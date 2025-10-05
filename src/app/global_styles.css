@@ -1,0 +1,15 @@
+@@ .. @@
+ .role-badge.externe {
+   background-color: var(--secondary-100);
+   color: var(--secondary-700);
+ }
++
++.role-badge.admin-insp {
++  background-color: var(--warning-100);
++  color: var(--warning-700);
++}
++
++.role-badge.role-bns {
++  background-color: var(--primary-100);
++  color: var(--primary-700);
++}
