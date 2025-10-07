@@ -529,7 +529,7 @@ import {CountryService, Country} from '../../../../../services/country.service';
                                                     type="checkbox"
                                                     [checked]="localData.cadreConsultation!.addictologieType==='SEVRAGE'"
                                                     name="addictologie"
-                                                    (change)="onFieldChange()"
+                                                    (change)="onAddictologieTypeChange('SEVRAGE')"
                                             >
                                             <span class="checkbox-text">1.a. Demande de sevrage</span>
                                         </label>
@@ -537,9 +537,8 @@ import {CountryService, Country} from '../../../../../services/country.service';
                                             <input
                                                     type="checkbox"
                                                     [checked]="localData.cadreConsultation!.addictologieType==='GESTION_ADDICTION'"
-
                                                     name="addictologieGestion"
-                                                    (change)="onFieldChange()"
+                                                    (change)="onAddictologieTypeChange('GESTION_ADDICTION')"
                                             >
                                             <span class="checkbox-text">1.b. Gestion d'une addiction sans substances ou autre</span>
                                         </label>
@@ -548,13 +547,11 @@ import {CountryService, Country} from '../../../../../services/country.service';
                                                     type="checkbox"
                                                     name="addictologieRisque"
                                                     [checked]="localData.cadreConsultation!.addictologieType==='RISQUE_RECHUTE'"
-
-                                                    (change)="onFieldChange()"
+                                                    (change)="onAddictologieTypeChange('RISQUE_RECHUTE')"
                                             >
                                             <span class="checkbox-text">1.c. Risque de glissement ou de rechute</span>
                                         </label>
                                     </div>
-
                                     <label class="checkbox-label">
                                         <input
                                                 type="checkbox"
@@ -3065,6 +3062,21 @@ export class Step1Component implements OnInit, OnChanges {
 
     selectTypeCarnetCnam(type: string): void {
         this.localData.typeCarnetCnam = type as any;
+        this.onFieldChange();
+    }
+    // AJOUTEZ CETTE MÉTHODE ICI ↓
+    onAddictologieTypeChange(type: string): void {
+        if (!this.localData.cadreConsultation) {
+            this.localData.cadreConsultation = {};
+        }
+
+        // Toggle behavior: si le même type est cliqué, on le désélectionne
+        if (this.localData.cadreConsultation.addictologieType === type) {
+            this.localData.cadreConsultation.addictologieType = undefined;
+        } else {
+            this.localData.cadreConsultation.addictologieType = type as any;
+        }
+
         this.onFieldChange();
     }
 }

@@ -64,7 +64,7 @@ import { User, UserRole } from '../../models/user.model';
           </div>
           <div class="card-body">
             <div class="actions-grid">
-              <a href="/formulaire" class="action-item" *ngIf="!isExterne()">
+              <a href="/formulaire" class="action-item" *ngIf="isUser()">
                 <div class="action-icon">📝</div>
                 <div class="action-content">
                   <h4 class="action-title">Nouveau formulaire</h4>
@@ -79,7 +79,7 @@ import { User, UserRole } from '../../models/user.model';
                 </div>
               </a>
 
-              <a href="/mes-formulaires" class="action-item" *ngIf="!isExterne()">
+              <a href="/mes-formulaires" class="action-item" *ngIf="isUser()">
                 <div class="action-icon">📋</div>
                 <div class="action-content">
                   <h4 class="action-title">Mes formulaires</h4>
@@ -569,6 +569,9 @@ export class DashboardComponent implements OnInit {
   }
   isExterne(): boolean {
     return this.authService.hasRole(UserRole.EXTERNE);
+  }
+  isUser(): boolean {
+    return this.authService.hasRole(UserRole.UTILISATEUR);
   }
 
   canAccessAdmin(): boolean {
