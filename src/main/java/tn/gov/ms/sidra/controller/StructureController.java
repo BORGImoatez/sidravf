@@ -21,6 +21,8 @@ import java.util.List;
 @RequestMapping("/structures")
 @RequiredArgsConstructor
 @Slf4j
+@CrossOrigin(origins = "https://sidra.rns.tn", maxAge = 3600)
+
 //@CrossOrigin(origins = "http://10.172.20.44:4200", maxAge = 3600)
 public class StructureController {
 

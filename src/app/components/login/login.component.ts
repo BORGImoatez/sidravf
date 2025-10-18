@@ -64,8 +64,10 @@ import { LoginRequest } from '../../models/user.model';
             <label for="motDePasse" class="form-label required">
               Mot de passe
             </label>
+            <div class="password-input-wrapper">
+
             <input
-                type="password"
+                [type]="showPassword ? 'text' : 'password'"
                 id="motDePasse"
                 name="motDePasse"
                 [(ngModel)]="loginData.motDePasse"
@@ -75,6 +77,15 @@ import { LoginRequest } from '../../models/user.model';
                 required
                 [disabled]="isLoading"
             >
+              <button
+                  type="button"
+                  class="password-toggle"
+                  (click)="togglePasswordVisibility()"
+                  [disabled]="isLoading"
+              >
+                {{ showPassword ? '👁️' : '👁️‍🗨️' }}
+              </button>
+            </div>
             <div *ngIf="showError && !loginData.motDePasse" class="form-error">
               Le mot de passe est requis
             </div>
@@ -120,6 +131,39 @@ import { LoginRequest } from '../../models/user.model';
     </div>
   `,
   styles: [`
+    .password-input-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .password-input-wrapper .form-input {
+      padding-right: 45px;
+    }
+
+    .password-toggle {
+      position: absolute;
+      right: 10px;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      padding: var(--spacing-2);
+      font-size: 18px;
+      color: var(--gray-500);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: color 0.2s;
+    }
+
+    .password-toggle:hover:not(:disabled) {
+      color: var(--gray-700);
+    }
+
+    .password-toggle:disabled {
+      cursor: not-allowed;
+      opacity: 0.5;
+    }
     .login-container {
       min-height: 100vh;
       display: flex;
@@ -211,7 +255,7 @@ export class LoginComponent implements OnInit {
     email: '',
     motDePasse: ''
   };
-
+  showPassword = false;
   isLoading = false;
   showError = false;
   errorMessage = '';
@@ -292,5 +336,8 @@ export class LoginComponent implements OnInit {
         console.error('Erreur de connexion:', error);
       }
     });
+  }
+  togglePasswordVisibility(): void {
+    this.showPassword = !this.showPassword;
   }
 }

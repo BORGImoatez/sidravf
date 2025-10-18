@@ -23,7 +23,7 @@ public class GouvernoratController {
      * Récupère tous les gouvernorats
      */
     @GetMapping
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN_STRUCTURE', 'UTILISATEUR','ADMINISTRATEUR_INSP')")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN_STRUCTURE', 'UTILISATEUR','ADMINISTRATEUR_INSP','BNS')")
     public ResponseEntity<List<Gouvernorat>> getAllGouvernorats() {
         log.info("Récupération de tous les gouvernorats");
         
@@ -35,7 +35,7 @@ public class GouvernoratController {
      * Récupère un gouvernorat par son ID
      */
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN_STRUCTURE', 'UTILISATEUR','ADMINISTRATEUR_INSP')")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN_STRUCTURE', 'UTILISATEUR','ADMINISTRATEUR_INSP','BNS')")
     public ResponseEntity<Gouvernorat> getGouvernoratById(@PathVariable Long id) {
         log.info("Récupération du gouvernorat avec l'ID: {}", id);
         

@@ -2538,11 +2538,15 @@ export class Step1Component implements OnInit, OnChanges {
                 depistage: false,
                 autre: false,
             };
+            if (!isChecked) {
+                this.localData.cadreConsultation.addictologieType = undefined;
+            }
         }
 
         if (cadre === "PSYCHIATRIE") {
             this.localData.cadreConsultation = {
                 addictologie: false,
+                addictologieType: undefined,
                 psychiatrie: isChecked,
                 psychologique: false,
                 medecineGenerale: false,
@@ -2560,6 +2564,8 @@ export class Step1Component implements OnInit, OnChanges {
 
         if (cadre === "PSYCHOLOGIQUE") {
             this.localData.cadreConsultation = {
+                addictologieType: undefined,
+
                 addictologie: false,
                 psychiatrie: false,
                 psychologique: isChecked,
@@ -2578,6 +2584,8 @@ export class Step1Component implements OnInit, OnChanges {
 
         if (cadre === "MEDECINE_GENERALE") {
             this.localData.cadreConsultation = {
+                addictologieType: undefined,
+
                 addictologie: false,
                 psychiatrie: false,
                 psychologique: false,
@@ -2596,6 +2604,8 @@ export class Step1Component implements OnInit, OnChanges {
 
         if (cadre === "NEUROLOGIQUE") {
             this.localData.cadreConsultation = {
+                addictologieType: undefined,
+
                 addictologie: false,
                 psychiatrie: false,
                 psychologique: false,
@@ -2614,6 +2624,8 @@ export class Step1Component implements OnInit, OnChanges {
 
         if (cadre === "INFECTIEUX") {
             this.localData.cadreConsultation = {
+                addictologieType: undefined,
+
                 addictologie: false,
                 psychiatrie: false,
                 psychologique: false,
@@ -2632,6 +2644,8 @@ export class Step1Component implements OnInit, OnChanges {
 
         if (cadre === "ESPACE_AMIS_JEUNES") {
             this.localData.cadreConsultation = {
+                addictologieType: undefined,
+
                 addictologie: false,
                 psychiatrie: false,
                 psychologique: false,
@@ -2650,6 +2664,8 @@ export class Step1Component implements OnInit, OnChanges {
 
         if (cadre === "ECHANGE_MATERIEL") {
             this.localData.cadreConsultation = {
+                addictologieType: undefined,
+
                 addictologie: false,
                 psychiatrie: false,
                 psychologique: false,
@@ -2668,6 +2684,8 @@ export class Step1Component implements OnInit, OnChanges {
 
         if (cadre === "REHABILITATION") {
             this.localData.cadreConsultation = {
+                addictologieType: undefined,
+
                 addictologie: false,
                 psychiatrie: false,
                 psychologique: false,
@@ -2686,6 +2704,8 @@ export class Step1Component implements OnInit, OnChanges {
 
         if (cadre === "URGENCE_MEDICALE") {
             this.localData.cadreConsultation = {
+                addictologieType: undefined,
+
                 addictologie: false,
                 psychiatrie: false,
                 psychologique: false,
@@ -2704,6 +2724,8 @@ export class Step1Component implements OnInit, OnChanges {
 
         if (cadre === "URGENCE_CHIRURGICALE") {
             this.localData.cadreConsultation = {
+                addictologieType: undefined,
+
                 addictologie: false,
                 psychiatrie: false,
                 psychologique: false,
@@ -2722,6 +2744,8 @@ export class Step1Component implements OnInit, OnChanges {
 
         if (cadre === "DEPISTAGE") {
             this.localData.cadreConsultation = {
+                addictologieType: undefined,
+
                 addictologie: false,
                 psychiatrie: false,
                 psychologique: false,
@@ -2740,6 +2764,8 @@ export class Step1Component implements OnInit, OnChanges {
 
         if (cadre === "AUTRE") {
             this.localData.cadreConsultation = {
+                addictologieType: undefined,
+
                 addictologie: false,
                 psychiatrie: false,
                 psychologique: false,

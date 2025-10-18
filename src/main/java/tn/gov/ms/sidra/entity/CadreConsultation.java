@@ -24,7 +24,7 @@ public class CadreConsultation {
     private Boolean addictologie;
 
     @Column(name = "addictologie_type")
-    private Boolean addictologieType;
+    private String addictologieType;
 
     @Column(name = "psychiatrie")
     private Boolean psychiatrie;

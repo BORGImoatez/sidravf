@@ -102,12 +102,10 @@ export class FormulaireService {
         // Adapter les noms des propriétés pour correspondre à ce qu'attend le backend
         const requestData = this.prepareFormDataForApi(formulaireData);
 
-        console.log('Mise à jour du formulaire:', id, formulaireData);
-        return this.http.put<any>(`${this.apiUrl}/formulaires/${id}`, requestData, {
+         return this.http.put<any>(`${this.apiUrl}/formulaires/${id}`, requestData, {
             headers: this.authService.getAuthHeaders()
         }).pipe(
             map((response: any) => {
-                console.log('Réponse de mise à jour:', response);
 
                 // Stocker l'ID du patient si disponible
                 if (response.patient && response.patient.id) {

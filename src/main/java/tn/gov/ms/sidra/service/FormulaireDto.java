@@ -186,7 +186,7 @@ public class FormulaireDto {
     @AllArgsConstructor
     public static class CadreConsultation {
         private Boolean addictologie;
-        private Boolean addictologieType;
+        private String addictologieType;
         private Boolean psychiatrie;
         private Boolean psychologique;
         private Boolean medecineGenerale;

@@ -251,7 +251,7 @@ public class FormulaireService {
 
         // Créer un nouveau formulaire à partir de la requête
         Formulaire updatedFormulaire = formulaireMapper.toEntity(request);
-
+        updatedFormulaire.setDateConsultation(request.getDateConsultation());
         // Créer et associer les entités liées
         createAndAssociateRelatedEntities(updatedFormulaire, request);
 

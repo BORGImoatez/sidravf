@@ -549,8 +549,7 @@ export class PendingUsersComponent implements OnInit {
         // Si l'utilisateur est un administrateur, s'abonner aux notifications admin
         if (this.canAccessAdmin()) {
           this.webSocketService.subscribe('/topic/admin/notifications', (message) => {
-            console.log('Notification admin reçue:', message);
-            this.loadPendingUsers();
+             this.loadPendingUsers();
             });
         }
 
@@ -558,8 +557,7 @@ export class PendingUsersComponent implements OnInit {
         const userId = this.currentUser?.id;
         if (userId) {
           this.webSocketService.subscribe(`/user/${userId}/queue/notifications`, (message) => {
-            console.log('Notification personnelle reçue:', message);
-            this.loadPendingUsers();
+             this.loadPendingUsers();
 
             // Ici vous pourriez ajouter une notification visuelle
           });

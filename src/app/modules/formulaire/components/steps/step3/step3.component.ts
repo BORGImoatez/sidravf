@@ -1180,8 +1180,345 @@ const HYPNOTIQUES_OPTIONS = [
                 </div>
               </div>
 
-              <!-- Continuer avec les autres substances... -->
-              <!-- Pour économiser l'espace, je vais juste montrer quelques exemples -->
+              <div class="spa-item">
+                <label class="form-label">2. Opium</label>
+                <div class="radio-options">
+                  <label class="radio-option">
+                    <input
+                        type="radio"
+                        name="initiationOpium"
+                        [value]="true"
+                        [(ngModel)]="localData.substanceInitiation!.opium"
+                        (change)="onFieldChange()"
+                    >
+                    <span class="radio-text">1. Oui</span>
+                  </label>
+                  <label class="radio-option">
+                    <input
+                        type="radio"
+                        name="initiationOpium"
+                        [value]="false"
+                        [(ngModel)]="localData.substanceInitiation!.opium"
+                        (change)="onFieldChange()"
+                    >
+                    <span class="radio-text">2. Non</span>
+                  </label>
+                </div>
+              </div>
+
+              <div class="spa-item">
+                <label class="form-label">3. Les morphiniques de synthèse (Subutex…)</label>
+                <div class="radio-options">
+                  <label class="radio-option">
+                    <input
+                        type="radio"
+                        name="initiationMorphiniques"
+                        [value]="true"
+                        [(ngModel)]="localData.substanceInitiation!.morphiniques"
+                        (change)="onFieldChange()"
+                    >
+                    <span class="radio-text">1. Oui</span>
+                  </label>
+                  <label class="radio-option">
+                    <input
+                        type="radio"
+                        name="initiationMorphiniques"
+                        [value]="false"
+                        [(ngModel)]="localData.substanceInitiation!.morphiniques"
+                        (change)="onFieldChange()"
+                    >
+                    <span class="radio-text">2. Non</span>
+                  </label>
+                </div>
+
+                <div class="nested" *ngIf="localData.substanceInitiation!.morphiniques === true">
+                  <label class="form-label required">3.a) Si oui, préciser la substance</label>
+                  <select
+                      class="form-select"
+                      [class.error]="showValidationErrors && !localData.substanceInitiation!.morphiniquesPrecision"
+                      [(ngModel)]="localData.substanceInitiation!.morphiniquesPrecision"
+                      name="initiationMorphiniquesPrecision"
+                      (change)="onFieldChange()"
+                  >
+                    <option value="">Sélectionner</option>
+                    <option value="Subutex">Subutex</option>
+                    <option value="Méthadone">Méthadone</option>
+                    <option value="Tramal">Tramal</option>
+                    <option value="Coalgésic">Coalgésic</option>
+                    <option value="Fentanyl">Fentanyl</option>
+                  </select>
+                  <div *ngIf="showValidationErrors && !localData.substanceInitiation!.morphiniquesPrecision" class="form-error">
+                    Ce champ est obligatoire
+                  </div>
+                </div>
+              </div>
+
+              <!-- Répéter pour les autres substances... -->
+              <div class="spa-item">
+                <label class="form-label">4. Héroïne</label>
+                <div class="radio-options">
+                  <label class="radio-option">
+                    <input
+                        type="radio"
+                        name="initiationHeroine"
+                        [value]="true"
+                        [(ngModel)]="localData.substanceInitiation!.heroine"
+                        (change)="onFieldChange()"
+                    >
+                    <span class="radio-text">1. Oui</span>
+                  </label>
+                  <label class="radio-option">
+                    <input
+                        type="radio"
+                        name="initiationHeroine"
+                        [value]="false"
+                        [(ngModel)]="localData.substanceInitiation!.heroine"
+                        (change)="onFieldChange()"
+                    >
+                    <span class="radio-text">2. Non</span>
+                  </label>
+                </div>
+              </div>
+
+              <div class="spa-item">
+                <label class="form-label">5. Cocaïne</label>
+                <div class="radio-options">
+                  <label class="radio-option">
+                    <input
+                        type="radio"
+                        name="initiationCocaine"
+                        [value]="true"
+                        [(ngModel)]="localData.substanceInitiation!.cocaine"
+                        (change)="onFieldChange()"
+                    >
+                    <span class="radio-text">1. Oui</span>
+                  </label>
+                  <label class="radio-option">
+                    <input
+                        type="radio"
+                        name="initiationCocaine"
+                        [value]="false"
+                        [(ngModel)]="localData.substanceInitiation!.cocaine"
+                        (change)="onFieldChange()"
+                    >
+                    <span class="radio-text">2. Non</span>
+                  </label>
+                </div>
+              </div>
+
+              <div class="spa-item">
+                <label class="form-label">6. Hypnotiques & sédatifs</label>
+                <div class="radio-options">
+                  <label class="radio-option">
+                    <input
+                        type="radio"
+                        name="initiationHypnotiques"
+                        [value]="true"
+                        [(ngModel)]="localData.substanceInitiation!.hypnotiques"
+                        (change)="onFieldChange()"
+                    >
+                    <span class="radio-text">1. Oui</span>
+                  </label>
+                  <label class="radio-option">
+                    <input
+                        type="radio"
+                        name="initiationHypnotiques"
+                        [value]="false"
+                        [(ngModel)]="localData.substanceInitiation!.hypnotiques"
+                        (change)="onFieldChange()"
+                    >
+                    <span class="radio-text">2. Non</span>
+                  </label>
+                </div>
+
+                <div class="nested" *ngIf="localData.substanceInitiation!.hypnotiques === true">
+                  <label class="form-label required">Type d'hypnotiques & sédatifs</label>
+                  <select
+                      class="form-select"
+                      [(ngModel)]="localData.substanceInitiation!.hypnotiquesPrecision"
+                      name="hypnotiquesPrecision"
+                      (change)="onFieldChange()"
+                      [class.error]="showValidationErrors && !localData.substanceInitiation!.hypnotiquesPrecision"
+                  >
+                    <option value="">Sélectionner un type</option>
+                    <option *ngFor="let option of hypnotiquesOptions" [value]="option">{{ option }}</option>
+                  </select>
+
+                  <!-- Champ de saisie pour "Autre" -->
+                  <div *ngIf="localData.droguesActuelles!.hypnotiquesPrecision === 'Autre'" class="form-group nested mt-4">
+                    <label class="form-label required">Préciser</label>
+                    <input
+                        type="text"
+                        class="form-input"
+                        [class.error]="showValidationErrors && !localData.substanceInitiation!.hypnotiquesAutrePrecision"
+                        [(ngModel)]="localData.substanceInitiation!.hypnotiquesAutrePrecision"
+                        name="hypnotiquesAutrePrecision"
+                        placeholder="(il est fort apprécié d'indiquer la substance utilisée comme la prononce l'utilisateur)"
+                        (input)="onFieldChange()"
+                    >
+                    <div *ngIf="showValidationErrors && !localData.substanceInitiation!.hypnotiquesAutrePrecision" class="form-error">
+                      Ce champ est obligatoire
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="spa-item">
+                <label class="form-label">7. Amphétamines</label>
+                <div class="radio-options">
+                  <label class="radio-option">
+                    <input
+                        type="radio"
+                        name="initiationAmphetamines"
+                        [value]="true"
+                        [(ngModel)]="localData.substanceInitiation!.amphetamines"
+                        (change)="onFieldChange()"
+                    >
+                    <span class="radio-text">1. Oui</span>
+                  </label>
+                  <label class="radio-option">
+                    <input
+                        type="radio"
+                        name="initiationAmphetamines"
+                        [value]="false"
+                        [(ngModel)]="localData.substanceInitiation!.amphetamines"
+                        (change)="onFieldChange()"
+                    >
+                    <span class="radio-text">2. Non</span>
+                  </label>
+                </div>
+              </div>
+
+              <div class="spa-item">
+                <label class="form-label">8. Ecstasy</label>
+                <div class="radio-options">
+                  <label class="radio-option">
+                    <input
+                        type="radio"
+                        name="initiationEcstasy"
+                        [value]="true"
+                        [(ngModel)]="localData.substanceInitiation!.ecstasy"
+                        (change)="onFieldChange()"
+                    >
+                    <span class="radio-text">1. Oui</span>
+                  </label>
+                  <label class="radio-option">
+                    <input
+                        type="radio"
+                        name="initiationEcstasy"
+                        [value]="false"
+                        [(ngModel)]="localData.substanceInitiation!.ecstasy"
+                        (change)="onFieldChange()"
+                    >
+                    <span class="radio-text">2. Non</span>
+                  </label>
+                </div>
+              </div>
+
+              <div class="spa-item">
+                <label class="form-label">9. Produits à inhaler (colle, solvants)</label>
+                <div class="radio-options">
+                  <label class="radio-option">
+                    <input
+                        type="radio"
+                        name="initiationProduitsInhaler"
+                        [value]="true"
+                        [(ngModel)]="localData.substanceInitiation!.produitsInhaler"
+                        (change)="onFieldChange()"
+                    >
+                    <span class="radio-text">1. Oui</span>
+                  </label>
+                  <label class="radio-option">
+                    <input
+                        type="radio"
+                        name="initiationProduitsInhaler"
+                        [value]="false"
+                        [(ngModel)]="localData.substanceInitiation!.produitsInhaler"
+                        (change)="onFieldChange()"
+                    >
+                    <span class="radio-text">2. Non</span>
+                  </label>
+                </div>
+              </div>
+
+              <div class="spa-item">
+                <label class="form-label">10. Prégabaline</label>
+                <div class="radio-options">
+                  <label class="radio-option">
+                    <input
+                        type="radio"
+                        name="initiationPregabaline"
+                        [value]="true"
+                        [(ngModel)]="localData.substanceInitiation!.pregabaline"
+                        (change)="onFieldChange()"
+                    >
+                    <span class="radio-text">1. Oui</span>
+                  </label>
+                  <label class="radio-option">
+                    <input
+                        type="radio"
+                        name="initiationPregabaline"
+                        [value]="false"
+                        [(ngModel)]="localData.substanceInitiation!.pregabaline"
+                        (change)="onFieldChange()"
+                    >
+                    <span class="radio-text">2. Non</span>
+                  </label>
+                </div>
+              </div>
+
+              <div class="spa-item">
+                <label class="form-label">11. Kétamines</label>
+                <div class="radio-options">
+                  <label class="radio-option">
+                    <input
+                        type="radio"
+                        name="initiationKetamines"
+                        [value]="true"
+                        [(ngModel)]="localData.substanceInitiation!.ketamines"
+                        (change)="onFieldChange()"
+                    >
+                    <span class="radio-text">1. Oui</span>
+                  </label>
+                  <label class="radio-option">
+                    <input
+                        type="radio"
+                        name="initiationKetamines"
+                        [value]="false"
+                        [(ngModel)]="localData.substanceInitiation!.ketamines"
+                        (change)="onFieldChange()"
+                    >
+                    <span class="radio-text">2. Non</span>
+                  </label>
+                </div>
+              </div>
+
+              <div class="spa-item">
+                <label class="form-label">12. LSD</label>
+                <div class="radio-options">
+                  <label class="radio-option">
+                    <input
+                        type="radio"
+                        name="initiationLsd"
+                        [value]="true"
+                        [(ngModel)]="localData.substanceInitiation!.lsd"
+                        (change)="onFieldChange()"
+                    >
+                    <span class="radio-text">1. Oui</span>
+                  </label>
+                  <label class="radio-option">
+                    <input
+                        type="radio"
+                        name="initiationLsd"
+                        [value]="false"
+                        [(ngModel)]="localData.substanceInitiation!.lsd"
+                        (change)="onFieldChange()"
+                    >
+                    <span class="radio-text">2. Non</span>
+                  </label>
+                </div>
+              </div>
+
 
               <div class="spa-item">
                 <label class="form-label">13. Autre</label>
@@ -1251,7 +1588,416 @@ const HYPNOTIQUES_OPTIONS = [
             <label class="form-label">27) (en cas de poly-consommation) Quelle est la substance principale de consommation chez le patient (la plus consommée)</label>
 
             <!-- Même structure que les questions précédentes pour substancePrincipale -->
+            <div class="spa-list">
+              <!-- Répéter la même structure que pour la question 23 mais avec substanceInitiation -->
+              <div class="spa-item">
+                <label class="form-label">1. Cannabis</label>
+                <div class="radio-options">
+                  <label class="radio-option">
+                    <input
+                        type="radio"
+                        name="substancePrincipaleCannabis"
+                        [value]="true"
+                        [(ngModel)]="localData.substancePrincipale!.cannabis"
+                        (change)="onFieldChange()"
+                    >
+                    <span class="radio-text">1. Oui</span>
+                  </label>
+                  <label class="radio-option">
+                    <input
+                        type="radio"
+                        name="substancePrincipaleCannabis"
+                        [value]="false"
+                        [(ngModel)]="localData.substancePrincipale!.cannabis"
+                        (change)="onFieldChange()"
+                    >
+                    <span class="radio-text">2. Non</span>
+                  </label>
+                </div>
+              </div>
 
+              <div class="spa-item">
+                <label class="form-label">2. Opium</label>
+                <div class="radio-options">
+                  <label class="radio-option">
+                    <input
+                        type="radio"
+                        name="substancePrincipaleOpium"
+                        [value]="true"
+                        [(ngModel)]="localData.substancePrincipale!.opium"
+                        (change)="onFieldChange()"
+                    >
+                    <span class="radio-text">1. Oui</span>
+                  </label>
+                  <label class="radio-option">
+                    <input
+                        type="radio"
+                        name="substancePrincipaleOpium"
+                        [value]="false"
+                        [(ngModel)]="localData.substancePrincipale!.opium"
+                        (change)="onFieldChange()"
+                    >
+                    <span class="radio-text">2. Non</span>
+                  </label>
+                </div>
+              </div>
+
+              <div class="spa-item">
+                <label class="form-label">3. Les morphiniques de synthèse (Subutex…)</label>
+                <div class="radio-options">
+                  <label class="radio-option">
+                    <input
+                        type="radio"
+                        name="substancePrincipaleMorphiniques"
+                        [value]="true"
+                        [(ngModel)]="localData.substancePrincipale!.morphiniques"
+                        (change)="onFieldChange()"
+                    >
+                    <span class="radio-text">1. Oui</span>
+                  </label>
+                  <label class="radio-option">
+                    <input
+                        type="radio"
+                        name="substancePrincipaleMorphiniques"
+                        [value]="false"
+                        [(ngModel)]="localData.substancePrincipale!.morphiniques"
+                        (change)="onFieldChange()"
+                    >
+                    <span class="radio-text">2. Non</span>
+                  </label>
+                </div>
+
+                <div class="nested" *ngIf="localData.substancePrincipale!.morphiniques === true">
+                  <label class="form-label required">3.a) Si oui, préciser la substance</label>
+                  <select
+                      class="form-select"
+                      [class.error]="showValidationErrors && !localData.substancePrincipale!.morphiniquesPrecision"
+                      [(ngModel)]="localData.substancePrincipale!.morphiniquesPrecision"
+                      name="substancePrincipaleMorphiniquesPrecision"
+                      (change)="onFieldChange()"
+                  >
+                    <option value="">Sélectionner</option>
+                    <option value="Subutex">Subutex</option>
+                    <option value="Méthadone">Méthadone</option>
+                    <option value="Tramal">Tramal</option>
+                    <option value="Coalgésic">Coalgésic</option>
+                    <option value="Fentanyl">Fentanyl</option>
+                  </select>
+                  <div *ngIf="showValidationErrors && !localData.substancePrincipale!.morphiniquesPrecision" class="form-error">
+                    Ce champ est obligatoire
+                  </div>
+                </div>
+              </div>
+
+              <!-- Répéter pour les autres substances... -->
+              <div class="spa-item">
+                <label class="form-label">4. Héroïne</label>
+                <div class="radio-options">
+                  <label class="radio-option">
+                    <input
+                        type="radio"
+                        name="substancePrincipaleHeroine"
+                        [value]="true"
+                        [(ngModel)]="localData.substancePrincipale!.heroine"
+                        (change)="onFieldChange()"
+                    >
+                    <span class="radio-text">1. Oui</span>
+                  </label>
+                  <label class="radio-option">
+                    <input
+                        type="radio"
+                        name="substancePrincipaleHeroine"
+                        [value]="false"
+                        [(ngModel)]="localData.substancePrincipale!.heroine"
+                        (change)="onFieldChange()"
+                    >
+                    <span class="radio-text">2. Non</span>
+                  </label>
+                </div>
+              </div>
+
+              <div class="spa-item">
+                <label class="form-label">5. Cocaïne</label>
+                <div class="radio-options">
+                  <label class="radio-option">
+                    <input
+                        type="radio"
+                        name="substancePrincipaleCocaine"
+                        [value]="true"
+                        [(ngModel)]="localData.substancePrincipale!.cocaine"
+                        (change)="onFieldChange()"
+                    >
+                    <span class="radio-text">1. Oui</span>
+                  </label>
+                  <label class="radio-option">
+                    <input
+                        type="radio"
+                        name="substancePrincipaleCocaine"
+                        [value]="false"
+                        [(ngModel)]="localData.substancePrincipale!.cocaine"
+                        (change)="onFieldChange()"
+                    >
+                    <span class="radio-text">2. Non</span>
+                  </label>
+                </div>
+              </div>
+
+              <div class="spa-item">
+                <label class="form-label">6. Hypnotiques & sédatifs</label>
+                <div class="radio-options">
+                  <label class="radio-option">
+                    <input
+                        type="radio"
+                        name="substancePrincipaleHypnotiques"
+                        [value]="true"
+                        [(ngModel)]="localData.substancePrincipale!.hypnotiques"
+                        (change)="onFieldChange()"
+                    >
+                    <span class="radio-text">1. Oui</span>
+                  </label>
+                  <label class="radio-option">
+                    <input
+                        type="radio"
+                        name="substancePrincipaleHypnotiques"
+                        [value]="false"
+                        [(ngModel)]="localData.substancePrincipale!.hypnotiques"
+                        (change)="onFieldChange()"
+                    >
+                    <span class="radio-text">2. Non</span>
+                  </label>
+                </div>
+
+                <div class="nested" *ngIf="localData.substancePrincipale!.hypnotiques === true">
+                  <label class="form-label required">Type d'hypnotiques & sédatifs</label>
+                  <select
+                      class="form-select"
+                      [(ngModel)]="localData.substancePrincipale!.hypnotiquesPrecision"
+                      name="hypnotiquesPrecision"
+                      (change)="onFieldChange()"
+                      [class.error]="showValidationErrors && !localData.substancePrincipale!.hypnotiquesPrecision"
+                  >
+                    <option value="">Sélectionner un type</option>
+                    <option *ngFor="let option of hypnotiquesOptions" [value]="option">{{ option }}</option>
+                  </select>
+
+                  <!-- Champ de saisie pour "Autre" -->
+                  <div *ngIf="localData.substancePrincipale!.hypnotiquesPrecision === 'Autre'" class="form-group nested mt-4">
+                    <label class="form-label required">Préciser</label>
+                    <input
+                        type="text"
+                        class="form-input"
+                        [class.error]="showValidationErrors && !localData.substancePrincipale!.hypnotiquesAutrePrecision"
+                        [(ngModel)]="localData.substancePrincipale!.hypnotiquesAutrePrecision"
+                        name="hypnotiquesAutrePrecision"
+                        placeholder="(il est fort apprécié d'indiquer la substance utilisée comme la prononce l'utilisateur)"
+                        (input)="onFieldChange()"
+                    >
+                    <div *ngIf="showValidationErrors && !localData.substancePrincipale!.hypnotiquesAutrePrecision" class="form-error">
+                      Ce champ est obligatoire
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="spa-item">
+                <label class="form-label">7. Amphétamines</label>
+                <div class="radio-options">
+                  <label class="radio-option">
+                    <input
+                        type="radio"
+                        name="substancePrincipaleAmphetamines"
+                        [value]="true"
+                        [(ngModel)]="localData.substancePrincipale!.amphetamines"
+                        (change)="onFieldChange()"
+                    >
+                    <span class="radio-text">1. Oui</span>
+                  </label>
+                  <label class="radio-option">
+                    <input
+                        type="radio"
+                        name="substancePrincipaleAmphetamines"
+                        [value]="false"
+                        [(ngModel)]="localData.substancePrincipale!.amphetamines"
+                        (change)="onFieldChange()"
+                    >
+                    <span class="radio-text">2. Non</span>
+                  </label>
+                </div>
+              </div>
+
+              <div class="spa-item">
+                <label class="form-label">8. Ecstasy</label>
+                <div class="radio-options">
+                  <label class="radio-option">
+                    <input
+                        type="radio"
+                        name="substancePrincipaleEcstasy"
+                        [value]="true"
+                        [(ngModel)]="localData.substancePrincipale!.ecstasy"
+                        (change)="onFieldChange()"
+                    >
+                    <span class="radio-text">1. Oui</span>
+                  </label>
+                  <label class="radio-option">
+                    <input
+                        type="radio"
+                        name="substancePrincipaleEcstasy"
+                        [value]="false"
+                        [(ngModel)]="localData.substancePrincipale!.ecstasy"
+                        (change)="onFieldChange()"
+                    >
+                    <span class="radio-text">2. Non</span>
+                  </label>
+                </div>
+              </div>
+
+              <div class="spa-item">
+                <label class="form-label">9. Produits à inhaler (colle, solvants)</label>
+                <div class="radio-options">
+                  <label class="radio-option">
+                    <input
+                        type="radio"
+                        name="substancePrincipaleProduitsInhaler"
+                        [value]="true"
+                        [(ngModel)]="localData.substancePrincipale!.produitsInhaler"
+                        (change)="onFieldChange()"
+                    >
+                    <span class="radio-text">1. Oui</span>
+                  </label>
+                  <label class="radio-option">
+                    <input
+                        type="radio"
+                        name="substancePrincipaleProduitsInhaler"
+                        [value]="false"
+                        [(ngModel)]="localData.substancePrincipale!.produitsInhaler"
+                        (change)="onFieldChange()"
+                    >
+                    <span class="radio-text">2. Non</span>
+                  </label>
+                </div>
+              </div>
+
+              <div class="spa-item">
+                <label class="form-label">10. Prégabaline</label>
+                <div class="radio-options">
+                  <label class="radio-option">
+                    <input
+                        type="radio"
+                        name="substancePrincipalePregabaline"
+                        [value]="true"
+                        [(ngModel)]="localData.substancePrincipale!.pregabaline"
+                        (change)="onFieldChange()"
+                    >
+                    <span class="radio-text">1. Oui</span>
+                  </label>
+                  <label class="radio-option">
+                    <input
+                        type="radio"
+                        name="substancePrincipalePregabaline"
+                        [value]="false"
+                        [(ngModel)]="localData.substancePrincipale!.pregabaline"
+                        (change)="onFieldChange()"
+                    >
+                    <span class="radio-text">2. Non</span>
+                  </label>
+                </div>
+              </div>
+
+              <div class="spa-item">
+                <label class="form-label">11. Kétamines</label>
+                <div class="radio-options">
+                  <label class="radio-option">
+                    <input
+                        type="radio"
+                        name="substancePrincipaleKetamines"
+                        [value]="true"
+                        [(ngModel)]="localData.substancePrincipale!.ketamines"
+                        (change)="onFieldChange()"
+                    >
+                    <span class="radio-text">1. Oui</span>
+                  </label>
+                  <label class="radio-option">
+                    <input
+                        type="radio"
+                        name="substancePrincipaleKetamines"
+                        [value]="false"
+                        [(ngModel)]="localData.substancePrincipale!.ketamines"
+                        (change)="onFieldChange()"
+                    >
+                    <span class="radio-text">2. Non</span>
+                  </label>
+                </div>
+              </div>
+
+              <div class="spa-item">
+                <label class="form-label">12. LSD</label>
+                <div class="radio-options">
+                  <label class="radio-option">
+                    <input
+                        type="radio"
+                        name="substancePrincipaleLsd"
+                        [value]="true"
+                        [(ngModel)]="localData.substancePrincipale!.lsd"
+                        (change)="onFieldChange()"
+                    >
+                    <span class="radio-text">1. Oui</span>
+                  </label>
+                  <label class="radio-option">
+                    <input
+                        type="radio"
+                        name="substancePrincipaleLsd"
+                        [value]="false"
+                        [(ngModel)]="localData.substancePrincipale!.lsd"
+                        (change)="onFieldChange()"
+                    >
+                    <span class="radio-text">2. Non</span>
+                  </label>
+                </div>
+              </div>
+
+
+              <div class="spa-item">
+                <label class="form-label">13. Autre</label>
+                <div class="radio-options">
+                  <label class="radio-option">
+                    <input
+                        type="radio"
+                        name="substancePrincipaleAutre"
+                        [value]="true"
+                        [(ngModel)]="localData.substancePrincipale!.autre"
+                        (change)="onFieldChange()"
+                    >
+                    <span class="radio-text">1. Oui</span>
+                  </label>
+                  <label class="radio-option">
+                    <input
+                        type="radio"
+                        name="substancePrincipaleAutre"
+                        [value]="false"
+                        [(ngModel)]="localData.substancePrincipale!.autre"
+                        (change)="onFieldChange()"
+                    >
+                    <span class="radio-text">2. Non</span>
+                  </label>
+                </div>
+
+                <div class="nested" *ngIf="localData.substanceInitiation!.autre === true">
+                  <label class="form-label required">26.13.a) Si autre, préciser</label>
+                  <input
+                      type="text"
+                      class="form-input"
+                      [class.error]="showValidationErrors && !localData.substanceInitiation!.autrePrecision"
+                      [(ngModel)]="localData.substanceInitiation!.autrePrecision"
+                      name="initiationAutrePrecision"
+                      placeholder="Préciser"
+                      (input)="onFieldChange()"
+                  >
+                  <div *ngIf="showValidationErrors && !localData.substanceInitiation!.autrePrecision" class="form-error">
+                    Ce champ est obligatoire
+                  </div>
+                </div>
+              </div>
+            </div>
             <!-- Question 25.B -->
             <div class="form-group nested">
               <label class="form-label">27.B) Âge d'initiation de consommation de la substance principale</label>

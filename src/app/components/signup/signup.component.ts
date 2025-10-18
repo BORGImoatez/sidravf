@@ -168,8 +168,10 @@ import { TypeStructure } from '../../models/user.model';
             <label for="motDePasse" class="form-label required">
               Mot de passe
             </label>
+            <div class="password-input-wrapper">
+
             <input
-                type="password"
+                [type]="showPassword ? 'text' : 'password'"
                 id="motDePasse"
                 name="motDePasse"
                 [(ngModel)]="signupData.motDePasse"
@@ -179,6 +181,15 @@ import { TypeStructure } from '../../models/user.model';
                 required
                 [disabled]="isLoading"
             >
+              <button
+                  type="button"
+                  class="password-toggle"
+                  (click)="togglePasswordVisibility()"
+                  [disabled]="isLoading"
+              >
+                {{ showPassword ? '👁️' : '👁️‍🗨️' }}
+              </button>
+            </div>
             <div *ngIf="showError && !signupData.motDePasse" class="form-error">
               Le mot de passe est requis
             </div>
@@ -218,6 +229,39 @@ import { TypeStructure } from '../../models/user.model';
     </div>
   `,
   styles: [`
+    .password-input-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .password-input-wrapper .form-input {
+      padding-right: 45px;
+    }
+
+    .password-toggle {
+      position: absolute;
+      right: 10px;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      padding: var(--spacing-2);
+      font-size: 18px;
+      color: var(--gray-500);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: color 0.2s;
+    }
+
+    .password-toggle:hover:not(:disabled) {
+      color: var(--gray-700);
+    }
+
+    .password-toggle:disabled {
+      cursor: not-allowed;
+      opacity: 0.5;
+    }
     .signup-container {
       min-height: 100vh;
       display: flex;
@@ -335,6 +379,7 @@ export class SignupComponent implements OnInit {
   showError = false;
   errorMessage = '';
   successMessage = '';
+  showPassword = false;
 
   constructor(
     private userService: UserService,
@@ -390,7 +435,7 @@ export class SignupComponent implements OnInit {
     this.userService.signup(signupRequest).subscribe({
       next: (response) => {
         this.isLoading = false;
-        this.successMessage = 'Votre demande d\'inscription a été envoyée avec succès. Un administrateur examinera votre demande.';
+        this.successMessage = 'Votre demande d\'inscription a été envoyée avec succès. Un administrateur examinera votre demande. Une fois votre demande approuvée par l\'équipe INSP, un SMS de confirmation vous sera envoyé sur votre numéro de téléphone.';
         this.resetForm();
       },
       error: (error) => {
@@ -431,5 +476,8 @@ export class SignupComponent implements OnInit {
       role: 'UTILISATEUR'
     };
     this.showError = false;
+  }
+  togglePasswordVisibility(): void {
+    this.showPassword = !this.showPassword;
   }
 }

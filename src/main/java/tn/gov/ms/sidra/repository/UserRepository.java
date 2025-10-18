@@ -27,7 +27,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
     List<User> findByActifTrue();
 
     List<User> findByRole(UserRole role);
-
+    @Query("SELECT u FROM User u WHERE u.role!='PENDING'")
+    List<User> getuserstatusdiffpending();
     @Query("SELECT u FROM User u WHERE u.structure.id = :structureId")
     List<User> findByStructureId(@Param("structureId") Long structureId);
 

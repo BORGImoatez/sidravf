@@ -31,10 +31,10 @@ public class DataInitializationService implements CommandLineRunner {
     public void run(String... args) throws Exception {
         initializeGouvernorats();
         initializeMinisteres();
-       // initializeStructures();
+         initializeStructures();
         initializeDelegations();
         initializeCountries();
-       // initializeDefaultSuperAdmin();
+      initializeDefaultSuperAdmin();
 
 
     }
@@ -110,32 +110,782 @@ public class DataInitializationService implements CommandLineRunner {
     /**
      * Initialise les délégations pour le gouvernorat d'Ariana
      */
-    private void initializeDelegations() {
-        log.info("Initialisation des délégations pour Ariana...");
+  /**
+ * Initialise les délégations pour chaque gouvernorat
+ */
+private void initializeDelegations() {
+    log.info("Initialisation des délégations...");
 
-        Gouvernorat ariana = gouvernoratRepository.findByNom("Ariana").orElse(null);
+    // === Gouvernorat de Tunis ===
+    Gouvernorat tunis = gouvernoratRepository.findByNom("Tunis").orElse(null);
+    if (tunis != null) {
+        if (tunis.getDelegations() == null || tunis.getDelegations().isEmpty()) {
+            List<String> delegationsTunis = Arrays.asList(
+                "Carthage",
+                "La Medina",
+                "Bab El Bhar",
+                "Bab Souika",
+                "El Omrane",
+                "El Omrane Supérieur",
+                "Ettahrir",
+                "El Menzah",
+                "Cité El Khadhra",
+                "Le Bardo",
+                "Sijoumi",
+                "Ezzouhour",
+                "El Hrairia",
+                "Sidi Hassine",
+                "El Ouardia",
+                "El Kabaria",
+                "Sidi El Béchir",
+                "Djebel Djelloud",
+                "La Goulette",
+                "Le Kram",
+                "La Marsa"
+            );
 
-        if (ariana != null) {
-            // Vérifier si des délégations existent déjà pour Ariana
-            if (ariana.getDelegations() == null || ariana.getDelegations().isEmpty()) {
-                // Créer les délégations pour Ariana
-                String[] delegationsAriana = {"Soukra", "Borj Louzir", "Ariana Ville", "Raoued", "Kalaat el-Andalous", "Sidi Thabet"};
-
-                for (String nomDelegation : delegationsAriana) {
-                    Delegation delegation = new Delegation();
-                    delegation.setNom(nomDelegation);
-                    delegation.setGouvernorat(ariana);
-                    delegationRepository.save(delegation);
-                }
-
-                log.info("✅ {} délégations créées pour Ariana", delegationsAriana.length);
-            } else {
-                log.info("✅ Délégations pour Ariana déjà initialisées");
+            for (String nomDelegation : delegationsTunis) {
+                Delegation delegation = new Delegation();
+                delegation.setNom(nomDelegation);
+                delegation.setGouvernorat(tunis);
+                delegationRepository.save(delegation);
             }
+
+            log.info("✅ {} délégations créées pour Tunis", delegationsTunis.size());
         } else {
-            log.warn("⚠️ Gouvernorat Ariana non trouvé, impossible d'initialiser les délégations");
+            log.info("✅ Délégations pour Tunis déjà initialisées");
         }
+    } else {
+        log.warn("⚠️ Gouvernorat Tunis non trouvé, impossible d'initialiser les délégations");
     }
+
+    // === Gouvernorat d'Ariana (déjà présent) ===
+    Gouvernorat ariana = gouvernoratRepository.findByNom("Ariana").orElse(null);
+    if (ariana != null) {
+        if (ariana.getDelegations() == null || ariana.getDelegations().isEmpty()) {
+            List<String> delegationsAriana = Arrays.asList(
+                "Soukra",
+                "Borj Louzir",
+                "Ariana Ville",
+                "Raoued",
+                "Kalaat el-Andalous",
+                "Sidi Thabet"
+            );
+
+            for (String nomDelegation : delegationsAriana) {
+                Delegation delegation = new Delegation();
+                delegation.setNom(nomDelegation);
+                delegation.setGouvernorat(ariana);
+                delegationRepository.save(delegation);
+            }
+
+            log.info("✅ {} délégations créées pour Ariana", delegationsAriana.size());
+        } else {
+            log.info("✅ Délégations pour Ariana déjà initialisées");
+        }
+    } else {
+        log.warn("⚠️ Gouvernorat Ariana non trouvé, impossible d'initialiser les délégations");
+    }
+    // === Gouvernorat de Ben Arous ===
+Gouvernorat benArous = gouvernoratRepository.findByNom("Ben Arous").orElse(null);
+if (benArous != null) {
+    if (benArous.getDelegations() == null || benArous.getDelegations().isEmpty()) {
+        List<String> delegationsBenArous = Arrays.asList(
+            "La Nouvelle Medina",
+            "El Mourouj",
+            "Hammam Lif",
+            "Hammam Chôtt",
+            "Bou Mhel El Bassatine",
+            "Ezzahra",
+            "Radès",
+            "Megrine",
+            "Mohamedia",
+            "Fouchana",
+            "Mornag"
+        );
+
+        for (String nomDelegation : delegationsBenArous) {
+            Delegation delegation = new Delegation();
+            delegation.setNom(nomDelegation);
+            delegation.setGouvernorat(benArous);
+            delegationRepository.save(delegation);
+        }
+
+        log.info("✅ {} délégations créées pour Ben Arous", delegationsBenArous.size());
+    } else {
+        log.info("✅ Délégations pour Ben Arous déjà initialisées");
+    }
+} else {
+    log.warn("⚠️ Gouvernorat Ben Arous non trouvé, impossible d'initialiser les délégations");
+}
+// === Gouvernorat de Manouba ===
+Gouvernorat manouba = gouvernoratRepository.findByNom("Manouba").orElse(null);
+if (manouba != null) {
+    if (manouba.getDelegations() == null || manouba.getDelegations().isEmpty()) {
+        List<String> delegationsManouba = Arrays.asList(
+            "Mannouba",
+            "Douar Hicher",
+            "Oued Ellil",
+            "Mornaguia",
+            "Borj Amri",
+            "Djedeida",
+            "Tebourba",
+            "El Battane"
+        );
+
+        for (String nomDelegation : delegationsManouba) {
+            Delegation delegation = new Delegation();
+            delegation.setNom(nomDelegation);
+            delegation.setGouvernorat(manouba);
+            delegationRepository.save(delegation);
+        }
+
+        log.info("✅ {} délégations créées pour Manouba", delegationsManouba.size());
+    } else {
+        log.info("✅ Délégations pour Manouba déjà initialisées");
+    }
+} else {
+    log.warn("⚠️ Gouvernorat Manouba non trouvé, impossible d'initialiser les délégations");
+}
+// === Gouvernorat de Nabeul ===
+Gouvernorat nabeul = gouvernoratRepository.findByNom("Nabeul").orElse(null);
+if (nabeul != null) {
+    if (nabeul.getDelegations() == null || nabeul.getDelegations().isEmpty()) {
+        List<String> delegationsNabeul = Arrays.asList(
+            "Nabeul",
+            "Dar Châabane El Fehri",
+            "Beni khiar",
+            "Korba",
+            "Menzel Temime",
+            "El Mida",
+            "Kelibia",
+            "Hammam El Guezaz",
+            "El Haouaria",
+            "Takelsa",
+            "Soliman",
+            "Menzel Bouzelfa",
+            "Beni Khalled",
+            "Grombalia",
+            "Bou Argoub",
+            "Hammamet"
+        );
+
+        for (String nomDelegation : delegationsNabeul) {
+            Delegation delegation = new Delegation();
+            delegation.setNom(nomDelegation);
+            delegation.setGouvernorat(nabeul);
+            delegationRepository.save(delegation);
+        }
+
+        log.info("✅ {} délégations créées pour Nabeul", delegationsNabeul.size());
+    } else {
+        log.info("✅ Délégations pour Nabeul déjà initialisées");
+    }
+} else {
+    log.warn("⚠️ Gouvernorat Nabeul non trouvé, impossible d'initialiser les délégations");
+}
+// === Gouvernorat de Zaghouan ===
+Gouvernorat zaghouan = gouvernoratRepository.findByNom("Zaghouan").orElse(null);
+if (zaghouan != null) {
+    if (zaghouan.getDelegations() == null || zaghouan.getDelegations().isEmpty()) {
+        List<String> delegationsZaghouan = Arrays.asList(
+            "Zaghouan",
+            "Ez-Zeriba",
+            "Bir Mchergua",
+            "El Fahs",
+            "En-Nadhour",
+            "Saouaf"
+        );
+
+        for (String nomDelegation : delegationsZaghouan) {
+            Delegation delegation = new Delegation();
+            delegation.setNom(nomDelegation);
+            delegation.setGouvernorat(zaghouan);
+            delegationRepository.save(delegation);
+        }
+
+        log.info("✅ {} délégations créées pour Zaghouan", delegationsZaghouan.size());
+    } else {
+        log.info("✅ Délégations pour Zaghouan déjà initialisées");
+    }
+} else {
+    log.warn("⚠️ Gouvernorat Zaghouan non trouvé, impossible d'initialiser les délégations");
+}
+// === Gouvernorat de Bizerte ===
+Gouvernorat bizerte = gouvernoratRepository.findByNom("Bizerte").orElse(null);
+if (bizerte != null) {
+    if (bizerte.getDelegations() == null || bizerte.getDelegations().isEmpty()) {
+        List<String> delegationsBizerte = Arrays.asList(
+            "Bizerte Nord",
+            "Zarzouna",
+            "Bizerte Sud",
+            "Sedjnane",
+            "Djoumine",
+            "Mateur",
+            "Ghezala",
+            "Menzel Bourguiba",
+            "Tinja",
+            "Utique",
+            "Ghar El Meleh",
+            "Menzel Djemil",
+            "El Alia",
+            "Ras Djebel"
+        );
+
+        for (String nomDelegation : delegationsBizerte) {
+            Delegation delegation = new Delegation();
+            delegation.setNom(nomDelegation);
+            delegation.setGouvernorat(bizerte);
+            delegationRepository.save(delegation);
+        }
+
+        log.info("✅ {} délégations créées pour Bizerte", delegationsBizerte.size());
+    } else {
+        log.info("✅ Délégations pour Bizerte déjà initialisées");
+    }
+} else {
+    log.warn("⚠️ Gouvernorat Bizerte non trouvé, impossible d'initialiser les délégations");
+}
+// === Gouvernorat de Béja ===
+Gouvernorat beja = gouvernoratRepository.findByNom("Béja").orElse(null);
+if (beja != null) {
+    if (beja.getDelegations() == null || beja.getDelegations().isEmpty()) {
+        List<String> delegationsBeja = Arrays.asList(
+            "Béja Nord",
+            "Béja Sud",
+            "Amdoun",
+            "Nefza",
+            "Teboursouk",
+            "Tibar",
+            "Testour",
+            "Goubellat",
+            "Medjez El Bab"
+        );
+
+        for (String nomDelegation : delegationsBeja) {
+            Delegation delegation = new Delegation();
+            delegation.setNom(nomDelegation);
+            delegation.setGouvernorat(beja);
+            delegationRepository.save(delegation);
+        }
+
+        log.info("✅ {} délégations créées pour Béja", delegationsBeja.size());
+    } else {
+        log.info("✅ Délégations pour Béja déjà initialisées");
+    }
+} else {
+    log.warn("⚠️ Gouvernorat Béja non trouvé, impossible d'initialiser les délégations");
+}
+// === Gouvernorat de Jendouba ===
+Gouvernorat jendouba = gouvernoratRepository.findByNom("Jendouba").orElse(null);
+if (jendouba != null) {
+    if (jendouba.getDelegations() == null || jendouba.getDelegations().isEmpty()) {
+        List<String> delegationsJendouba = Arrays.asList(
+            "Jendouba",
+            "Jendouba Nord",
+            "Bou Salem",
+            "Tabarka",
+            "Ain Draham",
+            "Fernana",
+            "Ghardimaou",
+            "Oued Meliz",
+            "Balta - Bou Aouane"
+        );
+
+        for (String nomDelegation : delegationsJendouba) {
+            Delegation delegation = new Delegation();
+            delegation.setNom(nomDelegation);
+            delegation.setGouvernorat(jendouba);
+            delegationRepository.save(delegation);
+        }
+
+        log.info("✅ {} délégations créées pour Jendouba", delegationsJendouba.size());
+    } else {
+        log.info("✅ Délégations pour Jendouba déjà initialisées");
+    }
+} else {
+    log.warn("⚠️ Gouvernorat Jendouba non trouvé, impossible d'initialiser les délégations");
+}
+// === Gouvernorat du Kef ===
+Gouvernorat kef = gouvernoratRepository.findByNom("Kef").orElse(null);
+if (kef != null) {
+    if (kef.getDelegations() == null || kef.getDelegations().isEmpty()) {
+        List<String> delegationsKef = Arrays.asList(
+            "Kef Ouest",
+            "Kef Est",
+            "Nebeur",
+            "Sakiet Sidi Youssef",
+            "Tajerouine",
+            "Kalâat Snan",
+            "Kalâat Khasbah",
+            "Djerissa",
+            "El Ksour",
+            "Dahmani",
+            "Es-Sers"
+        );
+
+        for (String nomDelegation : delegationsKef) {
+            Delegation delegation = new Delegation();
+            delegation.setNom(nomDelegation);
+            delegation.setGouvernorat(kef);
+            delegationRepository.save(delegation);
+        }
+
+        log.info("✅ {} délégations créées pour Kef", delegationsKef.size());
+    } else {
+        log.info("✅ Délégations pour Kef déjà initialisées");
+    }
+} else {
+    log.warn("⚠️ Gouvernorat Kef non trouvé, impossible d'initialiser les délégations");
+}
+// === Gouvernorat de Siliana ===
+Gouvernorat siliana = gouvernoratRepository.findByNom("Siliana").orElse(null);
+if (siliana != null) {
+    if (siliana.getDelegations() == null || siliana.getDelegations().isEmpty()) {
+        List<String> delegationsSiliana = Arrays.asList(
+            "Siliana Nord",
+            "Siliana Sud",
+            "Bou Arada",
+            "Gaâfour",
+            "El Krib",
+            "Bourouis",
+            "Makthar",
+            "Er-Rouhia",
+            "Kesra",
+            "Bargou",
+            "El Aroussa"
+        );
+
+        for (String nomDelegation : delegationsSiliana) {
+            Delegation delegation = new Delegation();
+            delegation.setNom(nomDelegation);
+            delegation.setGouvernorat(siliana);
+            delegationRepository.save(delegation);
+        }
+
+        log.info("✅ {} délégations créées pour Siliana", delegationsSiliana.size());
+    } else {
+        log.info("✅ Délégations pour Siliana déjà initialisées");
+    }
+} else {
+    log.warn("⚠️ Gouvernorat Siliana non trouvé, impossible d'initialiser les délégations");
+}
+// === Gouvernorat de Sousse ===
+Gouvernorat sousse = gouvernoratRepository.findByNom("Sousse").orElse(null);
+if (sousse != null) {
+    if (sousse.getDelegations() == null || sousse.getDelegations().isEmpty()) {
+        List<String> delegationsSousse = Arrays.asList(
+            "Sousse Medina",
+            "Sousse Riadh",
+            "Sousse Jawhara",
+            "Sousse Sidi Abdelhamid",
+            "Hammam Sousse",
+            "Akouda",
+            "Kalaâ Kebira",
+            "Sidi Bou Ali",
+            "Hergla",
+            "Enfidha",
+            "Bouficha",
+            "Kondar",
+            "Sidi El Héni",
+            "M'saken",
+            "Kalaâ Seghira",
+            "Zaouia - Ksiba - Thrayet"
+        );
+
+        for (String nomDelegation : delegationsSousse) {
+            Delegation delegation = new Delegation();
+            delegation.setNom(nomDelegation);
+            delegation.setGouvernorat(sousse);
+            delegationRepository.save(delegation);
+        }
+
+        log.info("✅ {} délégations créées pour Sousse", delegationsSousse.size());
+    } else {
+        log.info("✅ Délégations pour Sousse déjà initialisées");
+    }
+} else {
+    log.warn("⚠️ Gouvernorat Sousse non trouvé, impossible d'initialiser les délégations");
+}
+// === Gouvernorat de Monastir ===
+Gouvernorat monastir = gouvernoratRepository.findByNom("Monastir").orElse(null);
+if (monastir != null) {
+    if (monastir.getDelegations() == null || monastir.getDelegations().isEmpty()) {
+        List<String> delegationsMonastir = Arrays.asList(
+            "Monastir",
+            "Ouerdanine",
+            "Sahline",
+            "Zermadine",
+            "Beni Hassen",
+            "Jammel",
+            "Bembla",
+            "Moknine",
+            "Bekalta",
+            "Teboulba",
+            "Ksar Helal",
+            "Ksibet El Mediouni",
+            "Sayada-Lamta Bou-Hjar"
+        );
+
+        for (String nomDelegation : delegationsMonastir) {
+            Delegation delegation = new Delegation();
+            delegation.setNom(nomDelegation);
+            delegation.setGouvernorat(monastir);
+            delegationRepository.save(delegation);
+        }
+
+        log.info("✅ {} délégations créées pour Monastir", delegationsMonastir.size());
+    } else {
+        log.info("✅ Délégations pour Monastir déjà initialisées");
+    }
+} else {
+    log.warn("⚠️ Gouvernorat Monastir non trouvé, impossible d'initialiser les délégations");
+}
+// === Gouvernorat de Mahdia ===
+Gouvernorat mahdia = gouvernoratRepository.findByNom("Mahdia").orElse(null);
+if (mahdia != null) {
+    if (mahdia.getDelegations() == null || mahdia.getDelegations().isEmpty()) {
+        List<String> delegationsMahdia = Arrays.asList(
+            "Mahdia",
+            "Bou Merdès",
+            "Ouled Chamekh",
+            "Chorbane",
+            "Hebira",
+            "Essouassi",
+            "El Djem",
+            "Chebba",
+            "Melloulech",
+            "Sidi Alouane",
+            "Ksour Essef"
+        );
+
+        for (String nomDelegation : delegationsMahdia) {
+            Delegation delegation = new Delegation();
+            delegation.setNom(nomDelegation);
+            delegation.setGouvernorat(mahdia);
+            delegationRepository.save(delegation);
+        }
+
+        log.info("✅ {} délégations créées pour Mahdia", delegationsMahdia.size());
+    } else {
+        log.info("✅ Délégations pour Mahdia déjà initialisées");
+    }
+} else {
+    log.warn("⚠️ Gouvernorat Mahdia non trouvé, impossible d'initialiser les délégations");
+}
+// === Gouvernorat de Sfax ===
+Gouvernorat sfax = gouvernoratRepository.findByNom("Sfax").orElse(null);
+if (sfax != null) {
+    if (sfax.getDelegations() == null || sfax.getDelegations().isEmpty()) {
+        List<String> delegationsSfax = Arrays.asList(
+            "Sfax Ville",
+            "Sfax Ouest",
+            "Sakiet Ezzit",
+            "Sakiet Eddaïer",
+            "Sfax Sud",
+            "Tina",
+            "Agareb",
+            "Djebeniana",
+            "El Amra",
+            "El Hencha",
+            "Menzel Chaker",
+            "Ghraiba",
+            "Bir ali Ben Kelifa",
+            "Skhira",
+            "Mahres",
+            "Kerkenah"
+        );
+
+        for (String nomDelegation : delegationsSfax) {
+            Delegation delegation = new Delegation();
+            delegation.setNom(nomDelegation);
+            delegation.setGouvernorat(sfax);
+            delegationRepository.save(delegation);
+        }
+
+        log.info("✅ {} délégations créées pour Sfax", delegationsSfax.size());
+    } else {
+        log.info("✅ Délégations pour Sfax déjà initialisées");
+    }
+} else {
+    log.warn("⚠️ Gouvernorat Sfax non trouvé, impossible d'initialiser les délégations");
+}
+// === Gouvernorat de Kairouan ===
+Gouvernorat kairouan = gouvernoratRepository.findByNom("Kairouan").orElse(null);
+if (kairouan != null) {
+    if (kairouan.getDelegations() == null || kairouan.getDelegations().isEmpty()) {
+        List<String> delegationsKairouan = Arrays.asList(
+            "Kairouan Nord",
+            "Kairouan Sud",
+            "Echebika",
+            "Sbikha",
+            "EL Ouslatia",
+            "Haffouz",
+            "El Alâa",
+            "Hajeb el Ayoun",
+            "Nasrallah",
+            "Echrarda",
+            "Bouhajla"
+        );
+
+        for (String nomDelegation : delegationsKairouan) {
+            Delegation delegation = new Delegation();
+            delegation.setNom(nomDelegation);
+            delegation.setGouvernorat(kairouan);
+            delegationRepository.save(delegation);
+        }
+
+        log.info("✅ {} délégations créées pour Kairouan", delegationsKairouan.size());
+    } else {
+        log.info("✅ Délégations pour Kairouan déjà initialisées");
+    }
+} else {
+    log.warn("⚠️ Gouvernorat Kairouan non trouvé, impossible d'initialiser les délégations");
+}
+// === Gouvernorat de Kasserine ===
+Gouvernorat kasserine = gouvernoratRepository.findByNom("Kasserine").orElse(null);
+if (kasserine != null) {
+    if (kasserine.getDelegations() == null || kasserine.getDelegations().isEmpty()) {
+        List<String> delegationsKasserine = Arrays.asList(
+            "Kasserine Nord",
+            "Kasserine Sud",
+            "Ezzouhour",
+            "Hassi Ferid",
+            "Sbeitla",
+            "Sbiba",
+            "Djedeliane",
+            "El Ayoun",
+            "Thala",
+            "Hidra",
+            "Foussana",
+            "Feriana",
+            "Majel Bel Abbès"
+        );
+
+        for (String nomDelegation : delegationsKasserine) {
+            Delegation delegation = new Delegation();
+            delegation.setNom(nomDelegation);
+            delegation.setGouvernorat(kasserine);
+            delegationRepository.save(delegation);
+        }
+
+        log.info("✅ {} délégations créées pour Kasserine", delegationsKasserine.size());
+    } else {
+        log.info("✅ Délégations pour Kasserine déjà initialisées");
+    }
+} else {
+    log.warn("⚠️ Gouvernorat Kasserine non trouvé, impossible d'initialiser les délégations");
+}
+// === Gouvernorat de Sidi Bouzid ===
+Gouvernorat sidiBouzid = gouvernoratRepository.findByNom("Sidi Bouzid").orElse(null);
+if (sidiBouzid != null) {
+    if (sidiBouzid.getDelegations() == null || sidiBouzid.getDelegations().isEmpty()) {
+        List<String> delegationsSidiBouzid = Arrays.asList(
+            "Sidi Bouzid Ouest",
+            "Sidi Bouzid Est",
+            "Jilma",
+            "Cebalet Ouled Asker",
+            "Bir El Hafey",
+            "Sidi Ali Ben Aoûn",
+            "Menzel Bouzaïenne",
+            "Meknassy",
+            "Souk Jedid",
+            "Mezzouna",
+            "Regueb",
+            "Ouled Haffouz"
+        );
+
+        for (String nomDelegation : delegationsSidiBouzid) {
+            Delegation delegation = new Delegation();
+            delegation.setNom(nomDelegation);
+            delegation.setGouvernorat(sidiBouzid);
+            delegationRepository.save(delegation);
+        }
+
+        log.info("✅ {} délégations créées pour Sidi Bouzid", delegationsSidiBouzid.size());
+    } else {
+        log.info("✅ Délégations pour Sidi Bouzid déjà initialisées");
+    }
+} else {
+    log.warn("⚠️ Gouvernorat Sidi Bouzid non trouvé, impossible d'initialiser les délégations");
+}
+// === Gouvernorat de Gabès ===
+Gouvernorat gabes = gouvernoratRepository.findByNom("Gabès").orElse(null);
+if (gabes != null) {
+    if (gabes.getDelegations() == null || gabes.getDelegations().isEmpty()) {
+        List<String> delegationsGabes = Arrays.asList(
+            "Gabes Medina",
+            "Gabes Ouest",
+            "Gabes Sud",
+            "Ghanouch",
+            "El Metouia",
+            "Menzel El Habib",
+            "El Hamma",
+            "Matmata",
+            "Nouvelle Matmata",
+            "Mareth"
+        );
+
+        for (String nomDelegation : delegationsGabes) {
+            Delegation delegation = new Delegation();
+            delegation.setNom(nomDelegation);
+            delegation.setGouvernorat(gabes);
+            delegationRepository.save(delegation);
+        }
+
+        log.info("✅ {} délégations créées pour Gabès", delegationsGabes.size());
+    } else {
+        log.info("✅ Délégations pour Gabès déjà initialisées");
+    }
+} else {
+    log.warn("⚠️ Gouvernorat Gabès non trouvé, impossible d'initialiser les délégations");
+}
+// === Gouvernorat de Médenine ===
+Gouvernorat medenine = gouvernoratRepository.findByNom("Médenine").orElse(null);
+if (medenine != null) {
+    if (medenine.getDelegations() == null || medenine.getDelegations().isEmpty()) {
+        List<String> delegationsMedenine = Arrays.asList(
+            "Medenine Nord",
+            "Medenine Sud",
+            "Beni Khedech",
+            "Ben Guerdane",
+            "Zarzis",
+            "Djerba Houmet Souk",
+            "Djerba Midoun",
+            "Djerba Ajim",
+            "Sidi Makhloulf"
+        );
+
+        for (String nomDelegation : delegationsMedenine) {
+            Delegation delegation = new Delegation();
+            delegation.setNom(nomDelegation);
+            delegation.setGouvernorat(medenine);
+            delegationRepository.save(delegation);
+        }
+
+        log.info("✅ {} délégations créées pour Médenine", delegationsMedenine.size());
+    } else {
+        log.info("✅ Délégations pour Médenine déjà initialisées");
+    }
+} else {
+    log.warn("⚠️ Gouvernorat Médenine non trouvé, impossible d'initialiser les délégations");
+}
+// === Gouvernorat de Tataouine ===
+Gouvernorat tataouine = gouvernoratRepository.findByNom("Tataouine").orElse(null);
+if (tataouine != null) {
+    if (tataouine.getDelegations() == null || tataouine.getDelegations().isEmpty()) {
+        List<String> delegationsTataouine = Arrays.asList(
+            "Tataouine Nord",
+            "Tataouine Sud",
+            "Smâr",
+            "Bir Lahmar",
+            "Ghomrassen",
+            "Dhehiba",
+            "Remada"
+        );
+
+        for (String nomDelegation : delegationsTataouine) {
+            Delegation delegation = new Delegation();
+            delegation.setNom(nomDelegation);
+            delegation.setGouvernorat(tataouine);
+            delegationRepository.save(delegation);
+        }
+
+        log.info("✅ {} délégations créées pour Tataouine", delegationsTataouine.size());
+    } else {
+        log.info("✅ Délégations pour Tataouine déjà initialisées");
+    }
+} else {
+    log.warn("⚠️ Gouvernorat Tataouine non trouvé, impossible d'initialiser les délégations");
+}
+// === Gouvernorat de Gafsa ===
+Gouvernorat gafsa = gouvernoratRepository.findByNom("Gafsa").orElse(null);
+if (gafsa != null) {
+    if (gafsa.getDelegations() == null || gafsa.getDelegations().isEmpty()) {
+        List<String> delegationsGafsa = Arrays.asList(
+            "Gafsa Nord",
+            "Sidi Aïch",
+            "El Ksar",
+            "Gafsa Sud",
+            "Oum El Araies",
+            "Redeyef",
+            "Metlaoui",
+            "Mdhila",
+            "EL Guetar",
+            "Belkhir",
+            "Sned"
+        );
+
+        for (String nomDelegation : delegationsGafsa) {
+            Delegation delegation = new Delegation();
+            delegation.setNom(nomDelegation);
+            delegation.setGouvernorat(gafsa);
+            delegationRepository.save(delegation);
+        }
+
+        log.info("✅ {} délégations créées pour Gafsa", delegationsGafsa.size());
+    } else {
+        log.info("✅ Délégations pour Gafsa déjà initialisées");
+    }
+} else {
+    log.warn("⚠️ Gouvernorat Gafsa non trouvé, impossible d'initialiser les délégations");
+}
+// === Gouvernorat de Tozeur ===
+Gouvernorat tozeur = gouvernoratRepository.findByNom("Tozeur").orElse(null);
+if (tozeur != null) {
+    if (tozeur.getDelegations() == null || tozeur.getDelegations().isEmpty()) {
+        List<String> delegationsTozeur = Arrays.asList(
+            "Tozeur",
+            "Degach",
+            "Tameghza",
+            "Nefta",
+            "Hazoua"
+        );
+
+        for (String nomDelegation : delegationsTozeur) {
+            Delegation delegation = new Delegation();
+            delegation.setNom(nomDelegation);
+            delegation.setGouvernorat(tozeur);
+            delegationRepository.save(delegation);
+        }
+
+        log.info("✅ {} délégations créées pour Tozeur", delegationsTozeur.size());
+    } else {
+        log.info("✅ Délégations pour Tozeur déjà initialisées");
+    }
+} else {
+    log.warn("⚠️ Gouvernorat Tozeur non trouvé, impossible d'initialiser les délégations");
+}
+// === Gouvernorat de Kébili ===
+Gouvernorat kebili = gouvernoratRepository.findByNom("Kébili").orElse(null);
+if (kebili != null) {
+    if (kebili.getDelegations() == null || kebili.getDelegations().isEmpty()) {
+        List<String> delegationsKebili = Arrays.asList(
+            "Kebili Sud",
+            "Kebeli Nord",
+            "Souk El Ahed",
+            "Douz Nord",
+            "Douz Sud",
+            "Faouar"
+        );
+
+        for (String nomDelegation : delegationsKebili) {
+            Delegation delegation = new Delegation();
+            delegation.setNom(nomDelegation);
+            delegation.setGouvernorat(kebili);
+            delegationRepository.save(delegation);
+        }
+
+        log.info("✅ {} délégations créées pour Kébili", delegationsKebili.size());
+    } else {
+        log.info("✅ Délégations pour Kébili déjà initialisées");
+    }
+} else {
+    log.warn("⚠️ Gouvernorat Kébili non trouvé, impossible d'initialiser les délégations");
+}
+
+}
+
 
     /**
      * Initialise quelques structures par défaut

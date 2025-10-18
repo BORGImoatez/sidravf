@@ -44,7 +44,7 @@ public class UserService {
         if (structureId != null) {
             users = userRepository.findByStructureId(structureId);
         } else {
-            users = userRepository.findAll();
+            users = userRepository.getuserstatusdiffpending();
         }
 
         return users.stream()

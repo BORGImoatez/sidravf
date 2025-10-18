@@ -326,29 +326,7 @@ Chart.register(...registerables);
                 </tr>
 
                 <!-- Niveau socioéconomique -->
-                <tr class="category-header">
-                  <td colspan="3"><strong>Niveau socioéconomique selon carnet du CNAM</strong></td>
-                </tr>
-                <tr>
-                  <td class="subcategory">Carte d'indigent 1 ou 2 ou carte AMEN</td>
-                  <td>{{ data.caracteristiquesSociodemographiques.niveauSocioeconomique.carteIndigent.nombre || '-' }}</td>
-                  <td>{{ data.caracteristiquesSociodemographiques.niveauSocioeconomique.carteIndigent.pourcentage || '-' }}%</td>
-                </tr>
-                <tr>
-                  <td class="subcategory">CARNET CNAM de santé publique</td>
-                  <td>{{ data.caracteristiquesSociodemographiques.niveauSocioeconomique.carnetCnamPublique.nombre || '-' }}</td>
-                  <td>{{ data.caracteristiquesSociodemographiques.niveauSocioeconomique.carnetCnamPublique.pourcentage || '-' }}%</td>
-                </tr>
-                <tr>
-                  <td class="subcategory">CARNET CNAM de médecine de famille</td>
-                  <td>{{ data.caracteristiquesSociodemographiques.niveauSocioeconomique.carnetCnamFamille.nombre || '-' }}</td>
-                  <td>{{ data.caracteristiquesSociodemographiques.niveauSocioeconomique.carnetCnamFamille.pourcentage || '-' }}%</td>
-                </tr>
-                <tr>
-                  <td class="subcategory">CARNET CNAM de remboursement</td>
-                  <td>{{ data.caracteristiquesSociodemographiques.niveauSocioeconomique.carnetCnamRemboursement.nombre || '-' }}</td>
-                  <td>{{ data.caracteristiquesSociodemographiques.niveauSocioeconomique.carnetCnamRemboursement.pourcentage || '-' }}%</td>
-                </tr>
+            
                 </tbody>
               </table>
             </div>

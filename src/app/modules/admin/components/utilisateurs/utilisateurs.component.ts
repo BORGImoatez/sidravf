@@ -285,8 +285,11 @@ import { User, UserRole, Structure, TypeStructure } from '../../../../models/use
                 <label for="newPassword" class="form-label required">
                   Mot de passe
                 </label>
+                <div class="password-input-wrapper">
+
                 <input
-                    type="password"
+                     [type]="showPassword ? 'text' : 'password'"
+
                     id="motDePasse"
                     name="motDePasse"
                     [(ngModel)]="currentUser.motDePasse"
@@ -296,6 +299,17 @@ import { User, UserRole, Structure, TypeStructure } from '../../../../models/use
                     required
                     [disabled]="isLoading"
                 >
+
+
+                  <button
+                      type="button"
+                      class="password-toggle"
+                      (click)="togglePasswordVisibility()"
+                      [disabled]="isLoading"
+                  >
+                    {{ showPassword ? '👁️' : '👁️‍🗨️' }}
+                  </button>
+                </div>
                 <div *ngIf="showError && !currentUser.motDePasse" class="form-error">
                   Le mot de passe est requis
                 </div>
@@ -338,10 +352,10 @@ import { User, UserRole, Structure, TypeStructure } from '../../../../models/use
               >
                 Annuler
               </button>
-              <button 
-                type="submit" 
-                class="btn btn-primary"
-                [disabled]="!userForm.valid || isSaving || !isPasswordValid()"
+              <button
+                  type="submit"
+                  class="btn btn-primary"
+                  [disabled]="!userForm.valid || isSaving || (!isEditMode && !isPasswordValid())"
               >
                 <span *ngIf="!isSaving">{{ isEditMode ? 'Modifier' : 'Créer' }}</span>
                 <span *ngIf="isSaving" class="flex items-center gap-2">
@@ -403,6 +417,39 @@ import { User, UserRole, Structure, TypeStructure } from '../../../../models/use
     </ng-template>
   `,
   styles: [`
+    .password-input-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .password-input-wrapper .form-input {
+      padding-right: 45px;
+    }
+
+    .password-toggle {
+      position: absolute;
+      right: 10px;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      padding: var(--spacing-2);
+      font-size: 18px;
+      color: var(--gray-500);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: color 0.2s;
+    }
+
+    .password-toggle:hover:not(:disabled) {
+      color: var(--gray-700);
+    }
+
+    .password-toggle:disabled {
+      cursor: not-allowed;
+      opacity: 0.5;
+    }
     .utilisateurs-container {
       max-width: 1400px;
       margin: 0 auto;
@@ -776,7 +823,7 @@ export class UtilisateursComponent implements OnInit {
   filteredUsers: User[] = [];
   structures: Structure[] = [];
   availableStructures: Structure[] = [];
-  
+  showPassword = false;
   // Filtres
   searchTerm = '';
   selectedRole = '';
@@ -810,8 +857,10 @@ export class UtilisateursComponent implements OnInit {
 
   private loadUsers(): void {
     this.isLoading = true;
-    
-    const structureId = this.isSuperAdmin() ? undefined : this.getCurrentUserStructureId();
+
+    const structureId = (this.isSuperAdmin() || this.isAdministrateurInsp())
+        ? undefined
+        : this.getCurrentUserStructureId();
     
     this.userService.getUsers(structureId).subscribe({
       next: (users) => {
@@ -830,8 +879,7 @@ export class UtilisateursComponent implements OnInit {
     this.userService.getStructures().subscribe({
       next: (structures) => {
         this.structures = structures;
-        console.log(this.structures);
-        this.updateAvailableStructures();
+         this.updateAvailableStructures();
       },
       error: (error) => {
         console.error('Erreur lors du chargement des structures:', error);
@@ -929,7 +977,8 @@ export class UtilisateursComponent implements OnInit {
       },
       error: (error) => {
         this.isSaving = false;
-        this.errorMessage = error.message || 'Une erreur est survenue';
+
+        this.errorMessage = error.error.message || 'Une erreur est survenue';
       }
     });
   }
@@ -1082,5 +1131,8 @@ export class UtilisateursComponent implements OnInit {
       return /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(this.currentUser.motDePasse);
     }
     return false;
+  }
+  togglePasswordVisibility(): void {
+    this.showPassword = !this.showPassword;
   }
 }

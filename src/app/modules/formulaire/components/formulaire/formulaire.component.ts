@@ -608,7 +608,6 @@ export class FormulaireComponent implements OnInit {
   private loadLastConsultationForPatient(): void {
     if (!this.patientId) return;
 
-    console.log('Chargement de la dernière consultation pour le patient ID:', this.patientId);
 
     this.isSaving = true;
     this.formulaireService.getLastConsultationForPatient(this.patientId).subscribe({
@@ -616,7 +615,6 @@ export class FormulaireComponent implements OnInit {
         this.isSaving = false;
 
         if (lastConsultation) {
-          console.log('Dernière consultation trouvée:', lastConsultation);
 
           // Convertir les données de la dernière consultation pour pré-remplir le formulaire
           this.formulaireData = this.convertApiDataToFormData(lastConsultation);
@@ -624,8 +622,7 @@ export class FormulaireComponent implements OnInit {
           // Réinitialiser certains champs spécifiques à la nouvelle consultation
           //this.resetConsultationSpecificFields();
 
-          console.log('Données du formulaire pré-remplies:', this.formulaireData);
-        } else {
+         } else {
           console.log('Aucune consultation précédente trouvée, initialisation avec des données vides');
           this.initializeFormData();
         }
@@ -811,13 +808,11 @@ export class FormulaireComponent implements OnInit {
   private loadFormulaire(): void {
     if (!this.formulaireId) return;
 
-    console.log('Chargement du formulaire ID:', this.formulaireId);
 
     this.isSaving = true;
     this.formulaireService.getFormulaireById(this.formulaireId).subscribe({
       next: (data) => {
-        console.log('Données du formulaire chargées:', data);
-        // Convertir les données du formulaire au format attendu
+         // Convertir les données du formulaire au format attendu
         this.formulaireData = this.convertApiDataToFormData(data);
         this.isSaving = false;
 
@@ -830,11 +825,9 @@ export class FormulaireComponent implements OnInit {
         // Si le formulaire contient un patient, on le stocke pour pouvoir le réutiliser
         if (data && data.patient && data.patient.id) {
           this.patientId = data.patient.id;
-          console.log('ID patient récupéré depuis data.patient:', this.patientId);
-        } else if (data && data.patientId) {
+         } else if (data && data.patientId) {
           this.patientId = data.patientId;
-          console.log('ID patient récupéré depuis data.patientId:', this.patientId);
-        }
+         }
       },
       error: (error) => {
         console.error('Erreur lors du chargement du formulaire:', error);
@@ -903,8 +896,7 @@ export class FormulaireComponent implements OnInit {
         }
       }*/
 
-      console.log('Données formulaire après conversion:', formData);
-    } catch (error) {
+     } catch (error) {
       console.error('Erreur lors de la conversion des données JSON:', error);
     }
 
