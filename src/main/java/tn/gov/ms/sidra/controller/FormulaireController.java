@@ -19,7 +19,7 @@ import java.util.List;
 @RequestMapping("/formulaires")
 @RequiredArgsConstructor
 @Slf4j
-@CrossOrigin(origins = "https://sidra.rns.tn", maxAge = 3600)
+@CrossOrigin(origins = "localhost:4200", maxAge = 3600)
 public class FormulaireController {
 
     private final FormulaireService formulaireService;
@@ -32,6 +32,17 @@ public class FormulaireController {
         return ResponseEntity.ok(ficheNumbers+1);
 
     }
+    @GetMapping("/getNbFichePerStructure/{structureId}")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN_STRUCTURE', 'UTILISATEUR')")
+    public ResponseEntity<Integer> getNbFichePerStructure(@PathVariable Long structureId)
+    {
+        int ficheNumbers=formulaireService.getNbFichePerStructure(structureId);
+        log.info("Récupération nb des formulaires - utilisateur: {}", ficheNumbers+1);
+        return ResponseEntity.ok(ficheNumbers);
+
+    }
+
+
     /**
      * Récupère tous les formulaires selon les permissions
      */

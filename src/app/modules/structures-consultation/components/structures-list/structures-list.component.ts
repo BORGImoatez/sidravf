@@ -5,6 +5,7 @@ import { RouterModule } from '@angular/router';
 import { UserService } from '../../../../services/user.service';
 import { AuthService } from '../../../../services/auth.service';
 import { Structure, Gouvernorat, UserRole } from '../../../../models/user.model';
+import { forkJoin } from 'rxjs';
 
 @Component({
   selector: 'app-structures-list',
@@ -76,6 +77,7 @@ import { Structure, Gouvernorat, UserRole } from '../../../../models/user.model'
                 <th>Type</th>
                 <th>Gouvernorat</th>
                 <th>Secteur</th>
+                <th>Nb Fiches</th>
                 <th>Actions</th>
               </tr>
               </thead>
@@ -105,6 +107,16 @@ import { Structure, Gouvernorat, UserRole } from '../../../../models/user.model'
                 <td>
                   <div class="secteur-info">
                     {{ structure.secteur }}
+                  </div>
+                </td>
+                <td>
+                  <div class="nb-fiches-info">
+                    <span class="nb-fiches-badge" *ngIf="structure.nbFiches !== undefined">
+                      {{ structure.nbFiches }}
+                    </span>
+                    <span class="loading-badge" *ngIf="structure.nbFiches === undefined">
+                      <span class="mini-spinner"></span>
+                    </span>
                   </div>
                 </td>
                 <td>
@@ -274,6 +286,46 @@ import { Structure, Gouvernorat, UserRole } from '../../../../models/user.model'
       color: var(--gray-900);
     }
 
+    .nb-fiches-info {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .nb-fiches-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 40px;
+      padding: var(--spacing-1) var(--spacing-3);
+      background-color: var(--primary-100);
+      color: var(--primary-700);
+      border-radius: var(--radius-sm);
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    .loading-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 40px;
+      padding: var(--spacing-1) var(--spacing-3);
+    }
+
+    .mini-spinner {
+      width: 16px;
+      height: 16px;
+      border: 2px solid var(--gray-200);
+      border-top-color: var(--primary-600);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
     .actions-menu {
       display: flex;
       gap: var(--spacing-2);
@@ -349,11 +401,31 @@ export class StructuresListComponent implements OnInit {
         this.structures = structures.filter(s => s.actif);
         this.filterStructures();
         this.isLoading = false;
+
+        // Charger le nombre de fiches pour chaque structure
+        this.loadAllNbFiches();
       },
       error: (error) => {
         console.error('Erreur lors du chargement des structures:', error);
         this.isLoading = false;
       }
+    });
+  }
+
+  private loadAllNbFiches(): void {
+    // Charger le nombre de fiches pour chaque structure
+    this.structures.forEach(structure => {
+      this.userService.getNbFichePerStructure(structure.id).subscribe({
+        next: (nbFiche) => {
+          structure.nbFiches = nbFiche;
+          // Rafraîchir le filtrage pour mettre à jour l'affichage
+          this.filterStructures();
+        },
+        error: (error) => {
+          console.error(`Erreur lors du chargement du nombre de fiches pour la structure ${structure.id}:`, error);
+          structure.nbFiches = 0;
+        }
+      });
     });
   }
 

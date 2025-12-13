@@ -48,7 +48,7 @@ public class PatientService {
             patients = patientRepository.findByStructureId(currentUser.getStructure().getId());
         } else if (currentUser.getRole() == UserRole.UTILISATEUR) {
             // UTILISATEUR voit les patients de sa structure
-            patients = patientRepository.findByStructureId(currentUser.getStructure().getId());
+            patients = patientRepository.findByStructureIdAndUserId_jpql(currentUser.getStructure().getId(),currentUser.getId());
         } else {
             throw new BusinessException("Vous n'avez pas les permissions pour consulter les patients");
         }

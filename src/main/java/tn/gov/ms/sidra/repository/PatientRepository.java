@@ -20,6 +20,9 @@ public interface PatientRepository extends JpaRepository<Patient, Long> {
     @Query("SELECT p FROM Patient p WHERE p.structure.id = :structureId")
     List<Patient> findByStructureId(@Param("structureId") Long structureId);
 
+    @Query("SELECT p FROM Patient p, Formulaire f WHERE p.structure.id = :structureId and f.patient=p and f.utilisateur.id=:id")
+    List<Patient> findByStructureIdAndUserId_jpql(@Param("structureId") Long structureId,@Param("id") Long idUser);
+
     @Query("SELECT COUNT(p) FROM Patient p WHERE p.structure.id = :structureId")
     long countByStructureId(@Param("structureId") Long structureId);
 

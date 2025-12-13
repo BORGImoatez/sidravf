@@ -7,12 +7,13 @@ import { AppComponent } from './app/app.component';
 import { routes } from './app/app.routes';
 import { DatePipe } from '@angular/common';
 import { HttpInterceptorService } from './app/services/http-interceptor.service';
+import {provideCharts, withDefaultRegisterables} from "ng2-charts";
 
 bootstrapApplication(AppComponent, {
   providers: [
     // Fournir les routes
     provideRouter(routes),
-
+    provideCharts(withDefaultRegisterables())  ,
     // Importer les modules nécessaires
     importProvidersFrom(
         BrowserAnimationsModule,

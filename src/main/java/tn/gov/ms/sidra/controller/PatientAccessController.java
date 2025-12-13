@@ -18,7 +18,7 @@ import java.util.Map;
 @RequestMapping("/patient-access")
 @RequiredArgsConstructor
 @Slf4j
-@CrossOrigin(origins = "https://sidra.rns.tn", maxAge = 3600)
+@CrossOrigin(origins = "localhost:4200", maxAge = 3600)
 public class PatientAccessController {
 
     private final PatientAccessService patientAccessService;

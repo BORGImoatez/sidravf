@@ -25,12 +25,12 @@ import { TypeStructure } from '../../models/user.model';
           <h1 class="text-2xl font-bold text-center text-gray-900 mb-2">
             SIDRA
           </h1>
-          
+
           <p class="text-center text-gray-600 mb-8">
             SYSTEME D'INFORMATION SUR LES DROGUES ET ADDICTIONS
           </p>
 
-       
+
         </div>
 
         <form (ngSubmit)="onSubmit()" #signupForm="ngForm" class="signup-form">
@@ -81,6 +81,10 @@ import { TypeStructure } from '../../models/user.model';
             </div>
             <div *ngIf="structures.length === 0 && signupData.typeStructure" class="form-info">
               Aucune structure disponible pour ce type
+            </div>
+            <!-- Message clignotant en rouge -->
+            <div *ngIf="signupData.typeStructure" class="blinking-warning">
+              ⚠️ Si votre structure n'apparaît pas dans la liste, veuillez contacter l'INSP
             </div>
           </div>
 
@@ -170,17 +174,17 @@ import { TypeStructure } from '../../models/user.model';
             </label>
             <div class="password-input-wrapper">
 
-            <input
-                [type]="showPassword ? 'text' : 'password'"
-                id="motDePasse"
-                name="motDePasse"
-                [(ngModel)]="signupData.motDePasse"
-                class="form-input"
-                [class.error]="showError && !signupData.motDePasse"
-                placeholder="••••••••"
-                required
-                [disabled]="isLoading"
-            >
+              <input
+                  [type]="showPassword ? 'text' : 'password'"
+                  id="motDePasse"
+                  name="motDePasse"
+                  [(ngModel)]="signupData.motDePasse"
+                  class="form-input"
+                  [class.error]="showError && !signupData.motDePasse"
+                  placeholder="••••••••"
+                  required
+                  [disabled]="isLoading"
+              >
               <button
                   type="button"
                   class="password-toggle"
@@ -218,7 +222,7 @@ import { TypeStructure } from '../../models/user.model';
 
         <div class="signup-footer">
           <p class="text-center mt-4">
-            Vous avez déjà un compte ? 
+            Vous avez déjà un compte ?
             <a href="/login" class="text-primary-600 hover:underline">Se connecter</a>
           </p>
           <p class="text-xs text-gray-500 text-center mt-4">
@@ -262,6 +266,30 @@ import { TypeStructure } from '../../models/user.model';
       cursor: not-allowed;
       opacity: 0.5;
     }
+
+    /* Style pour le message clignotant */
+    .blinking-warning {
+      margin-top: var(--spacing-3);
+      padding: var(--spacing-3);
+      background-color: #fee;
+      border: 1px solid #dc2626;
+      border-radius: var(--radius-md);
+      color: #dc2626;
+      font-size: 13px;
+      font-weight: 500;
+      text-align: center;
+      animation: blink 2s ease-in-out infinite;
+    }
+
+    @keyframes blink {
+      0%, 100% {
+        opacity: 1;
+      }
+      50% {
+        opacity: 0.3;
+      }
+    }
+
     .signup-container {
       min-height: 100vh;
       display: flex;
@@ -290,7 +318,7 @@ import { TypeStructure } from '../../models/user.model';
       gap: var(--spacing-3);
       margin-bottom: var(--spacing-6);
       padding: var(--spacing-4);
-       border-radius: var(--radius-md);
+      border-radius: var(--radius-md);
     }
 
     .logo-placeholder {
@@ -342,6 +370,11 @@ import { TypeStructure } from '../../models/user.model';
       animation: spin 1s linear infinite;
     }
 
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
     .signup-footer {
       border-top: 1px solid var(--gray-200);
       padding-top: var(--spacing-4);
@@ -351,11 +384,11 @@ import { TypeStructure } from '../../models/user.model';
       .signup-card {
         padding: var(--spacing-6);
       }
-      
+
       .partners-logos {
         grid-template-columns: repeat(2, 1fr);
       }
-      
+
       .logo-placeholder {
         height: 50px;
       }
@@ -382,8 +415,8 @@ export class SignupComponent implements OnInit {
   showPassword = false;
 
   constructor(
-    private userService: UserService,
-    private router: Router
+      private userService: UserService,
+      private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -394,7 +427,7 @@ export class SignupComponent implements OnInit {
     if (this.signupData.typeStructure) {
       this.isLoading = true;
       this.signupData.structureId = '';
-      
+
       this.userService.getStructuresByType(this.signupData.typeStructure as TypeStructure).subscribe({
         next: (structures) => {
           this.structures = structures;
@@ -440,13 +473,13 @@ export class SignupComponent implements OnInit {
       },
       error: (error) => {
         this.isLoading = false;
-        
+
         if (error.error && error.error.message) {
           this.errorMessage = error.error.message;
         } else {
           this.errorMessage = 'Une erreur est survenue lors de l\'inscription. Veuillez réessayer.';
         }
-        
+
         console.error('Erreur d\'inscription:', error);
       }
     });
@@ -454,13 +487,13 @@ export class SignupComponent implements OnInit {
 
   private validateForm(): boolean {
     return !!(
-      this.signupData.typeStructure &&
-      this.signupData.structureId &&
-      this.signupData.nom &&
-      this.signupData.prenom &&
-      this.signupData.email &&
-      this.signupData.telephone &&
-      this.signupData.motDePasse
+        this.signupData.typeStructure &&
+        this.signupData.structureId &&
+        this.signupData.nom &&
+        this.signupData.prenom &&
+        this.signupData.email &&
+        this.signupData.telephone &&
+        this.signupData.motDePasse
     );
   }
 
@@ -477,6 +510,7 @@ export class SignupComponent implements OnInit {
     };
     this.showError = false;
   }
+
   togglePasswordVisibility(): void {
     this.showPassword = !this.showPassword;
   }

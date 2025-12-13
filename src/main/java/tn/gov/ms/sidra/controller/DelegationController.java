@@ -14,7 +14,7 @@ import java.util.List;
 @RequestMapping("/delegations")
 @RequiredArgsConstructor
 @Slf4j
-@CrossOrigin(origins = "https://sidra.rns.tn", maxAge = 3600)
+@CrossOrigin(origins = "localhost:4200", maxAge = 3600)
 public class DelegationController {
 
     private final DelegationRepository delegationRepository;
@@ -23,7 +23,7 @@ public class DelegationController {
      * Récupère toutes les délégations d'un gouvernorat
      */
     @GetMapping("/gouvernorat/{gouvernoratId}")
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN_STRUCTURE', 'UTILISATEUR','ADMINISTRATEUR_INSP')")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN_STRUCTURE', 'UTILISATEUR','ADMINISTRATEUR_INSP','ROLE_BNS','BNS')")
     public ResponseEntity<List<Delegation>> getDelegationsByGouvernorat(@PathVariable Long gouvernoratId) {
         log.info("Récupération des délégations pour le gouvernorat ID: {}", gouvernoratId);
 
@@ -35,7 +35,7 @@ public class DelegationController {
      * Récupère une délégation par son ID
      */
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN_STRUCTURE', 'UTILISATEUR','ADMINISTRATEUR_INSP')")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN_STRUCTURE', 'UTILISATEUR','ADMINISTRATEUR_INSP','ROLE_BNS','BNS')")
     public ResponseEntity<Delegation> getDelegationById(@PathVariable Long id) {
         log.info("Récupération de la délégation avec l'ID: {}", id);
 

@@ -33,6 +33,7 @@ public class StructureDto {
     private String adresse;
 
     private String telephone;
+    private String nbFiches;
 
     private Boolean actif;
 

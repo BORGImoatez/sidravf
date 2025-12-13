@@ -10,7 +10,7 @@ public class CorsConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**") // Autoriser toutes les routes
-                .allowedOrigins("https://sidra.rns.tn") // Autoriser localhost:4200
+                .allowedOrigins("localhost:4200") // Autoriser localhost:4200
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS","PATCH") // Méthodes autorisées
                 //.allowedHeaders("x-user-id", "Content-Type", "Authorization")  // Allow specific headers
                 .allowedHeaders("*") // accepte tous les headers

@@ -14,9 +14,11 @@ export const routes: Routes = [
     path: 'structures',
     loadComponent: () => import('./components/structures/structures.component').then(m => m.StructuresComponent)
   },
+
   {
     path: 'rapports',
-    loadComponent: () => import('./components/rapports/rapports.component').then(m => m.RapportsComponent)
+    loadComponent: () => import('./components/rapports/rapports.component')
+        .then(m => m.RapportsComponent)
   },
   {
     path: 'pending-users',

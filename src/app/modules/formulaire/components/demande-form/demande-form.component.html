@@ -1,0 +1,204 @@
+<div class="container mt-4">
+    <div class="card shadow">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">Nouvelle demande de prise en charge</h4>
+        </div>
+        <div class="card-body">
+            <form (ngSubmit)="onSubmit()" #demandeForm="ngForm">
+
+                <!-- 1. Nom & Prénom -->
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Nom <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" [(ngModel)]="demande.nom" name="nom"
+                               required #nom="ngModel" [class.is-invalid]="nom.invalid && nom.touched">
+                        <div class="invalid-feedback">Le nom est obligatoire</div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Prénom <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" [(ngModel)]="demande.prenom" name="prenom"
+                               required #prenom="ngModel" [class.is-invalid]="prenom.invalid && prenom.touched">
+                        <div class="invalid-feedback">Le prénom est obligatoire</div>
+                    </div>
+                </div>
+
+                <!-- 2. Genre & Date de naissance -->
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Genre <span class="text-danger">*</span></label>
+                        <select class="form-select" [(ngModel)]="demande.genre" name="genre" required>
+                            <option value="MASCULIN">Masculin</option>
+                            <option value="FEMININ">Féminin</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Date de naissance <span class="text-danger">*</span></label>
+                        <input type="date" class="form-control" [(ngModel)]="demande.dateNaissance" name="dateNaissance"
+                               required #dateNaiss="ngModel" [class.is-invalid]="dateNaiss.invalid && dateNaiss.touched">
+                        <div class="invalid-feedback">La date de naissance est obligatoire</div>
+                    </div>
+                </div>
+
+                <!-- 3. Adresse : Gouvernorat + Délégation -->
+                <fieldset class="border rounded p-3 mb-3">
+                    <legend class="float-none w-auto p-2 fs-6">Adresse du patient <span class="text-danger">*</span></legend>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Gouvernorat <span class="text-danger">*</span></label>
+                            <select class="form-select" [(ngModel)]="demande.gouvernoratId" name="gouvernoratId"
+                                    (change)="onGouvernoratChange()" required #gouvSelect="ngModel"
+                                    [class.is-invalid]="gouvSelect.invalid && gouvSelect.touched">
+                                <option [ngValue]="null">Choisir un gouvernorat</option>
+                                <option *ngFor="let g of gouvernorats" [ngValue]="g.id">{{ g.nom }}</option>
+                            </select>
+                            <div class="invalid-feedback">Veuillez sélectionner un gouvernorat</div>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Délégation <span class="text-danger">*</span></label>
+                            <select class="form-select" [(ngModel)]="demande.delegationId" name="delegationId"
+                                    [disabled]="!demande.gouvernoratId" required #delSelect="ngModel"
+                                    [class.is-invalid]="delSelect.invalid && delSelect.touched">
+                                <option [ngValue]="null">
+                                    {{ demande.gouvernoratId ? 'Choisir une délégation' : 'Sélectionner d\'abord un gouvernorat' }}
+                                </option>
+                                <option *ngFor="let d of delegationsFiltered" [ngValue]="d.id">{{ d.nom }}</option>
+                            </select>
+                            <div class="invalid-feedback">Veuillez sélectionner une délégation</div>
+                        </div>
+                    </div>
+                </fieldset>
+
+                <!-- 4. Auteur de la demande -->
+                <fieldset class="border rounded p-3 mb-3">
+                    <legend class="float-none w-auto p-2 fs-6">Auteur de la demande <span class="text-danger">*</span></legend>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Type d'auteur <span class="text-danger">*</span></label>
+                            <select class="form-select" [(ngModel)]="demande.auteurType" name="auteurType" required>
+                                <option value="lui_meme">Lui-même</option>
+                                <option value="mere">Mère</option>
+                                <option value="pere">Père</option>
+                                <option value="autre">Autre personne</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3" *ngIf="demande.auteurType === 'autre'">
+                            <label class="form-label">Lien avec le patient <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" [(ngModel)]="demande.lienAvecPatient"
+                                   name="lienAvecPatient" required>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">CIN de l'auteur <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" [(ngModel)]="demande.cinAuteur" name="cinAuteur"
+                               required pattern="[0-9]{8}" placeholder="8 chiffres">
+                        <small class="text-muted">8 chiffres uniquement</small>
+                    </div>
+                </fieldset>
+
+                <!-- 5. Certificat médical -->
+                <fieldset class="border rounded p-3 mb-3">
+                    <legend class="float-none w-auto p-2 fs-6">Certificat médical <span class="text-danger">*</span></legend>
+
+                    <div class="mb-3">
+                        <label class="form-label">Type <span class="text-danger">*</span></label>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" [(ngModel)]="demande.typeCertificat" name="typeCertificat"
+                                   value="public" id="public" required>
+                            <label class="form-check-label" for="public">Public</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" [(ngModel)]="demande.typeCertificat" name="typeCertificat"
+                                   value="prive" id="prive" required>
+                            <label class="form-check-label" for="prive">Privé</label>
+                        </div>
+                    </div>
+
+                    <div *ngIf="demande.typeCertificat === 'public'" class="row">
+                        <div class="col-md-8 mb-3">
+                            <label class="form-label">Établissement public <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" [(ngModel)]="demande.etablissementPublic"
+                                   name="etablissementPublic" required>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Gouvernorat de l'établissement <span class="text-danger">*</span></label>
+                            <select class="form-select" [(ngModel)]="demande.gouvernoratEtablissement" name="gouvernoratEtablissement" required>
+                                <option [ngValue]="null">Choisir</option>
+                                <option *ngFor="let g of gouvernorats" [ngValue]="g.id">{{ g.nom }}</option>
+                            </select>
+                        </div>
+                    </div>
+                </fieldset>
+
+                <!-- 6. Commission -->
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Date de la commission <span class="text-danger">*</span></label>
+                        <input type="date" class="form-control" [(ngModel)]="demande.dateCommission" name="dateCommission" required>
+                    </div>
+                </div>
+
+                <!-- 7. Décision de la commission -->
+                <fieldset class="border rounded p-3 mb-4">
+                    <legend class="float-none w-auto p-2 fs-6">Décision de la commission <span class="text-danger">*</span></legend>
+
+                    <div class="mb-3">
+                        <select class="form-select" [(ngModel)]="demande.decision" name="decision" required>
+                            <option value="complet_favorable">Dossier complet - Avis favorable</option>
+                            <option value="incomplet_favorable_reserve">Dossier incomplet - Avis favorable sous réserve</option>
+                            <option value="defavorable">Avis défavorable</option>
+                        </select>
+                    </div>
+
+                    <!-- Dossier complet favorable -->
+                    <div *ngIf="demande.decision === 'complet_favorable'">
+                        <div class="row">
+                            <div class="col-md-8 mb-3">
+                                <label class="form-label">Établissement de prise en charge (Gouvernorat) <span class="text-danger">*</span></label>
+                                <select class="form-select" [(ngModel)]="demande.etablissementPriseEnCharge" name="etablissementPriseEnCharge" required>
+                                    <option [ngValue]="null">Choisir</option>
+                                    <option *ngFor="let g of gouvernorats" [ngValue]="g.id">{{ g.nom }}</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Prise en charge par méthadone <span class="text-danger">*</span></label>
+                                <select class="form-select" [(ngModel)]="demande.priseEnChargeMethadone" name="priseEnChargeMethadone" required>
+                                    <option [ngValue]="true">Oui</option>
+                                    <option [ngValue]="false">Non</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Dossier incomplet -->
+                    <div *ngIf="demande.decision === 'incomplet_favorable_reserve'" class="mb-3">
+                        <label class="form-label">Pièces manquantes <span class="text-danger">*</span></label>
+                        <textarea class="form-control" rows="3" [(ngModel)]="demande.piecesManquantes"
+                                  name="piecesManquantes" required placeholder="Ex: CIN, certificat médical..."></textarea>
+                    </div>
+
+                    <!-- Avis défavorable -->
+                    <div *ngIf="demande.decision === 'defavorable'" class="mb-3">
+                        <label class="form-label">Motif du refus <span class="text-danger">*</span></label>
+                        <textarea class="form-control" rows="3" [(ngModel)]="demande.motifRefus"
+                                  name="motifRefus" required></textarea>
+                    </div>
+                </fieldset>
+
+                <!-- Boutons -->
+                <div class="d-flex justify-content-end gap-3">
+                    <button type="button" class="btn btn-secondary"  >
+                        Annuler
+                    </button>
+
+                    <button type="submit" class="btn btn-success px-5" [disabled]="demandeForm.invalid">
+                        {{ isEditMode ? 'Mettre à jour' : 'Enregistrer la demande' }}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

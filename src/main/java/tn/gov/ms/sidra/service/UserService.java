@@ -317,7 +317,9 @@ public class UserService {
 
             structureInfo.setTypeStructure(structure.getType());
             structureInfo.setSecteur(structure.getSecteur());
-            structureInfo.setMinistere(structure.getMinistere().getNom()); // Utiliser le secteur comme ministère
+            if(structure.getSecteur().equals("PUBLIQUE")) {
+                structureInfo.setMinistere(structure.getMinistere().getNom()); // Utiliser le secteur comme ministère
+            }
             structureInfo.setStructureId(structure.getId());
             structureInfo.setStructureNom(structure.getNom());
 

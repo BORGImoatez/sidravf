@@ -14,7 +14,7 @@ import tn.gov.ms.sidra.service.AuthService;
 @RequiredArgsConstructor
 @Slf4j
 
-@CrossOrigin(origins = "https://sidra.rns.tn", maxAge = 3600)
+@CrossOrigin(origins = "localhost:4200", maxAge = 3600)
 public class AuthController {
 
     private final AuthService authService;

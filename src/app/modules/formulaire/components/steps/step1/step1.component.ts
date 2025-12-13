@@ -956,7 +956,9 @@ import {CountryService, Country} from '../../../../../services/country.service';
                                         </div>
                                     </div>
                                 </div>
-
+                                <div *ngIf="showValidationErrors && !hasAllOrigineDemandeAnswered()" class="form-error">
+                                    Veuillez répondre à toutes les options (Oui ou Non)
+                                </div>
                             </div>
 
                             <!-- 10.a) Cause ou circonstance -->
@@ -2789,7 +2791,21 @@ export class Step1Component implements OnInit, OnChanges {
 
         this.onFieldChange();
     }
+    hasAllOrigineDemandeAnswered(): boolean {
+        const origine = this.localData.origineDemande;
+        if (!origine) return false;
 
+        // Toutes les options doivent avoir une valeur définie (true ou false)
+        return (origine.luiMeme == true || origine.luiMeme == false ) &&
+            (origine.famille == true || origine.famille == false ) &&
+            (origine.amis == true || origine.amis == false ) &&
+            (origine.celluleEcoute == true || origine.celluleEcoute == false ) &&
+            (origine.autreCentre == true || origine.autreCentre == false ) &&
+            (origine.structureSociale == true || origine.structureSociale == false ) &&
+            (origine.structureJudiciaire == true || origine.structureJudiciaire == false ) &&
+            (origine.jugeEnfance == true || origine.jugeEnfance == false ) &&
+            (origine.autre == true || origine.autre == false );
+    }
     onOrigineDemandeChange(origine: string, value: boolean): void {
         if (!this.localData.origineDemande) {
             this.localData.origineDemande = {};
@@ -2892,147 +2908,220 @@ export class Step1Component implements OnInit, OnChanges {
     private validateStep(): void {
         let isValid = true;
 
-        const required = [
-
-            'natureLogement',
-        ];
-        for (const field of required) {
-            const value = (this.localData as any)[field];
-            if (value === undefined || value === null || value === '') {
-                isValid = false;
-
-                break;
-            }
-        }
-
-        // Vérifier les champs radio obligatoires
-        if (this.localData.couvertureSociale === undefined ||
-            this.localData.consultationAnterieure === undefined ||
-            this.localData.activiteSportive === undefined) {
+        // 1. Secteur obligatoire
+        if (!this.localData.secteur) {
             isValid = false;
-
         }
 
-
-        // Si secteur ONG ou SOCIETE_CIVILE_ONG, ongPrecision est obligatoire
-        if ((this.localData.secteur === 'ONG' || this.localData.secteur === 'SOCIETE_CIVILE_ONG') &&
+        // 2. Si secteur ONG, ongPrecision obligatoire
+        if (this.localData.secteur === 'ONG' &&
             (!this.localData.ongPrecision || this.localData.ongPrecision.trim() === '')) {
             isValid = false;
         }
 
-        // Si résidence TUNISIE, gouvernorat et délégation sont obligatoires
-        if (this.localData.residence === 'TUNISIE') {
-            if (!this.localData.gouvernoratResidence || !this.localData.delegationResidence) {
-                isValid = false;
 
-            }
+
+        // 4. Date consultation obligatoire
+        if (!this.localData.dateConsultation) {
+            isValid = false;
         }
 
-        // Si résidence ETRANGER, pays est obligatoire
+        // 5. Genre obligatoire
+        if (!this.localData.genre) {
+            isValid = false;
+        }
+
+        // 6. Date de naissance valide (au moins l'année)
+        if (!this.isValidDateNaissance()) {
+            isValid = false;
+        }
+
+        // 7. Nationalité obligatoire
+        if (!this.localData.nationalite || this.localData.nationalite.trim() === '') {
+            isValid = false;
+        }
+
+        // 8. Couverture sociale obligatoire
+        if (this.localData.couvertureSociale === undefined) {
+            isValid = false;
+        }
+
+        // 8.a. Si couverture sociale = true, type obligatoire
+        if (this.localData.couvertureSociale === true &&
+            (!this.localData.typeCouvertureSociale || this.localData.typeCouvertureSociale.trim() === '')) {
+            isValid = false;
+        }
+
+        // 8.b. Si CNAM, type carnet obligatoire
+        if (this.localData.typeCouvertureSociale === 'CNAM' &&
+            (!this.localData.typeCarnetCnam || this.localData.typeCarnetCnam.trim() === '')) {
+            isValid = false;
+        }
+
+        // 9. Résidence obligatoire
+        if (!this.localData.residence) {
+            isValid = false;
+        }
+
+        // 9.a. Si TUNISIE, gouvernorat obligatoire
+        if (this.localData.residence === 'TUNISIE' && !this.localData.gouvernoratResidence) {
+            isValid = false;
+        }
+
+        // 9.b. Si TUNISIE, délégation obligatoire
+        if (this.localData.residence === 'TUNISIE' && !this.localData.delegationResidence) {
+            isValid = false;
+        }
+
+        // 9.c. Si ETRANGER, pays obligatoire
         if (this.localData.residence === 'ETRANGER' &&
             (!this.localData.paysResidence || this.localData.paysResidence.trim() === '')) {
             isValid = false;
         }
 
-        // Si couverture sociale = true, type de couverture est obligatoire
-        if (this.localData.couvertureSociale === true &&
-            (!this.localData.typeCouvertureSociale || this.localData.typeCouvertureSociale.trim() === '')) {
+        // 10. Cadre consultation - au moins un choix
+        if (!this.isAllCadreConsultationFalse()) {
             isValid = false;
-
         }
 
-        // Si type couverture = CNAM, type carnet CNAM est obligatoire
-        if (this.localData.typeCouvertureSociale === 'CNAM' &&
-            (!this.localData.typeCarnetCnam || this.localData.typeCarnetCnam.trim() === '')) {
-            isValid = false;
-
-        }
-
-        // Si cadre consultation autre, précision obligatoire
-        if (this.localData.cadreConsultation?.autre === true &&
-            (!this.localData.cadreConsultation?.autrePrecision || this.localData.cadreConsultation?.autrePrecision.trim() === '')) {
-            isValid = false;
-
-        }
-
-        // Si addictologie sélectionnée, type addictologie obligatoire
+        // 10.a. Si addictologie, type obligatoire
         if (this.localData.cadreConsultation?.addictologie === true &&
-            (!this.localData.cadreConsultation?.addictologieType || this.localData.cadreConsultation?.addictologieType.trim() === '')) {
+            (!this.localData.cadreConsultation?.addictologieType ||
+                this.localData.cadreConsultation?.addictologieType.trim() === '')) {
             isValid = false;
-
         }
 
-        // Si origine demande autre, précision obligatoire
+        // 10.b. Si autre, précision obligatoire
+        if (this.localData.cadreConsultation?.autre === true &&
+            (!this.localData.cadreConsultation?.autrePrecision ||
+                this.localData.cadreConsultation?.autrePrecision.trim() === '')) {
+            isValid = false;
+        }
+
+        // 11. Origine demande - TOUTES les options doivent avoir une réponse (oui ou non)
+        if (!this.hasAllOrigineDemandeAnswered()) {
+            isValid = false;
+        }
+
+        // 11.a. Si autre, précision obligatoire
         if (this.localData.origineDemande?.autre === true &&
-            (!this.localData.origineDemande?.autrePrecision || this.localData.origineDemande?.autrePrecision.trim() === '')) {
+            (!this.localData.origineDemande?.autrePrecision ||
+                this.localData.origineDemande?.autrePrecision.trim() === '')) {
             isValid = false;
         }
 
-        // Si consultation antérieure = true, date et motif obligatoires
-        if (this.localData.consultationAnterieure === true) {
-            if (!this.localData.dateConsultationAnterieure || !this.localData.motifConsultationAnterieure) {
-                isValid = false;
-
-            }
-
-            // Si motif autre, précision obligatoire
-            if (this.localData.motifConsultationAnterieure === 'AUTRE' &&
-                (!this.localData.motifConsultationAnterieurePrecision || this.localData.motifConsultationAnterieurePrecision.trim() === '')) {
-                isValid = false;
-
-            }
-
-            // Si motif récidive, cause récidive obligatoire
-            if (this.localData.motifConsultationAnterieure === 'RECIDIVE' &&
-                (!this.localData.causeRecidive || this.localData.causeRecidive.trim() === '')) {
-                isValid = false;
-
-            }
-
-            // Si motif échec sevrage, cause échec sevrage obligatoire
-            if (this.localData.motifConsultationAnterieure === 'ECHEC_SEVRAGE' &&
-                (!this.localData.causeEchecSevrage || this.localData.causeEchecSevrage.trim() === '')) {
-                isValid = false;
-
-            }
+        // 11.b. Cause ou circonstance obligatoire
+        if (!this.localData.causeCirconstance || this.localData.causeCirconstance.trim() === '') {
+            isValid = false;
         }
 
-        // Si situation familiale autre, précision obligatoire
+        // 12. Consultation antérieure obligatoire
+        if (this.localData.consultationAnterieure === undefined) {
+            isValid = false;
+        }
+
+        // 12.a. Si oui, date obligatoire
+        if (this.localData.consultationAnterieure === true && !this.localData.dateConsultationAnterieure) {
+            isValid = false;
+        }
+
+        // 12.b. Si oui, motif obligatoire
+        if (this.localData.consultationAnterieure === true &&
+            (!this.localData.motifConsultationAnterieure || this.localData.motifConsultationAnterieure.trim() === '')) {
+            isValid = false;
+        }
+
+        // 12.b.1. Si motif autre, précision obligatoire
+        if (this.localData.motifConsultationAnterieure === 'AUTRE' &&
+            (!this.localData.motifConsultationAnterieurePrecision ||
+                this.localData.motifConsultationAnterieurePrecision.trim() === '')) {
+            isValid = false;
+        }
+
+        // 12.c. Si récidive, cause obligatoire
+        if (this.localData.motifConsultationAnterieure === 'RECIDIVE' &&
+            (!this.localData.causeRecidive || this.localData.causeRecidive.trim() === '')) {
+            isValid = false;
+        }
+
+        // 12.c.1. Si cause autre, précision obligatoire
+        if (this.localData.causeRecidive === 'AUTRE' &&
+            (!this.localData.causeRecidivePrecision || this.localData.causeRecidivePrecision.trim() === '')) {
+            isValid = false;
+        }
+
+        // 12.d. Si sevrage, cause échec obligatoire
+        if (this.localData.motifConsultationAnterieure === 'SEVRAGE' &&
+            (!this.localData.causeEchecSevrage || this.localData.causeEchecSevrage.trim() === '')) {
+            isValid = false;
+        }
+
+        // 12.d.1. Si cause autre, précision obligatoire
+        if (this.localData.causeEchecSevrage === 'AUTRE' &&
+            (!this.localData.causeEchecSevragePrecision ||
+                this.localData.causeEchecSevragePrecision.trim() === '')) {
+            isValid = false;
+        }
+
+        // 13. Situation familiale obligatoire
+        if (!this.localData.situationFamiliale) {
+            isValid = false;
+        }
+
+        // 13.a. Si autre, précision obligatoire
         if (this.localData.situationFamiliale === 'AUTRE' &&
             (!this.localData.situationFamilialeAutre || this.localData.situationFamilialeAutre.trim() === '')) {
             isValid = false;
-
         }
 
-        // Si logement autre, précision obligatoire
+        // 14. Logement 30 jours obligatoire
+        if (!this.localData.logement30Jours) {
+            isValid = false;
+        }
+
+        // 14.a. Si autre, précision obligatoire
         if (this.localData.logement30Jours === 'AUTRE' &&
             (!this.localData.logement30JoursAutre || this.localData.logement30JoursAutre.trim() === '')) {
             isValid = false;
-
         }
 
-        // Si activité sportive = true, fréquence, type et dopage obligatoires
-        if (this.localData.activiteSportive === true) {
-            if (!this.localData.activiteSportiveFrequence ||
-                !this.localData.activiteSportiveType ||
-                this.localData.dopage === undefined) {
-                isValid = false;
-
-            }
-        }
-
-        if (!this.isAllCadreConsultationFalse()) {
+        // 15. Nature logement obligatoire
+        if (!this.localData.natureLogement) {
             isValid = false;
-
         }
 
-        if (!this.hasOrigineDemandeSelected()) {
+        // 16. Profession obligatoire
+        if (!this.localData.profession) {
             isValid = false;
-
         }
+
+        // 17. Niveau scolaire obligatoire
+        if (!this.localData.niveauScolaire) {
+            isValid = false;
+        }
+
+        // 18. Activité sportive obligatoire
+        if (this.localData.activiteSportive === undefined) {
+            isValid = false;
+        }
+
+        // 18.a. Si oui, fréquence obligatoire
+        if (this.localData.activiteSportive === true && !this.localData.activiteSportiveFrequence) {
+            isValid = false;
+        }
+
+        // 18.b. Si oui, type obligatoire
+        if (this.localData.activiteSportive === true && !this.localData.activiteSportiveType) {
+            isValid = false;
+        }
+
+        // 18.b.1. Si compétition, dopage obligatoire
+        if (this.localData.activiteSportiveType === 'COMPETITION' && this.localData.dopage === undefined) {
+            isValid = false;
+        }
+
         this.validationChange.emit(isValid);
     }
-
     hasOrigineDemandeSelected(): boolean {
         const origine = this.localData.origineDemande;
         if (!origine) return false;

@@ -1,0 +1,621 @@
+/* liste-demandes.component.css - Version Responsive Optimisée */
+
+/* ============================================
+   CONTENEUR PRINCIPAL
+   ============================================ */
+.demandes-container {
+    padding: 1rem;
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
+@media (min-width: 768px) {
+    .demandes-container {
+        padding: 1.5rem;
+    }
+}
+
+@media (min-width: 1200px) {
+    .demandes-container {
+        padding: 2rem;
+    }
+}
+
+/* ============================================
+   CARD PRINCIPALE
+   ============================================ */
+.card {
+    border-radius: 12px;
+    overflow: hidden;
+    border: none;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+@media (min-width: 768px) {
+    .card {
+        border-radius: 16px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    }
+}
+
+/* ============================================
+   EN-TÊTE
+   ============================================ */
+.card-header {
+    background: linear-gradient(135deg, #4169E1 0%, #1E3A8A 100%);
+    border-bottom: none;
+    padding: 1rem 1rem;
+}
+
+@media (min-width: 768px) {
+    .card-header {
+        padding: 1.5rem 1.5rem;
+    }
+}
+
+@media (min-width: 1200px) {
+    .card-header {
+        padding: 1.75rem 2rem;
+    }
+}
+
+.card-header h4 {
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    font-size: 1.125rem;
+    margin: 0;
+}
+
+@media (min-width: 768px) {
+    .card-header h4 {
+        font-size: 1.25rem;
+        letter-spacing: 0.5px;
+    }
+}
+
+.card-header .btn-light {
+    background: white;
+    border: none;
+    font-weight: 600;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    font-size: 0.875rem;
+    white-space: nowrap;
+}
+
+@media (min-width: 768px) {
+    .card-header .btn-light {
+        padding: 0.6rem 1.5rem;
+        font-size: 1rem;
+    }
+}
+
+.card-header .btn-light:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(255, 255, 255, 0.3);
+}
+
+/* ============================================
+   CORPS DE LA CARD
+   ============================================ */
+.card-body {
+    padding: 1rem;
+}
+
+@media (min-width: 768px) {
+    .card-body {
+        padding: 1.5rem;
+    }
+}
+
+@media (min-width: 1200px) {
+    .card-body {
+        padding: 2rem;
+    }
+}
+
+/* ============================================
+   SECTION FILTRES
+   ============================================ */
+.filters-section {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-radius: 8px;
+    padding: 1rem;
+    border: 1px solid #dee2e6;
+    margin-bottom: 1rem;
+}
+
+@media (min-width: 768px) {
+    .filters-section {
+        border-radius: 12px;
+        padding: 1.5rem;
+        border: 2px solid #dee2e6;
+        margin-bottom: 1.5rem;
+    }
+}
+
+.form-label {
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 0.4rem;
+    font-size: 0.813rem;
+}
+
+@media (min-width: 768px) {
+    .form-label {
+        margin-bottom: 0.5rem;
+        font-size: 0.9rem;
+    }
+}
+
+.form-control,
+.form-select {
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    padding: 0.5rem 0.75rem;
+    transition: all 0.3s ease;
+    font-size: 0.875rem;
+}
+
+@media (min-width: 768px) {
+    .form-control,
+    .form-select {
+        border: 2px solid #e0e0e0;
+        border-radius: 8px;
+        padding: 0.65rem 1rem;
+        font-size: 1rem;
+    }
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: #4169E1;
+    box-shadow: 0 0 0 3px rgba(65, 105, 225, 0.1);
+    outline: none;
+}
+
+@media (min-width: 768px) {
+    .form-control:focus,
+    .form-select:focus {
+        box-shadow: 0 0 0 4px rgba(65, 105, 225, 0.1);
+    }
+}
+
+/* ============================================
+   TABLEAU (DESKTOP UNIQUEMENT)
+   ============================================ */
+.table-responsive {
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.table {
+    margin-bottom: 0;
+    font-size: 0.875rem;
+}
+
+@media (min-width: 1200px) {
+    .table {
+        font-size: 1rem;
+    }
+}
+
+.table thead {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+}
+
+.table thead th {
+    font-weight: 700;
+    color: #2c3e50;
+    border-bottom: 2px solid #4169E1;
+    padding: 0.75rem;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+}
+
+@media (min-width: 1200px) {
+    .table thead th {
+        padding: 1rem;
+        font-size: 0.85rem;
+    }
+}
+
+.table tbody tr {
+    transition: all 0.3s ease;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.table tbody tr:hover {
+    background-color: #f8f9fa;
+    transform: translateX(4px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.table tbody td {
+    padding: 0.75rem;
+    vertical-align: middle;
+}
+
+@media (min-width: 1200px) {
+    .table tbody td {
+        padding: 1rem;
+    }
+}
+
+/* ============================================
+   CARDS MOBILE/TABLETTE
+   ============================================ */
+.demande-card {
+    border-left: 4px solid #4169E1;
+    transition: all 0.3s ease;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+.demande-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+.demande-card .card-body {
+    padding: 0.875rem;
+}
+
+@media (min-width: 768px) {
+    .demande-card .card-body {
+        padding: 1rem;
+    }
+}
+
+/* ============================================
+   BADGES
+   ============================================ */
+.badge {
+    padding: 0.375rem 0.75rem;
+    font-weight: 600;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    letter-spacing: 0.3px;
+    display: inline-block;
+}
+
+@media (min-width: 768px) {
+    .badge {
+        padding: 0.5rem 0.9rem;
+        font-size: 0.8rem;
+    }
+}
+
+.badge-success,
+.bg-success {
+    background: linear-gradient(135deg, #28a745 0%, #218838 100%) !important;
+    color: white !important;
+}
+
+.badge-warning,
+.bg-warning {
+    background: linear-gradient(135deg, #ffc107 0%, #e0a800 100%) !important;
+    color: #000 !important;
+}
+
+.badge-danger,
+.bg-danger {
+    background: linear-gradient(135deg, #dc3545 0%, #c82333 100%) !important;
+    color: white !important;
+}
+
+.bg-info {
+    background: linear-gradient(135deg, #17a2b8 0%, #138496 100%) !important;
+    color: white !important;
+}
+
+.bg-primary {
+    background: linear-gradient(135deg, #4169E1 0%, #1E3A8A 100%) !important;
+    color: white !important;
+}
+
+/* ============================================
+   BOUTONS D'ACTIONS
+   ============================================ */
+.btn-group-sm .btn {
+    padding: 0.375rem 0.625rem;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+    font-size: 0.813rem;
+    white-space: nowrap;
+}
+
+@media (min-width: 992px) {
+    .btn-group-sm .btn {
+        padding: 0.4rem 0.7rem;
+        font-size: 0.85rem;
+    }
+}
+
+.btn-outline-primary {
+    border-color: #4169E1;
+    color: #4169E1;
+    border-width: 1.5px;
+}
+
+.btn-outline-primary:hover {
+    background-color: #4169E1;
+    border-color: #4169E1;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(65, 105, 225, 0.3);
+}
+
+.btn-secondary {
+    background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%);
+    border: none;
+    color: white;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-secondary:hover {
+    background: linear-gradient(135deg, #5a6268 0%, #545b62 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(108, 117, 125, 0.3);
+}
+
+/* ============================================
+   SPINNER & MESSAGE VIDE
+   ============================================ */
+.spinner-border {
+    width: 2.5rem;
+    height: 2.5rem;
+}
+
+@media (min-width: 768px) {
+    .spinner-border {
+        width: 3rem;
+        height: 3rem;
+    }
+}
+
+.fa-inbox {
+    opacity: 0.3;
+}
+
+/* ============================================
+   STATISTIQUES
+   ============================================ */
+.stats-section {
+    padding-top: 1rem;
+    border-top: 2px solid #e9ecef;
+    margin-top: 1rem;
+}
+
+@media (min-width: 768px) {
+    .stats-section {
+        padding-top: 1.5rem;
+        margin-top: 1.5rem;
+    }
+}
+
+.stat-card {
+    padding: 1rem;
+    border-radius: 8px;
+    text-align: center;
+    color: white;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+@media (min-width: 768px) {
+    .stat-card {
+        padding: 1.25rem;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+}
+
+.stat-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+.stat-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+    line-height: 1.2;
+}
+
+@media (min-width: 576px) {
+    .stat-value {
+        font-size: 1.75rem;
+    }
+}
+
+@media (min-width: 768px) {
+    .stat-value {
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+    }
+}
+
+@media (min-width: 1200px) {
+    .stat-value {
+        font-size: 2.5rem;
+    }
+}
+
+.stat-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    opacity: 0.9;
+}
+
+@media (min-width: 768px) {
+    .stat-label {
+        font-size: 0.85rem;
+    }
+}
+
+@media (min-width: 1200px) {
+    .stat-label {
+        font-size: 0.9rem;
+    }
+}
+
+/* ============================================
+   UTILITAIRES RESPONSIVE
+   ============================================ */
+/* Espacement des gaps */
+.g-2 {
+    gap: 0.5rem;
+}
+
+@media (min-width: 768px) {
+    .g-md-3 {
+        gap: 1rem;
+    }
+}
+
+/* Ajustement des marges */
+.mb-2 {
+    margin-bottom: 0.5rem;
+}
+
+.mb-3 {
+    margin-bottom: 1rem;
+}
+
+@media (min-width: 768px) {
+    .mb-md-4 {
+        margin-bottom: 1.5rem;
+    }
+}
+
+.mt-3 {
+    margin-top: 1rem;
+}
+
+@media (min-width: 768px) {
+    .mt-md-4 {
+        margin-top: 1.5rem;
+    }
+}
+
+/* ============================================
+   ANIMATIONS
+   ============================================ */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.table tbody tr,
+.demande-card {
+    animation: fadeIn 0.5s ease;
+}
+
+/* ============================================
+   OPTIMISATIONS MOBILE SPÉCIFIQUES
+   ============================================ */
+@media (max-width: 575.98px) {
+    /* Réduire les espacements sur très petits écrans */
+    .card-header {
+        padding: 0.875rem;
+    }
+
+    .filters-section {
+        padding: 0.875rem;
+    }
+
+    /* Améliorer la lisibilité des petits textes */
+    .small,
+    small {
+        font-size: 0.813rem;
+    }
+
+    /* Optimiser les boutons pour le tactile */
+    .btn {
+        min-height: 38px;
+    }
+
+    /* Empêcher le débordement horizontal */
+    * {
+        max-width: 100%;
+    }
+}
+
+/* ============================================
+   OPTIMISATIONS TABLETTE
+   ============================================ */
+@media (min-width: 768px) and (max-width: 991.98px) {
+    .table {
+        font-size: 0.875rem;
+    }
+
+    .table th,
+    .table td {
+        padding: 0.625rem;
+    }
+
+    .btn-group-sm .btn {
+        font-size: 0.813rem;
+    }
+}
+
+/* ============================================
+   PRINT STYLES
+   ============================================ */
+@media print {
+    .card-header .btn-light,
+    .filters-section,
+    .btn-group,
+    .stats-section {
+        display: none !important;
+    }
+
+    .card {
+        box-shadow: none;
+        border: 1px solid #dee2e6;
+    }
+
+    .table tbody tr:hover {
+        transform: none;
+        box-shadow: none;
+    }
+}
+/* ===============================
+   Rendre le tableau responsive + scroll horizontal
+   =============================== */
+
+/* Autoriser le scroll horizontal si les colonnes dépassent */
+.demandes-table-responsive {
+    width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch; /* Smooth scrolling on mobile */
+}
+
+/* Empêcher le tableau de se casser sur mobile */
+.demandes-table-responsive table {
+    min-width: 900px; /* Ajuste selon besoin */
+    white-space: nowrap; /* Empêche la rupture de texte dans les cellules */
+}
+
+/* Sur très petits écrans, activer le scroller */
+@media (max-width: 768px) {
+    .demandes-table-responsive {
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+    }
+}

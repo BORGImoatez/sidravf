@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
@@ -11,12 +11,21 @@ import { User, UserRole } from '../../models/user.model';
   imports: [CommonModule, RouterModule],
   template: `
     <div class="app-layout">
+      <!-- Overlay pour mobile -->
+      <div
+          class="sidebar-overlay"
+          [class.active]="isSidebarOpen && isMobile"
+          (click)="closeSidebar()"
+      ></div>
+
       <!-- Sidebar -->
-      <aside class="sidebar" [class.sidebar-collapsed]="isSidebarCollapsed">
+      <aside class="sidebar"
+             [class.sidebar-collapsed]="isSidebarCollapsed && !isMobile"
+             [class.sidebar-open]="isSidebarOpen && isMobile">
         <div class="sidebar-header">
           <div class="sidebar-logo">
             <h2 class="text-lg font-bold text-white">SIDRA</h2>
-            <p class="text-xs text-blue-200" *ngIf="!isSidebarCollapsed">
+            <p class="text-xs text-blue-200" *ngIf="!isSidebarCollapsed || isMobile">
               Système d'Information<br>Drogue et Addiction
             </p>
           </div>
@@ -24,37 +33,70 @@ import { User, UserRole } from '../../models/user.model';
               class="sidebar-toggle"
               (click)="toggleSidebar()"
               type="button"
+              *ngIf="!isMobile"
           >
             <span class="toggle-icon" [class.rotated]="isSidebarCollapsed">
               ‹
             </span>
           </button>
+          <button
+              class="mobile-close-btn"
+              (click)="closeSidebar()"
+              type="button"
+              *ngIf="isMobile"
+          >
+            ✕
+          </button>
         </div>
 
         <nav class="sidebar-nav">
           <div class="nav-section">
-            <h3 class="nav-section-title" *ngIf="!isSidebarCollapsed">Navigation</h3>
+            <h3 class="nav-section-title" *ngIf="!isSidebarCollapsed || isMobile">Navigation</h3>
 
             <a
                 routerLink="/dashboard"
                 routerLinkActive="active"
                 class="nav-item"
-                [title]="isSidebarCollapsed ? 'Tableau de bord' : ''"
+                [title]="isSidebarCollapsed && !isMobile ? 'Accueil' : ''"
+                (click)="onNavItemClick()"
             >
               <span class="nav-icon">📊</span>
-              <span class="nav-label" *ngIf="!isSidebarCollapsed">Tableau de bord</span>
+              <span class="nav-label" *ngIf="!isSidebarCollapsed || isMobile">Accueil</span>
+            </a>
+            
+            <a
+                routerLink="/formulaire/demande/new"
+                routerLinkActive="active"
+                class="nav-item"
+                [title]="isSidebarCollapsed && !isMobile ? 'Nouvelle demande' : ''"
+                *ngIf="!isExterne() && !isSuperAdmin() && isRoleBns() && !isAdministrateurInsp() && !isUser()"
+                (click)="onNavItemClick()"
+            >
+              <span class="nav-icon">📝</span>
+              <span class="nav-label" *ngIf="!isSidebarCollapsed || isMobile">Nouvelle demande</span>
+            </a>
+            <a
+                routerLink="/formulaire/listDemandes"
+                routerLinkActive="active"
+                class="nav-item"
+                [title]="isSidebarCollapsed && !isMobile ? 'Liste des demandes' : ''"
+                *ngIf="!isExterne() && !isSuperAdmin() && isRoleBns() && !isAdministrateurInsp() && !isUser()"
+                (click)="onNavItemClick()"
+            >
+              <span class="nav-icon">📝</span>
+              <span class="nav-label" *ngIf="!isSidebarCollapsed || isMobile">Liste des demandes</span>
             </a>
 
             <a
                 routerLink="/formulaire"
                 routerLinkActive="active"
                 class="nav-item"
-                [title]="isSidebarCollapsed ? 'Nouveau formulaire' : ''"
+                [title]="isSidebarCollapsed && !isMobile ? 'Nouveau formulaire' : ''"
                 *ngIf="!isExterne() && !isSuperAdmin() && !isRoleBns() && !isAdministrateurInsp()"
-
+                (click)="onNavItemClick()"
             >
-              <span class="nav-icon">📝</span>
-              <span class="nav-label" *ngIf="!isSidebarCollapsed">Nouveau formulaire</span>
+              <span class="nav-icon">📋</span>
+              <span class="nav-label" *ngIf="!isSidebarCollapsed || isMobile">Nouveau formulaire</span>
             </a>
 
             <a
@@ -62,23 +104,23 @@ import { User, UserRole } from '../../models/user.model';
                 routerLinkActive="active"
                 class="nav-item"
                 *ngIf="!isExterne() && !isSuperAdmin() && !isRoleBns() && !isAdministrateurInsp()"
-                [title]="isSidebarCollapsed ? 'Mes formulaires' : ''"
+                [title]="isSidebarCollapsed && !isMobile ? 'Mes formulaires' : ''"
+                (click)="onNavItemClick()"
             >
               <span class="nav-icon">📋</span>
-              <span class="nav-label" *ngIf="!isSidebarCollapsed">Mes formulaires</span>
+              <span class="nav-label" *ngIf="!isSidebarCollapsed || isMobile">Mes formulaires</span>
             </a>
-
-       
 
             <a
                 routerLink="/structures-consultation"
                 routerLinkActive="active"
                 class="nav-item"
                 *ngIf="isSuperAdmin() || isRoleBns()"
-                [title]="isSidebarCollapsed ? 'Consultation par structure' : ''"
+                [title]="isSidebarCollapsed && !isMobile ? 'Consultation par structure' : ''"
+                (click)="onNavItemClick()"
             >
               <span class="nav-icon">🏥</span>
-              <span class="nav-label" *ngIf="!isSidebarCollapsed">Consultation par structure</span>
+              <span class="nav-label" *ngIf="!isSidebarCollapsed || isMobile">Consultation par structure</span>
             </a>
 
             <a
@@ -86,27 +128,29 @@ import { User, UserRole } from '../../models/user.model';
                 routerLinkActive="active"
                 class="nav-item"
                 *ngIf="isExterne() || isRoleBns() || isSuperAdmin()"
-                [title]="isSidebarCollapsed ? 'Indicateurs offre de drogues' : ''"
+                [title]="isSidebarCollapsed && !isMobile ? 'Indicateurs offre de drogues' : ''"
+                (click)="onNavItemClick()"
             >
               <span class="nav-icon">📊</span>
-              <span class="nav-label" *ngIf="!isSidebarCollapsed">
+              <span class="nav-label" *ngIf="!isSidebarCollapsed || isMobile">
                 {{ isExterne() || isRoleBns() ? 'Offre de drogues' : 'Offre de drogues' }}
               </span>
             </a>
           </div>
 
           <div class="nav-section" *ngIf="canAccessAdmin() || isAdministrateurInsp()">
-            <h3 class="nav-section-title" *ngIf="!isSidebarCollapsed">Administration</h3>
+            <h3 class="nav-section-title" *ngIf="!isSidebarCollapsed || isMobile">Administration</h3>
 
             <a
                 routerLink="/admin/utilisateurs"
                 routerLinkActive="active"
                 class="nav-item"
                 *ngIf="canAccessAdmin() || isAdministrateurInsp()"
-                [title]="isSidebarCollapsed ? 'Gestion des utilisateurs' : ''"
+                [title]="isSidebarCollapsed && !isMobile ? 'Gestion des utilisateurs' : ''"
+                (click)="onNavItemClick()"
             >
               <span class="nav-icon">👥</span>
-              <span class="nav-label" *ngIf="!isSidebarCollapsed">Utilisateurs</span>
+              <span class="nav-label" *ngIf="!isSidebarCollapsed || isMobile">Utilisateurs</span>
             </a>
 
             <a
@@ -114,21 +158,23 @@ import { User, UserRole } from '../../models/user.model';
                 routerLinkActive="active"
                 class="nav-item"
                 *ngIf="isSuperAdmin() || isAdministrateurInsp()"
-                [title]="isSidebarCollapsed ? 'Gestion des structures' : ''"
+                [title]="isSidebarCollapsed && !isMobile ? 'Gestion des structures' : ''"
+                (click)="onNavItemClick()"
             >
               <span class="nav-icon">🏢</span>
-              <span class="nav-label" *ngIf="!isSidebarCollapsed">Structures</span>
+              <span class="nav-label" *ngIf="!isSidebarCollapsed || isMobile">Structures</span>
             </a>
 
             <a
                 routerLink="/admin/rapports"
                 routerLinkActive="active"
                 class="nav-item"
-                *ngIf="isSuperAdmin()"
-                [title]="isSidebarCollapsed ? 'Rapports et statistiques' : ''"
+                *ngIf="isSuperAdmin() || isUser() || isRoleBns()"
+                [title]="isSidebarCollapsed && !isMobile ? 'Rapports et statistiques' : ''"
+                (click)="onNavItemClick()"
             >
               <span class="nav-icon">📈</span>
-              <span class="nav-label" *ngIf="!isSidebarCollapsed">Rapports</span>
+              <span class="nav-label" *ngIf="!isSidebarCollapsed || isMobile">Tableau de bord national</span>
             </a>
 
             <a
@@ -136,30 +182,32 @@ import { User, UserRole } from '../../models/user.model';
                 routerLinkActive="active"
                 class="nav-item"
                 *ngIf="isSuperAdmin() || isAdministrateurInsp()"
-                [title]="isSidebarCollapsed ? 'Demandes d inscription' : ''"
+                [title]="isSidebarCollapsed && !isMobile ? 'Demandes d inscription' : ''"
+                (click)="onNavItemClick()"
             >
               <span class="nav-icon">🔔</span>
-              <span class="nav-label" *ngIf="!isSidebarCollapsed">Demandes d'inscription</span>
+              <span class="nav-label" *ngIf="!isSidebarCollapsed || isMobile">Demandes d'inscription</span>
             </a>
           </div>
 
           <div class="nav-section">
-            <h3 class="nav-section-title" *ngIf="!isSidebarCollapsed">Support</h3>
+            <h3 class="nav-section-title" *ngIf="!isSidebarCollapsed || isMobile">Support</h3>
 
             <a
                 routerLink="/aide"
                 routerLinkActive="active"
                 class="nav-item"
-                [title]="isSidebarCollapsed ? 'Guide d utilisation' : ''"
+                [title]="isSidebarCollapsed && !isMobile ? 'Guide d utilisation' : ''"
+                (click)="onNavItemClick()"
             >
               <span class="nav-icon">❓</span>
-              <span class="nav-label" *ngIf="!isSidebarCollapsed">Aide</span>
+              <span class="nav-label" *ngIf="!isSidebarCollapsed || isMobile">Aide</span>
             </a>
           </div>
         </nav>
 
         <div class="sidebar-footer">
-          <div class="user-info" *ngIf="currentUser && !isSidebarCollapsed">
+          <div class="user-info" *ngIf="currentUser && (!isSidebarCollapsed || isMobile)">
             <div class="user-avatar">
               {{ getUserInitials() }}
             </div>
@@ -176,21 +224,21 @@ import { User, UserRole } from '../../models/user.model';
               class="logout-btn"
               (click)="logout()"
               type="button"
-              [title]="isSidebarCollapsed ? 'Se déconnecter' : ''"
+              [title]="isSidebarCollapsed && !isMobile ? 'Se déconnecter' : ''"
           >
             <span class="nav-icon">🚪</span>
-            <span class="nav-label" *ngIf="!isSidebarCollapsed">Déconnexion</span>
+            <span class="nav-label" *ngIf="!isSidebarCollapsed || isMobile">Déconnexion</span>
           </button>
         </div>
       </aside>
 
       <!-- Main content -->
-      <main class="main-content" [class.main-content-expanded]="isSidebarCollapsed">
+      <main class="main-content" [class.main-content-expanded]="isSidebarCollapsed && !isMobile">
         <header class="main-header">
           <div class="header-left">
             <button
                 class="mobile-menu-btn"
-                (click)="toggleSidebar()"
+                (click)="openSidebar()"
                 type="button"
             >
               ☰
@@ -220,6 +268,26 @@ import { User, UserRole } from '../../models/user.model';
       display: flex;
       height: 100vh;
       background-color: var(--gray-50);
+      overflow: hidden;
+    }
+
+    /* Overlay pour mobile */
+    .sidebar-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(0, 0, 0, 0.5);
+      z-index: 999;
+      opacity: 0;
+      transition: opacity 0.3s ease-in-out;
+    }
+
+    .sidebar-overlay.active {
+      display: block;
+      opacity: 1;
     }
 
     /* Sidebar */
@@ -233,6 +301,7 @@ import { User, UserRole } from '../../models/user.model';
       position: relative;
       box-shadow: var(--shadow-lg);
       z-index: 100;
+      flex-shrink: 0;
     }
 
     .sidebar-collapsed {
@@ -243,6 +312,13 @@ import { User, UserRole } from '../../models/user.model';
       padding: var(--spacing-6) var(--spacing-4);
       border-bottom: 1px solid rgba(255, 255, 255, 0.1);
       position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .sidebar-logo {
+      flex: 1;
     }
 
     .sidebar-logo h2 {
@@ -290,10 +366,40 @@ import { User, UserRole } from '../../models/user.model';
       transform: rotate(180deg);
     }
 
+    .mobile-close-btn {
+      display: none;
+      background: transparent;
+      border: none;
+      color: white;
+      font-size: 24px;
+      cursor: pointer;
+      padding: var(--spacing-2);
+      width: 32px;
+      height: 32px;
+      align-items: center;
+      justify-content: center;
+      border-radius: var(--radius-sm);
+      transition: background-color 0.2s;
+    }
+
+    .mobile-close-btn:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+
     .sidebar-nav {
       flex: 1;
       padding: var(--spacing-4) 0;
       overflow-y: auto;
+      overflow-x: hidden;
+    }
+
+    .sidebar-nav::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    .sidebar-nav::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.3);
+      border-radius: 4px;
     }
 
     .nav-section {
@@ -335,16 +441,19 @@ import { User, UserRole } from '../../models/user.model';
       font-size: 18px;
       width: 24px;
       text-align: center;
+      flex-shrink: 0;
     }
 
     .nav-label {
       font-size: 14px;
       font-weight: 500;
+      white-space: nowrap;
     }
 
     .sidebar-footer {
       border-top: 1px solid rgba(255, 255, 255, 0.1);
       padding: var(--spacing-4);
+      flex-shrink: 0;
     }
 
     .user-info {
@@ -367,6 +476,7 @@ import { User, UserRole } from '../../models/user.model';
       justify-content: center;
       font-weight: 600;
       font-size: 14px;
+      flex-shrink: 0;
     }
 
     .user-details {
@@ -423,7 +533,8 @@ import { User, UserRole } from '../../models/user.model';
       flex: 1;
       display: flex;
       flex-direction: column;
-      transition: margin-left 0.3s ease-in-out;
+      min-width: 0;
+      overflow: hidden;
     }
 
     .main-content-expanded {
@@ -438,23 +549,31 @@ import { User, UserRole } from '../../models/user.model';
       align-items: center;
       justify-content: space-between;
       border-bottom: 1px solid var(--gray-200);
+      flex-shrink: 0;
     }
 
     .header-left {
       display: flex;
       align-items: center;
       gap: var(--spacing-4);
+      min-width: 0;
+      flex: 1;
     }
 
     .mobile-menu-btn {
       display: none;
       background: transparent;
       border: none;
-      font-size: 18px;
+      font-size: 20px;
       cursor: pointer;
       padding: var(--spacing-2);
       border-radius: var(--radius-sm);
       color: var(--gray-600);
+      width: 36px;
+      height: 36px;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
     }
 
     .mobile-menu-btn:hover {
@@ -466,11 +585,15 @@ import { User, UserRole } from '../../models/user.model';
       font-weight: 600;
       color: var(--gray-900);
       margin: 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .header-right {
       display: flex;
       align-items: center;
+      flex-shrink: 0;
     }
 
     .user-menu {
@@ -490,38 +613,64 @@ import { User, UserRole } from '../../models/user.model';
       font-weight: 600;
       font-size: 12px;
       color: white;
+      flex-shrink: 0;
     }
 
     .user-info-sm {
       display: flex;
       flex-direction: column;
+      min-width: 0;
     }
 
     .user-name-sm {
       font-weight: 600;
       font-size: 14px;
       color: var(--gray-900);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .user-role-sm {
       font-size: 12px;
       color: var(--gray-500);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .main-content-area {
       flex: 1;
       padding: var(--spacing-6);
       overflow-y: auto;
+      overflow-x: hidden;
     }
 
-    /* Responsive */
+    /* Responsive - Tablette */
+    @media (max-width: 1024px) {
+      .sidebar {
+        width: 260px;
+      }
+
+      .sidebar-collapsed {
+        width: 70px;
+      }
+
+      .page-title {
+        font-size: 20px;
+      }
+    }
+
+    /* Responsive - Mobile */
     @media (max-width: 768px) {
       .sidebar {
         position: fixed;
         left: -280px;
         top: 0;
         height: 100vh;
+        width: 280px;
         z-index: 1000;
+        transition: left 0.3s ease-in-out;
       }
 
       .sidebar.sidebar-open {
@@ -529,7 +678,16 @@ import { User, UserRole } from '../../models/user.model';
       }
 
       .sidebar-collapsed {
-        left: -80px;
+        width: 280px;
+        left: -280px;
+      }
+
+      .sidebar-toggle {
+        display: none;
+      }
+
+      .mobile-close-btn {
+        display: flex;
       }
 
       .main-content {
@@ -537,12 +695,24 @@ import { User, UserRole } from '../../models/user.model';
         width: 100%;
       }
 
+      .main-content-expanded {
+        margin-left: 0;
+      }
+
       .mobile-menu-btn {
-        display: block;
+        display: flex;
       }
 
       .user-info-sm {
         display: none;
+      }
+
+      .main-header {
+        padding: var(--spacing-3) var(--spacing-4);
+      }
+
+      .page-title {
+        font-size: 18px;
       }
 
       .main-content-area {
@@ -550,13 +720,57 @@ import { User, UserRole } from '../../models/user.model';
       }
     }
 
+    /* Responsive - Petits mobiles */
     @media (max-width: 480px) {
+      .sidebar {
+        width: 260px;
+        left: -260px;
+      }
+
       .main-header {
-        padding: var(--spacing-3) var(--spacing-4);
+        padding: var(--spacing-2) var(--spacing-3);
+      }
+
+      .header-left {
+        gap: var(--spacing-2);
       }
 
       .page-title {
-        font-size: 20px;
+        font-size: 16px;
+      }
+
+      .main-content-area {
+        padding: var(--spacing-3);
+      }
+
+      .user-avatar-sm {
+        width: 28px;
+        height: 28px;
+        font-size: 11px;
+      }
+    }
+
+    /* Landscape mobile */
+    @media (max-height: 500px) and (max-width: 900px) {
+      .sidebar {
+        width: 240px;
+        left: -240px;
+      }
+
+      .sidebar-header {
+        padding: var(--spacing-3) var(--spacing-3);
+      }
+
+      .sidebar-logo h2 {
+        font-size: 18px;
+      }
+
+      .sidebar-logo p {
+        font-size: 10px;
+      }
+
+      .nav-item {
+        padding: var(--spacing-2) var(--spacing-3);
       }
 
       .main-content-area {
@@ -568,6 +782,8 @@ import { User, UserRole } from '../../models/user.model';
 export class LayoutComponent implements OnInit {
   currentUser: User | null = null;
   isSidebarCollapsed = false;
+  isSidebarOpen = false;
+  isMobile = false;
 
   constructor(
       private authService: AuthService,
@@ -575,33 +791,42 @@ export class LayoutComponent implements OnInit {
       private webSocketService: WebSocketService
   ) {}
 
+  @HostListener('window:resize', ['$event'])
+  onResize(event: any) {
+    this.checkIfMobile();
+  }
+
   ngOnInit(): void {
+    this.checkIfMobile();
+
     this.authService.currentUser$.subscribe(user => {
       this.currentUser = user;
-
-      // Connecter au WebSocket si l'utilisateur est authentifié
       if (user) {
-      //  this.connectWebSocket();
+        // this.connectWebSocket();
       }
     });
   }
 
+  private checkIfMobile(): void {
+    this.isMobile = window.innerWidth <= 768;
+    if (!this.isMobile) {
+      this.isSidebarOpen = false;
+    }
+  }
+
   private connectWebSocket(): void {
-    // Connecter au WebSocket et s'abonner aux notifications appropriées
     this.webSocketService.connect().subscribe(connected => {
       if (connected) {
-        // Si l'utilisateur est un administrateur, s'abonner aux notifications admin
         if (this.canAccessAdmin()) {
           this.webSocketService.subscribe('/topic/admin/notifications', (message) => {
-             // Ici vous pourriez ajouter une notification visuelle
+            // Notification visuelle
           });
         }
 
-        // S'abonner aux notifications personnelles
         const userId = this.currentUser?.id;
         if (userId) {
           this.webSocketService.subscribe(`/user/${userId}/queue/notifications`, (message) => {
-             // Ici vous pourriez ajouter une notification visuelle
+            // Notification visuelle
           });
         }
       }
@@ -609,12 +834,36 @@ export class LayoutComponent implements OnInit {
   }
 
   ngOnDestroy(): void {
-    // Se déconnecter du WebSocket
     this.webSocketService.disconnect();
   }
 
   toggleSidebar(): void {
-    this.isSidebarCollapsed = !this.isSidebarCollapsed;
+    if (this.isMobile) {
+      this.isSidebarOpen = !this.isSidebarOpen;
+    } else {
+      this.isSidebarCollapsed = !this.isSidebarCollapsed;
+    }
+  }
+
+  openSidebar(): void {
+    if (this.isMobile) {
+      this.isSidebarOpen = true;
+    }
+  }
+
+  closeSidebar(): void {
+    if (this.isMobile) {
+      this.isSidebarOpen = false;
+    }
+  }
+
+  onNavItemClick(): void {
+    if (this.isMobile) {
+      this.closeSidebar();
+    }
+  }
+  isUser():boolean{
+    return this.authService.hasRole(UserRole.UTILISATEUR);
   }
 
   canAccessAdmin(): boolean {

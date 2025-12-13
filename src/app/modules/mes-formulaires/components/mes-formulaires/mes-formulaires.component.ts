@@ -28,6 +28,7 @@ import { UserRole } from '../../../../models/user.model';
                 (input)="searchPatients()"
             >
           </div>
+          <button class="btn-excel" (click)="exportExcel()"> <i class="fa fa-file-excel-o"></i> Exporter Excel</button>
         </div>
         <button
             class="btn btn-primary"
@@ -140,6 +141,33 @@ import { UserRole } from '../../../../models/user.model';
     </ng-template>
   `,
   styles: [`
+    .btn-excel {
+      background-color: #1D6F42;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      font-size: 15px;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: 0.2s ease;
+    }
+
+    .btn-excel:hover {
+      background-color: #145832;
+    }
+
+    .btn-excel:active {
+      transform: scale(0.96);
+    }
+
+    .btn-excel i {
+      font-size: 18px;
+    }
+
     .mes-formulaires-container {
       max-width: 1200px;
       margin: 0 auto;
@@ -324,7 +352,9 @@ export class MesFormulairesComponent implements OnInit {
       }
     });
   }
-
+  exportExcel() {
+  this.patientService.exportExcel();
+  }
   searchPatients(): void {
     if (!this.searchTerm || this.searchTerm.trim().length === 0) {
       this.loadPatients();

@@ -15,21 +15,16 @@ import { LoginRequest } from '../../models/user.model';
         <div class="login-header">
           <div class="logo-placeholder">
             <img  src="../../../assets/logo/logoMS.png" alt="">
-            
+
           </div>
-
-      
-
-
 
           <!-- Logos des partenaires -->
           <div class="partners-logos">
             <div class="logo-placeholder">
               <img   width="80%" src="../../../assets/logo/logos.png" alt="">
             </div>
-
-
           </div>
+
           <h1 class="text-2xl font-bold text-center text-gray-900 mb-2">
             SIDRA
           </h1>
@@ -65,18 +60,17 @@ import { LoginRequest } from '../../models/user.model';
               Mot de passe
             </label>
             <div class="password-input-wrapper">
-
-            <input
-                [type]="showPassword ? 'text' : 'password'"
-                id="motDePasse"
-                name="motDePasse"
-                [(ngModel)]="loginData.motDePasse"
-                class="form-input"
-                [class.error]="showError && !loginData.motDePasse"
-                placeholder="••••••••"
-                required
-                [disabled]="isLoading"
-            >
+              <input
+                  [type]="showPassword ? 'text' : 'password'"
+                  id="motDePasse"
+                  name="motDePasse"
+                  [(ngModel)]="loginData.motDePasse"
+                  class="form-input"
+                  [class.error]="showError && !loginData.motDePasse"
+                  placeholder="••••••••"
+                  required
+                  [disabled]="isLoading"
+              >
               <button
                   type="button"
                   class="password-toggle"
@@ -115,14 +109,19 @@ import { LoginRequest } from '../../models/user.model';
         </form>
 
         <div class="login-footer">
-         
-          <div class="text-center mt-4">
+          <div class="text-center mt-4 mb-4">
             <a routerLink="/forgot-password" class="text-primary-600 hover:underline">
               Mot de passe oublié ?
             </a>
           </div>
-          <div class="text-center mb-4">
-            <a routerLink="/signup" class="btn btn-secondary">
+
+          <!-- Section inscription avec message et icône -->
+          <div class="signup-section">
+            <div class="signup-message">
+              <span class="pointer-icon">👉</span>
+              <p>Si vous n'avez pas encore un compte, veuillez créer un compte</p>
+            </div>
+            <a routerLink="/signup" class="btn btn-secondary btn-signup">
               S'inscrire
             </a>
           </div>
@@ -164,6 +163,7 @@ import { LoginRequest } from '../../models/user.model';
       cursor: not-allowed;
       opacity: 0.5;
     }
+
     .login-container {
       min-height: 100vh;
       display: flex;
@@ -192,7 +192,7 @@ import { LoginRequest } from '../../models/user.model';
       gap: var(--spacing-3);
       margin-bottom: var(--spacing-6);
       padding: var(--spacing-4);
-       border-radius: var(--radius-md);
+      border-radius: var(--radius-md);
     }
 
     .logo-placeholder {
@@ -201,11 +201,9 @@ import { LoginRequest } from '../../models/user.model';
       justify-content: center;
       height: 60px;
       background: white;
-        text-align: center;
+      text-align: center;
       transition: border-color 0.2s ease-in-out;
     }
-
-    
 
     .login-form {
       margin-bottom: var(--spacing-6);
@@ -230,22 +228,98 @@ import { LoginRequest } from '../../models/user.model';
       animation: spin 1s linear infinite;
     }
 
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
     .login-footer {
       border-top: 1px solid var(--gray-200);
       padding-top: var(--spacing-4);
+    }
+
+    /* Style pour la section inscription */
+    .signup-section {
+      margin-top: var(--spacing-4);
+      padding: var(--spacing-4);
+      background-color: #f0f9ff;
+      border-radius: var(--radius-md);
+      border: 2px dashed var(--primary-300);
+    }
+
+    .signup-message {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--spacing-2);
+      margin-bottom: var(--spacing-3);
+      text-align: center;
+    }
+
+    .signup-message p {
+      margin: 0;
+      color: var(--gray-700);
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .pointer-icon {
+      font-size: 24px;
+      animation: point 1.5s ease-in-out infinite;
+      display: inline-block;
+    }
+
+    @keyframes point {
+      0%, 100% {
+        transform: translateX(0) scale(1);
+      }
+      50% {
+        transform: translateX(5px) scale(1.1);
+      }
+    }
+
+    .btn-signup {
+      width: 100%;
+      margin-top: var(--spacing-2);
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+
+    .btn-signup:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     }
 
     @media (max-width: 480px) {
       .login-card {
         padding: var(--spacing-6);
       }
-      
+
       .partners-logos {
         grid-template-columns: repeat(1, 1fr);
       }
-      
+
       .logo-placeholder {
         height: 50px;
+      }
+
+      .signup-message {
+        flex-direction: column;
+        gap: var(--spacing-1);
+      }
+
+      .pointer-icon {
+        transform: rotate(90deg);
+        animation: pointDown 1.5s ease-in-out infinite;
+      }
+
+      @keyframes pointDown {
+        0%, 100% {
+          transform: rotate(90deg) translateX(0) scale(1);
+        }
+        50% {
+          transform: rotate(90deg) translateX(5px) scale(1.1);
+        }
       }
     }
   `]
@@ -337,6 +411,7 @@ export class LoginComponent implements OnInit {
       }
     });
   }
+
   togglePasswordVisibility(): void {
     this.showPassword = !this.showPassword;
   }

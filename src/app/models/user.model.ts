@@ -25,6 +25,8 @@ export interface Structure {
   ministere?: Ministere;
   telephone?: string;
   actif: boolean;
+  nbFiches?: number; // Ajouter cette propriété
+
 }
 
 export interface Gouvernorat {

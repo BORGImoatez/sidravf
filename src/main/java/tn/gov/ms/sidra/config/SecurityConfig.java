@@ -68,7 +68,11 @@ public class SecurityConfig {
                         // Endpoints d'administration
                         .requestMatchers("/admin/**").hasAnyRole("SUPER_ADMIN", "ADMIN_STRUCTURE", "ADMINISTRATEUR_INSP")
                         .requestMatchers("/users/create").hasAnyRole("SUPER_ADMIN", "ADMIN_STRUCTURE", "ADMINISTRATEUR_INSP")
+
                         .requestMatchers("/structures/**").permitAll()
+                                .requestMatchers("/statistiques/**").permitAll()
+
+
                         .requestMatchers("/ws/**").permitAll()
                         .requestMatchers("/ws/info").permitAll()
                         .requestMatchers("/ws/websocket").permitAll()

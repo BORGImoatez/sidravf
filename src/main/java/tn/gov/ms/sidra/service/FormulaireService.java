@@ -708,4 +708,15 @@ public class FormulaireService {
             formulaire.setPriseEnChargeSocialePrecision(dto.getPriseEnChargeSocialePrecision());
         }
     }
+    /**
+     * Retourner le nombres des consultation par strucutre
+     */
+    @Transactional(readOnly = true)
+    public int getNbFichePerStructure(Long structureId)
+
+    {
+        List<Formulaire > formulaireList =formulaireRepository.findByStructureId(structureId);
+        return formulaireList.size();
+    }
+
 }

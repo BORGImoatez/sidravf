@@ -1,0 +1,547 @@
+<div class="rapports-container">
+    <!-- LOADER GLOBAL -->
+    <div *ngIf="isLoading" class="loader-overlay">
+        <div class="loader-spinner"></div>
+        <p class="loader-text">Chargement des données...</p>
+    </div>
+
+    <!-- HEADER -->
+    <header class="page-header">
+        <div class="page-header-left">
+            <h1 class="page-title">Tableau de Bord National</h1>
+            <p class="page-subtitle">Drogues, addictions & demandes de traitement</p>
+            <p class="page-description">
+                Visualisation des indicateurs clés avec filtres dynamiques.
+            </p>
+        </div>
+
+        <div class="page-header-right">
+            <div class="chip" *ngIf="filters.anneeConsultation === 0">
+                📅 Toutes les années
+            </div>
+            <div class="chip" *ngIf="filters.anneeConsultation !== 0">
+                📅 Année {{ filters.anneeConsultation }}
+            </div>
+            <div class="chip">
+                👤 Sexe : {{ getSexeFilterLabel() }}
+            </div>
+            <div class="chip">
+                🎯 Âge : {{ filters.ageMin }} - {{ filters.ageMax }} ans
+            </div>
+        </div>
+    </header>
+    <!-- BADGE MODE DEV -->
+    <div class="dev-badge">
+        <span class="dev-badge-icon">🚧</span>
+        <div class="dev-badge-content">
+            <strong>Mode Test</strong>
+            <span class="dev-badge-text">Version beta - ce n'est pas une version finale</span>
+        </div>
+    </div>
+    <!-- MESSAGE D'ERREUR -->
+    <div *ngIf="errorMessage" class="error-alert">
+        <span class="error-icon">⚠️ </span>
+        <div class="error-content">
+            <strong>Erreur :</strong> {{ errorMessage }}
+        </div>
+        <button (click)="dismissError()" class="error-close">×</button>
+    </div>
+
+    <!-- FILTRES -->
+    <section class="filters-section card">
+        <div class="card-header">
+            <div class="card-header-left">
+                <h3 class="card-title">🔍 Filtres</h3>
+                <p class="card-subtitle">
+                    Affinez l’analyse selon le sexe, l’année de consultation et la tranche d’âge.
+                </p>
+            </div>
+            <div class="card-header-right">
+            <span class="pill pill-soft">
+              {{ getActiveFiltersCount() }} filtre(s) actif(s)
+            </span>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="filters-grid">
+                <div class="filter-item">
+                    <label class="filter-label">Sexe</label>
+                    <select
+                            [(ngModel)]="filters.sexe"
+                            (change)="applyFilters()"
+                            class="filter-select"
+                            [disabled]="isLoading"
+                    >
+                        <option value="tous">Tous</option>
+                        <option value="homme">Homme</option>
+                        <option value="femme">Femme</option>
+                    </select>
+                </div>
+
+                <div class="filter-item">
+                    <label class="filter-label">Année de consultation</label>
+                    <select
+                            [(ngModel)]="filters.anneeConsultation"
+                            (change)="applyFilters()"
+                            class="filter-select"
+                            [disabled]="isLoading"
+                    >
+                        <option [value]="0">Toutes les années</option>
+                        <option *ngFor="let annee of anneesDisponibles" [value]="annee">
+                            {{ annee }}
+                        </option>
+                    </select>
+                </div>
+
+                <div class="filter-item filter-item-wide">
+                    <label class="filter-label">
+                        Tranche d'âge : {{ filters.ageMin }} - {{ filters.ageMax }} ans
+                    </label>
+                    <div class="range-slider-container">
+                        <input
+                                type="range"
+                                [(ngModel)]="filters.ageMin"
+                                (input)="onAgeMinChange()"
+                                class="range-slider"
+                                min="10"
+                                max="100"
+                                step="1"
+                                [disabled]="isLoading"
+                        />
+                        <input
+                                type="range"
+                                [(ngModel)]="filters.ageMax"
+                                (input)="onAgeMaxChange()"
+                                class="range-slider"
+                                min="10"
+                                max="100"
+                                step="1"
+                                [disabled]="isLoading"
+                        />
+                        <div class="range-values">
+                            <span class="range-value">{{ filters.ageMin }} ans</span>
+                            <span class="range-value">{{ filters.ageMax }} ans</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="filter-actions">
+                <button
+                        (click)="resetFilters()"
+                        class="btn-secondary"
+                        [disabled]="isLoading"
+                >
+                    🔄 Réinitialiser les filtres
+                </button>
+                <button
+                        (click)="exportData()"
+                        class="btn-primary"
+                        [disabled]="isLoading || isExporting"
+                >
+                    <span *ngIf="!isExporting">📥 Exporter les données</span>
+                    <span *ngIf="isExporting">⏳ Export en cours...</span>
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- INDICATEURS CLÉS -->
+    <section class="indicators-section" *ngIf="!isLoading">
+        <h2 class="section-title">📊 Indicateurs clés</h2>
+
+        <div class="indicators-grid">
+            <!-- Total consultations -->
+            <div class="indicator-card card-primary">
+                <div class="indicator-icon">👥</div>
+                <div class="indicator-content">
+                    <div class="indicator-label">Total des consultations</div>
+                    <div class="indicator-value">
+                        {{ stats.totalConsultations | number }}
+                    </div>
+                    <p class="indicator-subtext" *ngIf="stats.totalConsultations > 0">
+                        {{ getConsultationsParJour() | number : '1.0-1' }} / jour (approx.)
+                    </p>
+                </div>
+            </div>
+
+            <!-- Moyenne d'âge -->
+            <div class="indicator-card card-info">
+                <div class="indicator-icon">📅</div>
+                <div class="indicator-content">
+                    <div class="indicator-label">Moyenne d'âge</div>
+                    <div class="indicator-value">
+                        {{ stats.moyenneAge | number : '1.1-1' }} ans
+                    </div>
+                    <p class="indicator-subtext">
+                        Principalement : {{ getTrancheAgeDominante() || '—' }}
+                    </p>
+                </div>
+            </div>
+
+            <!-- Décès liés -->
+            <div class="indicator-card card-danger">
+                <div class="indicator-icon">⚠️</div>
+                <div class="indicator-content">
+                    <div class="indicator-label">Décès liés aux drogues</div>
+                    <div class="indicator-value">
+                        {{ stats.decesLieDrogues | number }}
+                    </div>
+                    <p class="indicator-subtext" *ngIf="stats.totalConsultations > 0">
+                        ~ {{ getTauxDeces() | number : '1.2-2' }} % des consultations
+                    </p>
+                </div>
+            </div>
+
+            <!-- Total demandes de traitement -->
+            <div class="indicator-card card-success">
+                <div class="indicator-icon">🏥</div>
+                <div class="indicator-content">
+                    <div class="indicator-label">Demandes de traitement</div>
+                    <div class="indicator-value">
+                        {{ stats.demandesTraitement.total | number }}
+                    </div>
+                    <p class="indicator-subtext">
+                        Substance la plus fréquente :
+                        <strong>{{ getSubstanceTop() || '—' }}</strong>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- LIGNE 1 : SEXE + ÂGE -->
+    <section class="chart-row" *ngIf="!isLoading">
+        <!-- Sexe -->
+        <div class="card chart-card">
+            <div class="card-header">
+                <h3 class="card-title">👫 Répartition par sexe</h3>
+                <p class="card-subtitle">
+                    Proportion d'hommes et de femmes parmi les patients.
+                </p>
+            </div>
+            <div class="card-body chart-body">
+                <div class="chart-wrapper">
+                    <canvas
+                            baseChart
+                            [data]="sexeChartData"
+                            [options]="sexeChartOptions"
+                            [type]="sexeChartType"
+                    >
+                    </canvas>
+                </div>
+                <div class="chart-legend-inline">
+                    <div class="legend-item">
+                        <span class="legend-dot legend-dot-homme"></span>
+                        <span>Hommes</span>
+                        <span class="legend-value">
+                  {{ stats.repartitionSexe.hommes | number }}
+                            ({{ getSexePercentage('hommes') | number : '1.0-0' }} %)
+                </span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-dot legend-dot-femme"></span>
+                        <span>Femmes</span>
+                        <span class="legend-value">
+                  {{ stats.repartitionSexe.femmes | number }}
+                            ({{ getSexePercentage('femmes') | number : '1.0-0' }} %)
+                </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Âge -->
+        <div class="card chart-card">
+            <div class="card-header">
+                <h3 class="card-title">🎯 Demandes de traitement par tranche d'âge</h3>
+                <p class="card-subtitle">
+                    Identification des tranches d'âge les plus touchées.
+                </p>
+            </div>
+            <div class="card-body chart-body">
+                <div class="chart-wrapper">
+                    <canvas
+                            baseChart
+                            [data]="ageChartData"
+                            [options]="ageChartOptions"
+                            [type]="ageChartType"
+                    >
+                    </canvas>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- LIGNE 2 : MODES + RÉGIONS -->
+    <section class="chart-row" *ngIf="!isLoading">
+        <!-- Modes d'administration -->
+        <div class="card chart-card" *ngIf="stats.modesAdministration.length > 0">
+            <div class="card-header">
+                <h3 class="card-title">💊 Modes d'administration</h3>
+                <p class="card-subtitle">
+                    Répartition des modes de consommation déclarés.
+                </p>
+            </div>
+            <div class="card-body chart-body">
+                <div class="chart-wrapper">
+                    <canvas
+                            baseChart
+                            [data]="modeAdminChartData"
+                            [options]="modeAdminChartOptions"
+                            [type]="modeAdminChartType"
+                    >
+                    </canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Par région -->
+        <div class="card chart-card" *ngIf="stats.demandesTraitement.parRegion.length > 0">
+            <div class="card-header">
+                <h3 class="card-title">📍 Demandes de traitement par région</h3>
+                <p class="card-subtitle">
+                    Comparaison des régions selon le volume de demandes.
+                </p>
+            </div>
+            <div class="card-body chart-body">
+                <div class="chart-wrapper">
+                    <canvas
+                            baseChart
+                            [data]="regionChartData"
+                            [options]="regionChartOptions"
+                            [type]="regionChartType"
+                    >
+                    </canvas>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- LIGNE 3 : SUBSTANCES -->
+    <section class="chart-row" *ngIf="!isLoading && stats.demandesTraitement.parSubstance.length > 0">
+        <div class="card chart-card full-width">
+            <div class="card-header">
+                <h3 class="card-title">🧪 Demandes de traitement par type de substance</h3>
+                <p class="card-subtitle">
+                    Vue d’ensemble des substances les plus problématiques.
+                </p>
+            </div>
+            <div class="card-body chart-body">
+                <div class="chart-wrapper">
+                    <canvas
+                            baseChart
+                            [data]="substanceChartData"
+                            [options]="substanceChartOptions"
+                            [type]="substanceChartType"
+                    >
+                    </canvas>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- LIGNE 4 : PROFESSION + SITUATION FAMILIALE -->
+    <section class="chart-row" *ngIf="!isLoading">
+        <!-- Par profession -->
+        <div class="card chart-card" *ngIf="stats.demandesTraitement.parProfession.length > 0">
+            <div class="card-header">
+                <h3 class="card-title">💼 Demandes de traitement par profession</h3>
+                <p class="card-subtitle">
+                    Répartition des demandes selon la profession des patients.
+                </p>
+            </div>
+            <div class="card-body chart-body">
+                <div class="chart-wrapper">
+                    <canvas
+                            baseChart
+                            [data]="professionChartData"
+                            [options]="professionChartOptions"
+                            [type]="professionChartType"
+                    >
+                    </canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Par situation familiale -->
+        <div class="card chart-card" *ngIf="stats.demandesTraitement.parSituationFamiliale.length > 0">
+            <div class="card-header">
+                <h3 class="card-title">👨‍👩‍👧‍👦 Demandes par situation familiale</h3>
+                <p class="card-subtitle">
+                    Distribution selon le statut familial des patients.
+                </p>
+            </div>
+            <div class="card-body chart-body">
+                <div class="chart-wrapper">
+                    <canvas
+                            baseChart
+                            [data]="situationFamilialeChartData"
+                            [options]="situationFamilialeChartOptions"
+                            [type]="situationFamilialeChartType"
+                    >
+                    </canvas>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- LISTES DÉTAILLÉES (COMPLÉMENT) -->
+    <section class="demandes-section" *ngIf="!isLoading">
+        <h2 class="section-title">📋 Détails complémentaires</h2>
+
+        <div class="demandes-grid">
+            <!-- Par sexe -->
+            <div class="card" *ngIf="stats.demandesTraitement.parSexe.length > 0">
+                <div class="card-header">
+                    <h4 class="card-title">Par sexe</h4>
+                </div>
+                <div class="card-body">
+                    <div class="demandes-list">
+                        <div
+                                *ngFor="let item of stats.demandesTraitement.parSexe"
+                                class="demande-row"
+                        >
+                            <span class="demande-label">{{ item.sexe }}</span>
+                            <span class="demande-value">{{ item.nombre | number }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Par NSE -->
+            <div class="card" *ngIf="stats.demandesTraitement.parNSE.length > 0">
+                <div class="card-header">
+                    <h4 class="card-title">Par niveau socio-économique</h4>
+                </div>
+                <div class="card-body">
+                    <div class="demandes-list">
+                        <div
+                                *ngFor="let item of stats.demandesTraitement.parNSE"
+                                class="demande-row"
+                        >
+                            <span class="demande-label">{{ item.niveau }}</span>
+                            <span class="demande-value">{{ item.nombre | number }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Par âge (liste brute en complément du chart) -->
+            <div class="card" *ngIf="stats.demandesTraitement.parAge.length > 0">
+                <div class="card-header">
+                    <h4 class="card-title">Par tranche d'âge (détail)</h4>
+                </div>
+                <div class="card-body">
+                    <div class="demandes-list">
+                        <div
+                                *ngFor="let item of stats.demandesTraitement.parAge"
+                                class="demande-row"
+                        >
+                            <span class="demande-label">{{ item.tranche }}</span>
+                            <span class="demande-value">{{ item.nombre | number }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- LISTES DÉTAILLÉES (COMPLÉMENT) -->
+    <section class="demandes-section" *ngIf="!isLoading">
+        <h2 class="section-title">📋 Détails des demandes de traitement</h2>
+
+        <div class="demandes-grid">
+            <!-- Par sexe -->
+            <div class="card" *ngIf="stats.demandesTraitement.parSexe.length > 0">
+                <div class="card-header">
+                    <h4 class="card-title">Par sexe</h4>
+                </div>
+                <div class="card-body">
+                    <div class="demandes-list">
+                        <div
+                                *ngFor="let item of stats.demandesTraitement.parSexe"
+                                class="demande-row"
+                        >
+                            <span class="demande-label">{{ item.sexe }}</span>
+                            <span class="demande-value">{{ item.nombre | number }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Par profession -->
+            <div class="card" *ngIf="stats.demandesTraitement.parProfession.length > 0">
+                <div class="card-header">
+                    <h4 class="card-title">Par profession</h4>
+                </div>
+                <div class="card-body">
+                    <div class="demandes-list">
+                        <div
+                                *ngFor="let item of stats.demandesTraitement.parProfession"
+                                class="demande-row"
+                        >
+                            <span class="demande-label">{{ item.profession }}</span>
+                            <span class="demande-value">{{ item.nombre | number }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Par NSE -->
+            <div class="card" *ngIf="stats.demandesTraitement.parNSE.length > 0">
+                <div class="card-header">
+                    <h4 class="card-title">Par niveau socio-économique</h4>
+                </div>
+                <div class="card-body">
+                    <div class="demandes-list">
+                        <div
+                                *ngFor="let item of stats.demandesTraitement.parNSE"
+                                class="demande-row"
+                        >
+                            <span class="demande-label">{{ item.niveau }}</span>
+                            <span class="demande-value">{{ item.nombre | number }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Par situation familiale -->
+            <div
+                    class="card"
+                    *ngIf="stats.demandesTraitement.parSituationFamiliale.length > 0"
+            >
+                <div class="card-header">
+                    <h4 class="card-title">Par situation familiale</h4>
+                </div>
+                <div class="card-body">
+                    <div class="demandes-list">
+                        <div
+                                *ngFor="let item of stats.demandesTraitement.parSituationFamiliale"
+                                class="demande-row"
+                        >
+                            <span class="demande-label">{{ item.situation }}</span>
+                            <span class="demande-value">{{ item.nombre | number }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Par âge (liste brute en complément du chart) -->
+            <div class="card" *ngIf="stats.demandesTraitement.parAge.length > 0">
+                <div class="card-header">
+                    <h4 class="card-title">Par tranche d'âge (liste)</h4>
+                </div>
+                <div class="card-body">
+                    <div class="demandes-list">
+                        <div
+                                *ngFor="let item of stats.demandesTraitement.parAge"
+                                class="demande-row"
+                        >
+                            <span class="demande-label">{{ item.tranche }}</span>
+                            <span class="demande-value">{{ item.nombre | number }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>

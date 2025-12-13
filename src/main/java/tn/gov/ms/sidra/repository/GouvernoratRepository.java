@@ -13,8 +13,7 @@ public interface GouvernoratRepository extends JpaRepository<Gouvernorat, Long> 
     Optional<Gouvernorat> findByNom(String nom);
 
     Optional<Gouvernorat> findByCodeIso3(String codeIso3);
-
-    boolean existsByNom(String nom);
+     boolean existsByNom(String nom);
 
     boolean existsByCodeIso3(String codeIso3);
 

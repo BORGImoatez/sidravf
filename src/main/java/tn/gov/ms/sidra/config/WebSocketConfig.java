@@ -48,7 +48,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         registry.addEndpoint("/ws")
                 .setHandshakeHandler(new JwtHandshakeHandler())
                 .addInterceptors(new JwtHandshakeInterceptor())
-                .setAllowedOrigins("https://sidra.rns.tn")
+                .setAllowedOrigins("localhost:4200")
                 .withSockJS();
     }
 

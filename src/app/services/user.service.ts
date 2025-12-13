@@ -122,6 +122,16 @@ export class UserService {
             })
         );
     }
+    getNbFichePerStructure(id: number): Observable<number> {
+        return this.http.get<number>(`${this.apiUrl}/formulaires/getNbFichePerStructure/${id}`, {
+            headers: this.authService.getAuthHeaders()
+        }).pipe(
+            catchError(error => {
+                console.error('Erreur lors du chargement des structures:', error);
+                return throwError(() => error);
+            })
+        );
+    }
 
     getStructureById(id: number): Observable<Structure | null> {
         return this.http.get<Structure>(`${this.apiUrl}/structures/${id}`, {

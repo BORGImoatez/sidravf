@@ -89,4 +89,25 @@ export class PatientService {
             })
         );
     }
+
+    exportExcel() {
+        this.http.get(`${this.apiUrl}/export/excel`, {
+            responseType: 'blob',
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+            }
+        }).subscribe(
+            (blob: Blob) => {
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'formulaires.xlsx';
+                a.click();
+                window.URL.revokeObjectURL(url);
+            },
+            error => {
+                console.error('Erreur:', error);
+            }
+        );
+    }
 }

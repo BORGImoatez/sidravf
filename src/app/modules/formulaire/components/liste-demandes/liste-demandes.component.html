@@ -1,0 +1,172 @@
+<div class="demandes-container">
+    <div class="card shadow">
+        <!-- En-tête -->
+        <div class="card-header bg-primary text-white">
+            <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-2">
+                <h4 class="mb-0 h5 h-md-4">
+                    <i class="fas fa-list-alt me-2"></i>
+                    <span class="d-none d-md-inline">Liste des demandes de prise en charge</span>
+                    <span class="d-inline d-md-none">Demandes</span>
+                </h4>
+                <button class="btn btn-light btn-sm" (click)="nouvelleDemande()">
+                    <i class="fas fa-plus me-1 me-sm-2"></i>
+                    <span class="d-none d-sm-inline">Nouvelle demande</span>
+                    <span class="d-inline d-sm-none">Nouveau</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Filtres -->
+        <div class="card-body">
+            <div class="filters-section mb-3 mb-md-4">
+                <div class="row g-2 g-md-3">
+                    <div class="col-12 col-md-6">
+                        <label class="form-label small">Rechercher</label>
+                        <input
+                                type="text"
+                                class="form-control form-control-sm"
+                                [(ngModel)]="searchTerm"
+                                (input)="filtrer()"
+                                placeholder="Nom, prénom ou CIN...">
+                    </div>
+                    <div class="col-8 col-md-4">
+                        <label class="form-label small">Filtrer par décision</label>
+                        <select
+                                class="form-select form-select-sm"
+                                [(ngModel)]="filtreDecision"
+                                (change)="filtrer()">
+                            <option value="">Toutes</option>
+                            <option value="complet_favorable">Favorable</option>
+                            <option value="incomplet_favorable_reserve">Sous réserve</option>
+                            <option value="defavorable">Défavorable</option>
+                        </select>
+                    </div>
+                    <div class="col-4 col-md-2 d-flex align-items-end">
+                        <button class="btn btn-secondary btn-sm w-100" (click)="chargerDemandes()">
+                            <i class="fas fa-sync-alt"></i>
+                            <span class="d-none d-lg-inline ms-2">Actualiser</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Loader -->
+            <div *ngIf="loading" class="text-center py-4 py-md-5">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Chargement...</span>
+                </div>
+                <p class="mt-3 text-muted small">Chargement des demandes...</p>
+            </div>
+
+            <!-- Vue Desktop - Tableau -->
+            <div *ngIf="!loading" class="d-none d-lg-block">
+                <div class="table-responsive demandes-table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-light">
+                        <tr>
+                            <th>Réf.</th>
+                            <th>Demandeur</th>
+                            <th>Genre</th>
+                            <th>Localisation</th>
+                            <th>Date commission</th>
+                            <th>Décision</th>
+                            <th>Ajouté par</th>
+                            <th class="text-center">Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr *ngFor="let demande of demandesFiltrees">
+                            <td class="fw-bold text-primary">#{{ demande.id }}</td>
+                            <td>
+                                <div class="fw-semibold">{{ demande.nom }} {{ demande.prenom }}</div>
+                                <small class="text-muted">{{ formatDate(demande.dateNaissance) }}</small>
+                            </td>
+                            <td>
+                                <span class="badge" [class.bg-info]="demande.genre === 'MASCULIN'"
+                                      [class.bg-warning]="demande.genre === 'FEMININ'">
+                                  {{ demande.genre }}
+                                </span>
+                            </td>
+                            <td>
+                                <div>{{ demande.gouvernoratLibelle }}</div>
+                                <small class="text-muted">{{ demande.delegationLibelle }}</small>
+                            </td>
+                            <td>{{ formatDate(demande.dateCommission) }}</td>
+                            <td>
+                                <span class="badge" [ngClass]="getDecisionClass(demande.decision)">
+                                  {{ getDecisionLabel(demande.decision) }}
+                                </span>
+                            </td>
+                            <td>
+                                <div>{{ demande.addedBy }}</div>
+                                <small class="text-muted">{{ formatDate(demande.dateCreation) }}</small>
+                            </td>
+                            <td>
+                                <div class="btn-group btn-group-sm" role="group">
+                                    <button
+                                            class="btn btn-outline-primary"
+                                            (click)="telechargerPDF(demande)"
+                                            title="Télécharger PDF">
+                                        <i class="fas fa-file-pdf"></i>
+                                        PDF
+                                    </button>
+                                    <button
+                                            class="btn btn-outline-primary"
+                                            (click)="modifier(demande.id)"
+                                            title="Modifier">
+                                        <i class="fas fa-edit"></i>
+                                        Modifier
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+
+            <!-- Message si aucune demande -->
+            <div *ngIf="!loading && demandesFiltrees.length === 0" class="text-center py-4 py-md-5">
+                <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+                <p class="text-muted">Aucune demande trouvée</p>
+            </div>
+
+            <!-- Statistiques -->
+            <div class="stats-section mt-3 mt-md-4" *ngIf="!loading && demandes.length > 0">
+                <div class="row g-2 g-md-3">
+                    <div class="col-6 col-md-3">
+                        <div class="stat-card bg-primary">
+                            <div class="stat-value">{{ demandes.length }}</div>
+                            <div class="stat-label">Total</div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <div class="stat-card bg-success">
+                            <div class="stat-value">
+                                {{ getCountByDecision('complet_favorable') }}
+                            </div>
+                            <div class="stat-label">Favorable</div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <div class="stat-card bg-warning">
+                            <div class="stat-value">
+                                {{ getCountByDecision('incomplet_favorable_reserve') }}
+                            </div>
+                            <div class="stat-label">Sous réserve</div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <div class="stat-card bg-danger">
+                            <div class="stat-value">
+                                {{ getCountByDecision('defavorable') }}
+                            </div>
+                            <div class="stat-label">Défavorable</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
