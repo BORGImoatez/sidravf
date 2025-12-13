@@ -18,26 +18,44 @@ import java.util.stream.Collectors;
 public class StatistiquesService {
 
     private final FormulaireRepository formulaireRepository;
+    private final StatistiquesServiceImpl statistiquesServiceImpl;
 
     /**
-     * Récupère les statistiques avec filtres
+     * Récupère les statistiques nationales avec filtres complets
+     */
+    public StatistiquesDTO getStatistiquesNationales(
+            String sexe, Integer anneeConsultation, Integer moisConsultation,
+            LocalDate dateDebut, LocalDate dateFin, String gouvernorat,
+            Integer ageMin, Integer ageMax
+    ) {
+        return statistiquesServiceImpl.getStatistiquesNationales(
+                sexe, anneeConsultation, moisConsultation, dateDebut, dateFin,
+                gouvernorat, ageMin, ageMax
+        );
+    }
+
+    /**
+     * Récupère les statistiques par structure
+     */
+    public StatistiquesDTO getStatistiquesStructure(
+            Long structureId, String sexe, Integer anneeConsultation,
+            Integer moisConsultation, LocalDate dateDebut, LocalDate dateFin,
+            Integer ageMin, Integer ageMax
+    ) {
+        return statistiquesServiceImpl.getStatistiquesStructure(
+                structureId, sexe, anneeConsultation, moisConsultation,
+                dateDebut, dateFin, ageMin, ageMax
+        );
+    }
+
+    /**
+     * Récupère les statistiques avec filtres (ancienne version pour compatibilité)
      */
     public StatistiquesDTO getStatistiques(String sexe, Integer anneeConsultation,
                                            Integer ageMin, Integer ageMax) {
-
-        // Construction de la requête avec filtres
-        List<Object[]> formulaires = formulaireRepository
-                .findStatisticsWithFilters(sexe, anneeConsultation, ageMin, ageMax);
-
-        // Calculs des statistiques
-        return StatistiquesDTO.builder()
-                .totalConsultations(getTotalConsultations(sexe, anneeConsultation, ageMin, ageMax))
-                .repartitionSexe(getRepartitionSexe(sexe, anneeConsultation, ageMin, ageMax))
-                .moyenneAge(getMoyenneAge(sexe, anneeConsultation, ageMin, ageMax))
-                .decesLieDrogues(getDecesLieDrogues(sexe, anneeConsultation, ageMin, ageMax))
-                .modesAdministration(getModesAdministration(sexe, anneeConsultation, ageMin, ageMax))
-                .demandesTraitement(getDemandesTraitement(sexe, anneeConsultation, ageMin, ageMax))
-                .build();
+        return statistiquesServiceImpl.getStatistiquesNationales(
+                sexe, anneeConsultation, null, null, null, null, ageMin, ageMax
+        );
     }
 
     /**
@@ -231,7 +249,14 @@ public class StatistiquesService {
      * Récupère les années disponibles
      */
     public List<Integer> getAnneesDisponibles() {
-        return formulaireRepository.findDistinctYears();
+        return statistiquesServiceImpl.getAnneesDisponibles();
+    }
+
+    /**
+     * Récupère les gouvernorats disponibles
+     */
+    public List<String> getGouvernoratsDisponibles() {
+        return statistiquesServiceImpl.getGouvernoratsDisponibles();
     }
 
     /**

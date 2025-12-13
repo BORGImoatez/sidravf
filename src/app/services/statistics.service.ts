@@ -8,6 +8,10 @@ import {environment} from "../../environments/environment";
 interface FilterParams {
   sexe?: string;
   anneeConsultation?: number;
+  moisConsultation?: number;
+  dateDebut?: string;
+  dateFin?: string;
+  gouvernorat?: string;
   ageMin?: number;
   ageMax?: number;
 }
@@ -40,9 +44,9 @@ export class StatisticsService {
   constructor(private http: HttpClient) {}
 
   /**
-   * Récupère les statistiques générales avec filtres optionnels
+   * Récupère les statistiques nationales avec filtres complets
    */
-  getStatistiques(filters?: FilterParams): Observable<StatistiquesData> {
+  getStatistiquesNationales(filters?: FilterParams): Observable<StatistiquesData> {
     let params = new HttpParams();
 
     if (filters) {
@@ -52,6 +56,18 @@ export class StatisticsService {
       if (filters.anneeConsultation && filters.anneeConsultation > 0) {
         params = params.set('anneeConsultation', filters.anneeConsultation.toString());
       }
+      if (filters.moisConsultation && filters.moisConsultation > 0) {
+        params = params.set('moisConsultation', filters.moisConsultation.toString());
+      }
+      if (filters.dateDebut) {
+        params = params.set('dateDebut', filters.dateDebut);
+      }
+      if (filters.dateFin) {
+        params = params.set('dateFin', filters.dateFin);
+      }
+      if (filters.gouvernorat) {
+        params = params.set('gouvernorat', filters.gouvernorat);
+      }
       if (filters.ageMin !== undefined) {
         params = params.set('ageMin', filters.ageMin.toString());
       }
@@ -60,9 +76,51 @@ export class StatisticsService {
       }
     }
 
-    return this.http.get<any>(`${this.apiUrl}`, { params }).pipe(
+    return this.http.get<any>(`${this.apiUrl}/national`, { params }).pipe(
         map(data => this.transformStatistiques(data))
     );
+  }
+
+  /**
+   * Récupère les statistiques par structure pour l'utilisateur connecté
+   */
+  getStatistiquesStructure(filters?: FilterParams): Observable<StatistiquesData> {
+    let params = new HttpParams();
+
+    if (filters) {
+      if (filters.sexe && filters.sexe !== 'tous') {
+        params = params.set('sexe', filters.sexe.toUpperCase());
+      }
+      if (filters.anneeConsultation && filters.anneeConsultation > 0) {
+        params = params.set('anneeConsultation', filters.anneeConsultation.toString());
+      }
+      if (filters.moisConsultation && filters.moisConsultation > 0) {
+        params = params.set('moisConsultation', filters.moisConsultation.toString());
+      }
+      if (filters.dateDebut) {
+        params = params.set('dateDebut', filters.dateDebut);
+      }
+      if (filters.dateFin) {
+        params = params.set('dateFin', filters.dateFin);
+      }
+      if (filters.ageMin !== undefined) {
+        params = params.set('ageMin', filters.ageMin.toString());
+      }
+      if (filters.ageMax !== undefined) {
+        params = params.set('ageMax', filters.ageMax.toString());
+      }
+    }
+
+    return this.http.get<any>(`${this.apiUrl}/structure`, { params }).pipe(
+        map(data => this.transformStatistiques(data))
+    );
+  }
+
+  /**
+   * Récupère les statistiques générales avec filtres optionnels (ancienne version pour compatibilité)
+   */
+  getStatistiques(filters?: FilterParams): Observable<StatistiquesData> {
+    return this.getStatistiquesNationales(filters);
   }
 
   /**
@@ -97,6 +155,13 @@ export class StatisticsService {
    */
   getAnneesDisponibles(): Observable<number[]> {
     return this.http.get<number[]>(`${this.apiUrl}/annees`);
+  }
+
+  /**
+   * Récupère les gouvernorats disponibles pour le filtre
+   */
+  getGouvernoratsDisponibles(): Observable<string[]> {
+    return this.http.get<string[]>(`${this.apiUrl}/gouvernorats`);
   }
 
   /**

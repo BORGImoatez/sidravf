@@ -1,0 +1,329 @@
+<div class="dashboard-structure">
+  <div class="dashboard-header">
+    <h1>Tableau de Bord - Ma Structure</h1>
+    <button class="btn-export" (click)="exportData()">
+      Exporter les données
+    </button>
+  </div>
+
+  <div class="filters-section">
+    <h2>Filtres</h2>
+    <div class="filters-grid">
+      <div class="filter-group">
+        <label>Sexe</label>
+        <select [(ngModel)]="filters.sexe" (change)="onFilterChange()">
+          <option value="tous">Tous</option>
+          <option value="homme">Homme</option>
+          <option value="femme">Femme</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label>Année de consultation</label>
+        <select [(ngModel)]="filters.anneeConsultation" (change)="onFilterChange()">
+          <option [value]="0">Toutes</option>
+          <option *ngFor="let annee of anneesDisponibles" [value]="annee">{{ annee }}</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label>Mois de consultation</label>
+        <select [(ngModel)]="filters.moisConsultation" (change)="onFilterChange()">
+          <option *ngFor="let mois of moisOptions" [value]="mois.value">{{ mois.label }}</option>
+        </select>
+      </div>
+
+      <div class="filter-group full-width">
+        <label>
+          <input type="checkbox" [(ngModel)]="usePeriode" (change)="onFilterChange()">
+          Filtrer par période
+        </label>
+      </div>
+
+      <div class="filter-group" *ngIf="usePeriode">
+        <label>Date début</label>
+        <input type="date" [(ngModel)]="filters.dateDebut" (change)="onFilterChange()">
+      </div>
+
+      <div class="filter-group" *ngIf="usePeriode">
+        <label>Date fin</label>
+        <input type="date" [(ngModel)]="filters.dateFin" (change)="onFilterChange()">
+      </div>
+
+      <div class="filter-group">
+        <label>Âge minimum</label>
+        <input type="number" [(ngModel)]="filters.ageMin" (change)="onFilterChange()" min="0">
+      </div>
+
+      <div class="filter-group">
+        <label>Âge maximum</label>
+        <input type="number" [(ngModel)]="filters.ageMax" (change)="onFilterChange()" min="0">
+      </div>
+    </div>
+
+    <div class="tranches-age">
+      <h3>Filtres rapides par tranche d'âge</h3>
+      <div class="tranches-buttons">
+        <button *ngFor="let tranche of tranchesAge" (click)="selectTrancheAge(tranche)" class="btn-tranche">
+          {{ tranche.label }}
+        </button>
+      </div>
+    </div>
+
+    <div class="filter-actions">
+      <button class="btn-reset" (click)="resetFilters()">Réinitialiser les filtres</button>
+    </div>
+  </div>
+
+  <div class="loading" *ngIf="loading">
+    Chargement des statistiques...
+  </div>
+
+  <div class="error" *ngIf="error">
+    {{ error }}
+  </div>
+
+  <div class="statistics-content" *ngIf="statistiques && !loading">
+    <div class="stats-overview">
+      <div class="stat-card">
+        <h3>Total consultations</h3>
+        <p class="stat-value">{{ statistiques.totalConsultations || 0 }}</p>
+      </div>
+
+      <div class="stat-card">
+        <h3>Hommes</h3>
+        <p class="stat-value">{{ statistiques.repartitionSexe?.hommes || 0 }}</p>
+      </div>
+
+      <div class="stat-card">
+        <h3>Femmes</h3>
+        <p class="stat-value">{{ statistiques.repartitionSexe?.femmes || 0 }}</p>
+      </div>
+
+      <div class="stat-card">
+        <h3>Âge moyen</h3>
+        <p class="stat-value">{{ (statistiques.moyenneAge || 0).toFixed(1) }} ans</p>
+      </div>
+
+      <div class="stat-card">
+        <h3>Décès liés aux drogues</h3>
+        <p class="stat-value">{{ statistiques.decesLieDrogues || 0 }}</p>
+      </div>
+    </div>
+
+    <div class="stats-sections">
+      <section class="stats-section" *ngIf="statistiques.demandesTraitement">
+        <h2>Demandes de Traitement</h2>
+        <p><strong>Total:</strong> {{ statistiques.demandesTraitement.total || 0 }}</p>
+
+        <div class="stats-grid">
+          <div class="stats-item" *ngIf="statistiques.demandesTraitement.parAge?.length">
+            <h3>Par Âge</h3>
+            <ul>
+              <li *ngFor="let item of statistiques.demandesTraitement.parAge">
+                {{ item.tranche }}: {{ item.nombre }}
+              </li>
+            </ul>
+          </div>
+
+          <div class="stats-item" *ngIf="statistiques.demandesTraitement.parSexe?.length">
+            <h3>Par Sexe</h3>
+            <ul>
+              <li *ngFor="let item of statistiques.demandesTraitement.parSexe">
+                {{ item.sexe }}: {{ item.nombre }}
+              </li>
+            </ul>
+          </div>
+
+          <div class="stats-item" *ngIf="statistiques.demandesTraitement.parProfession?.length">
+            <h3>Par Profession</h3>
+            <ul>
+              <li *ngFor="let item of statistiques.demandesTraitement.parProfession">
+                {{ item.profession }}: {{ item.nombre }}
+              </li>
+            </ul>
+          </div>
+
+          <div class="stats-item" *ngIf="statistiques.demandesTraitement.parSubstance?.length">
+            <h3>Par Substance</h3>
+            <ul>
+              <li *ngFor="let item of statistiques.demandesTraitement.parSubstance">
+                {{ item.substance }}: {{ item.nombre }}
+              </li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section class="stats-section" *ngIf="statistiques.cse">
+        <h2>Caractéristiques Socio-Économiques</h2>
+        <div class="stats-grid">
+          <div class="stats-item" *ngIf="statistiques.cse.parSecteur?.length">
+            <h3>Par Secteur</h3>
+            <ul>
+              <li *ngFor="let item of statistiques.cse.parSecteur">
+                {{ item.secteur }}: {{ item.nombre }}
+              </li>
+            </ul>
+          </div>
+
+          <div class="stats-item" *ngIf="statistiques.cse.parNationalite?.length">
+            <h3>Par Nationalité</h3>
+            <ul>
+              <li *ngFor="let item of statistiques.cse.parNationalite">
+                {{ item.nationalite }}: {{ item.nombre }}
+              </li>
+            </ul>
+          </div>
+
+          <div class="stats-item" *ngIf="statistiques.cse.parNiveauScolaire?.length">
+            <h3>Par Niveau Scolaire</h3>
+            <ul>
+              <li *ngFor="let item of statistiques.cse.parNiveauScolaire">
+                {{ item.niveau }}: {{ item.nombre }}
+              </li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section class="stats-section" *ngIf="statistiques.tabac">
+        <h2>Consommation de Tabac</h2>
+        <div class="stat-cards-row">
+          <div class="stat-mini-card">
+            <span class="label">Fumeurs</span>
+            <span class="value">{{ statistiques.tabac.frequenceTabagiques || 0 }}</span>
+          </div>
+          <div class="stat-mini-card">
+            <span class="label">Âge moyen 1ère cigarette</span>
+            <span class="value">{{ (statistiques.tabac.moyenneAgePremiereCigarette || 0).toFixed(1) }} ans</span>
+          </div>
+          <div class="stat-mini-card">
+            <span class="label">Sevrage assisté</span>
+            <span class="value">{{ statistiques.tabac.frequenceSevrageAssiste || 0 }}</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="stats-section" *ngIf="statistiques.alcool">
+        <h2>Consommation d'Alcool</h2>
+        <div class="stat-cards-row">
+          <div class="stat-mini-card">
+            <span class="label">Consommateurs</span>
+            <span class="value">{{ statistiques.alcool.frequenceConsommateursAlcool || 0 }}</span>
+          </div>
+          <div class="stat-mini-card">
+            <span class="label">Âge moyen 1ère consommation</span>
+            <span class="value">{{ (statistiques.alcool.moyenneAgePremiereConsommation || 0).toFixed(1) }} ans</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="stats-section" *ngIf="statistiques.spaPersonnelle">
+        <h2>Consommation de Substances Psychoactives</h2>
+        <div class="stat-cards-row">
+          <div class="stat-mini-card">
+            <span class="label">Total demandes traitement</span>
+            <span class="value">{{ statistiques.spaPersonnelle.nombreTotalDemandesTraitement || 0 }}</span>
+          </div>
+          <div class="stat-mini-card">
+            <span class="label">Poly-consommation</span>
+            <span class="value">{{ statistiques.spaPersonnelle.frequencePolyConsommation || 0 }}</span>
+          </div>
+          <div class="stat-mini-card">
+            <span class="label">Accompagnement sevrage</span>
+            <span class="value">{{ statistiques.spaPersonnelle.frequenceAccompagnementSevrage || 0 }}</span>
+          </div>
+        </div>
+
+        <div class="stats-grid" *ngIf="statistiques.spaPersonnelle.topSpaConsommees?.length">
+          <div class="stats-item">
+            <h3>Substances les plus consommées</h3>
+            <ul>
+              <li *ngFor="let item of statistiques.spaPersonnelle.topSpaConsommees">
+                {{ item.type }}: {{ item.nombre }}
+              </li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section class="stats-section" *ngIf="statistiques.autresAddictions">
+        <h2>Autres Addictions</h2>
+        <div class="stat-cards-row">
+          <div class="stat-mini-card">
+            <span class="label">Jeux pathologiques</span>
+            <span class="value">{{ statistiques.autresAddictions.prevalenceAddictionJeuxPathologiques || 0 }}</span>
+          </div>
+          <div class="stat-mini-card">
+            <span class="label">Écrans</span>
+            <span class="value">{{ statistiques.autresAddictions.prevalenceAddictionEcrans || 0 }}</span>
+          </div>
+          <div class="stat-mini-card">
+            <span class="label">Comportements sexuels</span>
+            <span class="value">{{ statistiques.autresAddictions.prevalenceComportementsSexuelsAddictifs || 0 }}</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="stats-section" *ngIf="statistiques.comportementsEtTests">
+        <h2>Tests de Dépistage</h2>
+        <div class="stat-cards-row" *ngIf="statistiques.comportementsEtTests.testsDepistage">
+          <div class="stat-mini-card">
+            <span class="label">Tests VIH</span>
+            <span class="value">{{ statistiques.comportementsEtTests.testsDepistage.nombreTestsVih || 0 }}</span>
+          </div>
+          <div class="stat-mini-card">
+            <span class="label">Tests VHC</span>
+            <span class="value">{{ statistiques.comportementsEtTests.testsDepistage.nombreTestsVhc || 0 }}</span>
+          </div>
+          <div class="stat-mini-card">
+            <span class="label">Tests VHB</span>
+            <span class="value">{{ statistiques.comportementsEtTests.testsDepistage.nombreTestsVhb || 0 }}</span>
+          </div>
+          <div class="stat-mini-card">
+            <span class="label">Usagers atteints</span>
+            <span class="value">{{ statistiques.comportementsEtTests.testsDepistage.nombreUsagersAtteints || 0 }}</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="stats-section" *ngIf="statistiques.comorbidites">
+        <h2>Comorbidités</h2>
+        <div class="stat-cards-row">
+          <div class="stat-mini-card">
+            <span class="label">Troubles alimentaires</span>
+            <span class="value">{{ statistiques.comorbidites.frequenceTroublesAlimentaires || 0 }}</span>
+          </div>
+          <div class="stat-mini-card">
+            <span class="label">ATCD psychiatriques</span>
+            <span class="value">{{ statistiques.comorbidites.frequenceAtcdPsychiatriquesPersonnels || 0 }}</span>
+          </div>
+          <div class="stat-mini-card">
+            <span class="label">ATCD somatiques</span>
+            <span class="value">{{ statistiques.comorbidites.frequenceAtcdSomatiquesPersonnels || 0 }}</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="stats-section" *ngIf="statistiques.conduiteTherapeutique">
+        <h2>Conduite Thérapeutique</h2>
+        <div class="stat-cards-row">
+          <div class="stat-mini-card">
+            <span class="label">Nombre moyen de consultations</span>
+            <span class="value">{{ (statistiques.conduiteTherapeutique.moyenneNombreConsultations || 0).toFixed(1) }}</span>
+          </div>
+        </div>
+
+        <div class="stats-item" *ngIf="statistiques.conduiteTherapeutique.parModalitePriseEnCharge?.length">
+          <h3>Modalités de prise en charge</h3>
+          <ul>
+            <li *ngFor="let item of statistiques.conduiteTherapeutique.parModalitePriseEnCharge">
+              {{ item.modalite }}: {{ item.nombre }}
+            </li>
+          </ul>
+        </div>
+      </section>
+    </div>
+  </div>
+</div>
