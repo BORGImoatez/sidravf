@@ -111,6 +111,85 @@
       </div>
     </div>
 
+    <div class="charts-grid">
+      <div class="chart-card" *ngIf="sexeChartData">
+        <h3>Répartition par Sexe</h3>
+        <div class="chart-container">
+          <canvas baseChart
+                  [data]="sexeChartData"
+                  [type]="pieChartType"
+                  [options]="pieChartOptions">
+          </canvas>
+        </div>
+      </div>
+
+      <div class="chart-card" *ngIf="ageChartData">
+        <h3>Répartition par Âge</h3>
+        <div class="chart-container">
+          <canvas baseChart
+                  [data]="ageChartData"
+                  [type]="barChartType"
+                  [options]="barChartOptions">
+          </canvas>
+        </div>
+      </div>
+
+      <div class="chart-card" *ngIf="substancesChartData">
+        <h3>Substances Psychoactives les Plus Consommées</h3>
+        <div class="chart-container">
+          <canvas baseChart
+                  [data]="substancesChartData"
+                  [type]="barChartType"
+                  [options]="barChartOptions">
+          </canvas>
+        </div>
+      </div>
+
+      <div class="chart-card" *ngIf="professionChartData">
+        <h3>Répartition par Profession</h3>
+        <div class="chart-container">
+          <canvas baseChart
+                  [data]="professionChartData"
+                  [type]="pieChartType"
+                  [options]="pieChartOptions">
+          </canvas>
+        </div>
+      </div>
+
+      <div class="chart-card" *ngIf="modesAdministrationChartData">
+        <h3>Modes d'Administration</h3>
+        <div class="chart-container">
+          <canvas baseChart
+                  [data]="modesAdministrationChartData"
+                  [type]="pieChartType"
+                  [options]="pieChartOptions">
+          </canvas>
+        </div>
+      </div>
+
+      <div class="chart-card" *ngIf="testDepistageChartData">
+        <h3>Tests de Dépistage</h3>
+        <div class="chart-container">
+          <canvas baseChart
+                  [data]="testDepistageChartData"
+                  [type]="barChartType"
+                  [options]="barChartOptions">
+          </canvas>
+        </div>
+      </div>
+
+      <div class="chart-card" *ngIf="modalitesChartData">
+        <h3>Modalités de Prise en Charge</h3>
+        <div class="chart-container">
+          <canvas baseChart
+                  [data]="modalitesChartData"
+                  [type]="barChartType"
+                  [options]="barChartOptions">
+          </canvas>
+        </div>
+      </div>
+    </div>
+
     <div class="stats-sections">
       <section class="stats-section" *ngIf="statistiques.demandesTraitement">
         <h2>Demandes de Traitement</h2>

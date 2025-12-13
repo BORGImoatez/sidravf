@@ -264,3 +264,30 @@
   font-weight: bold;
   color: #2c3e50;
 }
+
+.charts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+  gap: 30px;
+  margin-bottom: 30px;
+}
+
+.chart-card {
+  background: white;
+  padding: 25px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.chart-card h3 {
+  color: #2c3e50;
+  font-size: 18px;
+  margin: 0 0 20px 0;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #e0e0e0;
+}
+
+.chart-container {
+  height: 350px;
+  position: relative;
+}
