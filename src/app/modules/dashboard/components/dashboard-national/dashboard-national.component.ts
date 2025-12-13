@@ -70,6 +70,16 @@ export class DashboardNationalComponent implements OnInit {
   public modesAdministrationChartData: ChartConfiguration<'pie'>['data'] | null = null;
   public testDepistageChartData: ChartConfiguration<'bar'>['data'] | null = null;
   public modalitesChartData: ChartConfiguration<'bar'>['data'] | null = null;
+  public secteurChartData: ChartConfiguration<'pie'>['data'] | null = null;
+  public nationaliteChartData: ChartConfiguration<'bar'>['data'] | null = null;
+  public niveauScolaireChartData: ChartConfiguration<'bar'>['data'] | null = null;
+  public typesAlcoolChartData: ChartConfiguration<'bar'>['data'] | null = null;
+  public spaEntourageChartData: ChartConfiguration<'bar'>['data'] | null = null;
+  public associationsSpaChartData: ChartConfiguration<'bar'>['data'] | null = null;
+  public substancesPrincipalesChartData: ChartConfiguration<'bar'>['data'] | null = null;
+  public autresAddictionsChartData: ChartConfiguration<'bar'>['data'] | null = null;
+  public testDepistageDetailChartData: ChartConfiguration<'bar'>['data'] | null = null;
+  public origineDemandeChartData: ChartConfiguration<'pie'>['data'] | null = null;
 
   anneesDisponibles: number[] = [];
   gouvernoratsDisponibles: string[] = [];
@@ -262,6 +272,154 @@ export class DashboardNationalComponent implements OnInit {
           data: this.statistiques.conduiteTherapeutique.parModalitePriseEnCharge.map((item: any) => item.nombre),
           backgroundColor: '#1abc9c',
           hoverBackgroundColor: '#16a085'
+        }]
+      };
+    }
+
+    // Chart secteur socio-économique
+    if (this.statistiques.cse?.parSecteur) {
+      this.secteurChartData = {
+        labels: this.statistiques.cse.parSecteur.map((item: any) => item.secteur),
+        datasets: [{
+          data: this.statistiques.cse.parSecteur.map((item: any) => item.nombre),
+          backgroundColor: ['#3498db', '#e74c3c', '#2ecc71', '#f39c12', '#9b59b6']
+        }]
+      };
+    }
+
+    // Chart nationalité
+    if (this.statistiques.cse?.parNationalite) {
+      this.nationaliteChartData = {
+        labels: this.statistiques.cse.parNationalite.map((item: any) => item.nationalite),
+        datasets: [{
+          label: 'Nombre de patients',
+          data: this.statistiques.cse.parNationalite.map((item: any) => item.nombre),
+          backgroundColor: '#16a085',
+          hoverBackgroundColor: '#138d75'
+        }]
+      };
+    }
+
+    // Chart niveau scolaire
+    if (this.statistiques.cse?.parNiveauScolaire) {
+      this.niveauScolaireChartData = {
+        labels: this.statistiques.cse.parNiveauScolaire.map((item: any) => item.niveau),
+        datasets: [{
+          label: 'Nombre de patients',
+          data: this.statistiques.cse.parNiveauScolaire.map((item: any) => item.nombre),
+          backgroundColor: '#8e44ad',
+          hoverBackgroundColor: '#7d3c98'
+        }]
+      };
+    }
+
+    // Chart types d'alcool consommés
+    if (this.statistiques.alcool?.typesAlcoolConsommes) {
+      this.typesAlcoolChartData = {
+        labels: this.statistiques.alcool.typesAlcoolConsommes.map((item: any) => item.type),
+        datasets: [{
+          label: 'Fréquence',
+          data: this.statistiques.alcool.typesAlcoolConsommes.map((item: any) => item.frequence),
+          backgroundColor: '#c0392b',
+          hoverBackgroundColor: '#a93226'
+        }]
+      };
+    }
+
+    // Chart SPA consommées par l'entourage
+    if (this.statistiques.spaEntourage?.typesConsommes) {
+      this.spaEntourageChartData = {
+        labels: this.statistiques.spaEntourage.typesConsommes.map((item: any) => item.type),
+        datasets: [{
+          label: 'Fréquence',
+          data: this.statistiques.spaEntourage.typesConsommes.map((item: any) => item.frequence),
+          backgroundColor: '#d68910',
+          hoverBackgroundColor: '#b9770e'
+        }]
+      };
+    }
+
+    // Chart associations de SPA
+    if (this.statistiques.spaPersonnelle?.associationsSpaFrequentes) {
+      this.associationsSpaChartData = {
+        labels: this.statistiques.spaPersonnelle.associationsSpaFrequentes.map((item: any) => item.association),
+        datasets: [{
+          label: 'Fréquence',
+          data: this.statistiques.spaPersonnelle.associationsSpaFrequentes.map((item: any) => item.frequence),
+          backgroundColor: '#28b463',
+          hoverBackgroundColor: '#239b56'
+        }]
+      };
+    }
+
+    // Chart substances principales
+    if (this.statistiques.spaPersonnelle?.substancesPrincipales) {
+      this.substancesPrincipalesChartData = {
+        labels: this.statistiques.spaPersonnelle.substancesPrincipales.map((item: any) => item.substance),
+        datasets: [{
+          label: 'Nombre',
+          data: this.statistiques.spaPersonnelle.substancesPrincipales.map((item: any) => item.nombre),
+          backgroundColor: '#2874a6',
+          hoverBackgroundColor: '#21618c'
+        }]
+      };
+    }
+
+    // Chart autres addictions
+    if (this.statistiques.autresAddictions) {
+      const addictions = this.statistiques.autresAddictions;
+      this.autresAddictionsChartData = {
+        labels: ['Jeux pathologiques', 'Écrans', 'Comportements sexuels'],
+        datasets: [{
+          label: 'Prévalence',
+          data: [
+            addictions.prevalenceAddictionJeuxPathologiques || 0,
+            addictions.prevalenceAddictionEcrans || 0,
+            addictions.prevalenceComportementsSexuelsAddictifs || 0
+          ],
+          backgroundColor: ['#cb4335', '#2874a6', '#1e8449'],
+          hoverBackgroundColor: ['#a93226', '#21618c', '#196f3d']
+        }]
+      };
+    }
+
+    // Chart tests de dépistage détaillés avec résultats
+    if (this.statistiques.comportementsEtTests?.testsDepistage) {
+      const tests = this.statistiques.comportementsEtTests.testsDepistage;
+      this.testDepistageDetailChartData = {
+        labels: ['Tests effectués', 'Usagers atteints'],
+        datasets: [
+          {
+            label: 'VIH',
+            data: [tests.nombreTestsVih || 0, 0],
+            backgroundColor: '#e74c3c'
+          },
+          {
+            label: 'VHC',
+            data: [tests.nombreTestsVhc || 0, 0],
+            backgroundColor: '#3498db'
+          },
+          {
+            label: 'VHB',
+            data: [tests.nombreTestsVhb || 0, 0],
+            backgroundColor: '#2ecc71'
+          },
+          {
+            label: 'Syphilis',
+            data: [tests.nombreTestsSyphilis || 0, 0],
+            backgroundColor: '#f39c12'
+          }
+        ]
+      };
+    }
+
+    // Chart origine des demandes
+    if (this.statistiques.demandesTraitement?.parOrigine) {
+      this.origineDemandeChartData = {
+        labels: this.statistiques.demandesTraitement.parOrigine.map((item: any) => item.origine),
+        datasets: [{
+          data: this.statistiques.demandesTraitement.parOrigine.map((item: any) => item.nombre),
+          backgroundColor: ['#e74c3c', '#3498db', '#2ecc71', '#f39c12', '#9b59b6', '#1abc9c']
         }]
       };
     }

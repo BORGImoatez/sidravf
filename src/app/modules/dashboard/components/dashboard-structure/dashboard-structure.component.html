@@ -188,6 +188,116 @@
           </canvas>
         </div>
       </div>
+
+      <div class="chart-card" *ngIf="secteurChartData">
+        <h3>Répartition par Secteur</h3>
+        <div class="chart-container">
+          <canvas baseChart
+                  [data]="secteurChartData"
+                  [type]="pieChartType"
+                  [options]="pieChartOptions">
+          </canvas>
+        </div>
+      </div>
+
+      <div class="chart-card" *ngIf="nationaliteChartData">
+        <h3>Répartition par Nationalité</h3>
+        <div class="chart-container">
+          <canvas baseChart
+                  [data]="nationaliteChartData"
+                  [type]="barChartType"
+                  [options]="barChartOptions">
+          </canvas>
+        </div>
+      </div>
+
+      <div class="chart-card" *ngIf="niveauScolaireChartData">
+        <h3>Répartition par Niveau Scolaire</h3>
+        <div class="chart-container">
+          <canvas baseChart
+                  [data]="niveauScolaireChartData"
+                  [type]="barChartType"
+                  [options]="barChartOptions">
+          </canvas>
+        </div>
+      </div>
+
+      <div class="chart-card" *ngIf="typesAlcoolChartData">
+        <h3>Types d'Alcool Consommés</h3>
+        <div class="chart-container">
+          <canvas baseChart
+                  [data]="typesAlcoolChartData"
+                  [type]="barChartType"
+                  [options]="barChartOptions">
+          </canvas>
+        </div>
+      </div>
+
+      <div class="chart-card" *ngIf="spaEntourageChartData">
+        <h3>SPA Consommées par l'Entourage</h3>
+        <div class="chart-container">
+          <canvas baseChart
+                  [data]="spaEntourageChartData"
+                  [type]="barChartType"
+                  [options]="barChartOptions">
+          </canvas>
+        </div>
+      </div>
+
+      <div class="chart-card" *ngIf="associationsSpaChartData">
+        <h3>Associations de SPA Fréquentes</h3>
+        <div class="chart-container">
+          <canvas baseChart
+                  [data]="associationsSpaChartData"
+                  [type]="barChartType"
+                  [options]="barChartOptions">
+          </canvas>
+        </div>
+      </div>
+
+      <div class="chart-card" *ngIf="substancesPrincipalesChartData">
+        <h3>Substances Principales</h3>
+        <div class="chart-container">
+          <canvas baseChart
+                  [data]="substancesPrincipalesChartData"
+                  [type]="barChartType"
+                  [options]="barChartOptions">
+          </canvas>
+        </div>
+      </div>
+
+      <div class="chart-card" *ngIf="autresAddictionsChartData">
+        <h3>Autres Addictions</h3>
+        <div class="chart-container">
+          <canvas baseChart
+                  [data]="autresAddictionsChartData"
+                  [type]="barChartType"
+                  [options]="barChartOptions">
+          </canvas>
+        </div>
+      </div>
+
+      <div class="chart-card" *ngIf="testDepistageDetailChartData">
+        <h3>Tests de Dépistage Détaillés</h3>
+        <div class="chart-container">
+          <canvas baseChart
+                  [data]="testDepistageDetailChartData"
+                  [type]="barChartType"
+                  [options]="barChartOptions">
+          </canvas>
+        </div>
+      </div>
+
+      <div class="chart-card" *ngIf="origineDemandeChartData">
+        <h3>Origine des Demandes</h3>
+        <div class="chart-container">
+          <canvas baseChart
+                  [data]="origineDemandeChartData"
+                  [type]="pieChartType"
+                  [options]="pieChartOptions">
+          </canvas>
+        </div>
+      </div>
     </div>
 
     <div class="stats-sections">
