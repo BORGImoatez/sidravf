@@ -103,7 +103,6 @@ export class DashboardStructureComponent implements OnInit {
   public substancesPrincipalesChartData: ChartConfiguration<'bar'>['data'] | null = null;
   public autresAddictionsChartData: ChartConfiguration<'bar'>['data'] | null = null;
   public testDepistageDetailChartData: ChartConfiguration<'bar'>['data'] | null = null;
-  public origineDemandeChartData: ChartConfiguration<'pie'>['data'] | null = null;
 
   constructor(private statisticsService: StatisticsService) {}
 
@@ -272,48 +271,48 @@ export class DashboardStructureComponent implements OnInit {
       };
     }
 
-    if (this.statistiques.alcool?.typesAlcoolConsommes) {
+    if (this.statistiques.alcool?.parTypeAlcool) {
       this.typesAlcoolChartData = {
-        labels: this.statistiques.alcool.typesAlcoolConsommes.map((item: any) => item.type),
+        labels: this.statistiques.alcool.parTypeAlcool.map((item: any) => item.type),
         datasets: [{
-          label: 'Fréquence',
-          data: this.statistiques.alcool.typesAlcoolConsommes.map((item: any) => item.frequence),
+          label: 'Nombre',
+          data: this.statistiques.alcool.parTypeAlcool.map((item: any) => item.nombre),
           backgroundColor: '#c0392b',
           hoverBackgroundColor: '#a93226'
         }]
       };
     }
 
-    if (this.statistiques.spaEntourage?.typesConsommes) {
+    if (this.statistiques.spaEntourage?.parTypeSpaEntourage) {
       this.spaEntourageChartData = {
-        labels: this.statistiques.spaEntourage.typesConsommes.map((item: any) => item.type),
+        labels: this.statistiques.spaEntourage.parTypeSpaEntourage.map((item: any) => item.type),
         datasets: [{
-          label: 'Fréquence',
-          data: this.statistiques.spaEntourage.typesConsommes.map((item: any) => item.frequence),
+          label: 'Nombre',
+          data: this.statistiques.spaEntourage.parTypeSpaEntourage.map((item: any) => item.nombre),
           backgroundColor: '#d68910',
           hoverBackgroundColor: '#b9770e'
         }]
       };
     }
 
-    if (this.statistiques.spaPersonnelle?.associationsSpaFrequentes) {
+    if (this.statistiques.spaPersonnelle?.associationsUsageFrequentes) {
       this.associationsSpaChartData = {
-        labels: this.statistiques.spaPersonnelle.associationsSpaFrequentes.map((item: any) => item.association),
+        labels: this.statistiques.spaPersonnelle.associationsUsageFrequentes.map((item: any) => item.association),
         datasets: [{
-          label: 'Fréquence',
-          data: this.statistiques.spaPersonnelle.associationsSpaFrequentes.map((item: any) => item.frequence),
+          label: 'Nombre',
+          data: this.statistiques.spaPersonnelle.associationsUsageFrequentes.map((item: any) => item.nombre),
           backgroundColor: '#28b463',
           hoverBackgroundColor: '#239b56'
         }]
       };
     }
 
-    if (this.statistiques.spaPersonnelle?.substancesPrincipales) {
+    if (this.statistiques.spaPersonnelle?.substancesPrincipalesPolyConsommateurs) {
       this.substancesPrincipalesChartData = {
-        labels: this.statistiques.spaPersonnelle.substancesPrincipales.map((item: any) => item.substance),
+        labels: this.statistiques.spaPersonnelle.substancesPrincipalesPolyConsommateurs.map((item: any) => item.type),
         datasets: [{
           label: 'Nombre',
-          data: this.statistiques.spaPersonnelle.substancesPrincipales.map((item: any) => item.nombre),
+          data: this.statistiques.spaPersonnelle.substancesPrincipalesPolyConsommateurs.map((item: any) => item.nombre),
           backgroundColor: '#2874a6',
           hoverBackgroundColor: '#21618c'
         }]
@@ -366,15 +365,6 @@ export class DashboardStructureComponent implements OnInit {
       };
     }
 
-    if (this.statistiques.demandesTraitement?.parOrigine) {
-      this.origineDemandeChartData = {
-        labels: this.statistiques.demandesTraitement.parOrigine.map((item: any) => item.origine),
-        datasets: [{
-          data: this.statistiques.demandesTraitement.parOrigine.map((item: any) => item.nombre),
-          backgroundColor: ['#e74c3c', '#3498db', '#2ecc71', '#f39c12', '#9b59b6', '#1abc9c']
-        }]
-      };
-    }
   }
 
   onFilterChange(): void {
