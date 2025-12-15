@@ -506,6 +506,7 @@ export class DashboardNationalComponent implements OnInit {
     this.marketStatisticsService.getStatistiquesNationales(dateDebut, dateFin, gouvernorat).subscribe({
       next: (data) => {
         this.statistiquesMarche = data;
+        console.log(this.statistiquesMarche);
         this.buildMarketCharts();
         console.log('Statistiques marché:', this.statistiquesMarche);
       },
@@ -930,6 +931,7 @@ export class DashboardNationalComponent implements OnInit {
     if (!this.statistiques?.comportementsEtTests) return;
 
     if (this.statistiques.comportementsEtTests.hospitalisations) {
+      alert("ss")
       const hosp = this.statistiques.comportementsEtTests.hospitalisations;
       this.hospitalisationsChartData = {
         labels: ['Usage drogues', 'Overdose', 'Endocardite', 'Total'],
@@ -966,9 +968,10 @@ export class DashboardNationalComponent implements OnInit {
   buildMarketCharts(): void {
     if (!this.statistiquesMarche) return;
 
+    // Substances Saisies
     if (this.statistiquesMarche.substancesSaisies) {
       this.substancesSaisiesChartData = {
-        labels: this.statistiquesMarche.substancesSaisies.map((item: any) => item.nomSubstance),
+        labels: this.statistiquesMarche.substancesSaisies.map((item: any) => item.substance),
         datasets: [{
           label: 'Quantité saisie',
           data: this.statistiquesMarche.substancesSaisies.map((item: any) => item.quantiteTotale),
@@ -979,6 +982,7 @@ export class DashboardNationalComponent implements OnInit {
       };
     }
 
+    // Saisies par Région
     if (this.statistiquesMarche.saisiesParRegion) {
       const regionsMap = new Map<string, number>();
       this.statistiquesMarche.saisiesParRegion.forEach((item: any) => {
@@ -986,8 +990,8 @@ export class DashboardNationalComponent implements OnInit {
         regionsMap.set(item.region, current + item.quantite);
       });
       const top10Regions = Array.from(regionsMap.entries())
-        .sort((a, b) => b[1] - a[1])
-        .slice(0, 10);
+          .sort((a, b) => b[1] - a[1])
+          .slice(0, 10);
 
       this.saisiesParRegionChartData = {
         labels: top10Regions.map(item => item[0]),
@@ -1001,9 +1005,10 @@ export class DashboardNationalComponent implements OnInit {
       };
     }
 
+    // Nouvelles Substances
     if (this.statistiquesMarche.nouvellesSubstances && this.statistiquesMarche.nouvellesSubstances.length > 0) {
       this.nouvellesSubstancesChartData = {
-        labels: this.statistiquesMarche.nouvellesSubstances.map((item: any) => item.nomSubstance),
+        labels: this.statistiquesMarche.nouvellesSubstances.map((item: any) => item.substance),
         datasets: [{
           label: 'Nombre de saisies',
           data: this.statistiquesMarche.nouvellesSubstances.map((item: any) => item.nombreSaisies),
@@ -1014,6 +1019,7 @@ export class DashboardNationalComponent implements OnInit {
       };
     }
 
+    // Évolution des Prix
     if (this.statistiquesMarche.evolutionPrix && this.statistiquesMarche.evolutionPrix.length > 0) {
       const substancesMap = new Map<string, any[]>();
       this.statistiquesMarche.evolutionPrix.forEach((item: any) => {
@@ -1042,6 +1048,7 @@ export class DashboardNationalComponent implements OnInit {
       };
     }
 
+    // Comparaison Saisie vs Consommation
     if (this.statistiquesMarche.comparaisonSaisieConsommation && this.statistiquesMarche.comparaisonSaisieConsommation.length > 0) {
       const substances = this.statistiquesMarche.comparaisonSaisieConsommation.map((item: any) => item.substance);
       const saisies = this.statistiquesMarche.comparaisonSaisieConsommation.map((item: any) => item.quantiteSaisie);
@@ -1068,16 +1075,15 @@ export class DashboardNationalComponent implements OnInit {
       };
     }
 
+    // Arrestations
     if (this.statistiquesMarche.arrestations) {
       const arr = this.statistiquesMarche.arrestations;
-      if (arr.arrestationsParType) {
-        const types = Object.keys(arr.arrestationsParType);
-        const values = Object.values(arr.arrestationsParType);
+      if (arr.parType) {
         this.arrestationsChartData = {
-          labels: types,
+          labels: arr.parType.map((item: any) => item.type),
           datasets: [{
             label: 'Nombre d\'arrestations',
-            data: values as number[],
+            data: arr.parType.map((item: any) => item.nombre),
             backgroundColor: this.colorPalettes.gradient,
             borderRadius: 8,
             borderSkipped: false
@@ -1086,15 +1092,14 @@ export class DashboardNationalComponent implements OnInit {
       }
     }
 
+    // Profil des Inculpés
     if (this.statistiquesMarche.profilInculpes) {
       const profil = this.statistiquesMarche.profilInculpes;
-      if (profil.repartitionGenre) {
-        const genres = Object.keys(profil.repartitionGenre);
-        const values = Object.values(profil.repartitionGenre);
+      if (profil.genre) {
         this.profilInculpesChartData = {
-          labels: genres,
+          labels: ['Masculin', 'Féminin'],
           datasets: [{
-            data: values as number[],
+            data: [profil.genre.masculin || 0, profil.genre.feminin || 0],
             backgroundColor: this.colorPalettes.primary,
             borderWidth: 0
           }]

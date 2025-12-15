@@ -1000,21 +1000,7 @@
                 </div>
             </div>
 
-            <div class="chart-card wide" *ngIf="evolutionPrixChartData">
-                <div class="chart-header">
-                    <h3>
-                        <span class="chart-icon">💰</span>
-                        Évolution des Prix des Substances
-                    </h3>
-                </div>
-                <div class="chart-body">
-                    <canvas baseChart
-                            [data]="evolutionPrixChartData"
-                            [type]="lineChartType"
-                            [options]="lineChartOptions">
-                    </canvas>
-                </div>
-            </div>
+
 
             <div class="chart-card" *ngIf="arrestationsChartData">
                 <div class="chart-header">
