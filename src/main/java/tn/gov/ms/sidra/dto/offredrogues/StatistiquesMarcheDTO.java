@@ -21,6 +21,7 @@ public class StatistiquesMarcheDTO {
     private ArrestationsDto arrestations;
     private ProfilSocioDemographiqueDto profilInculpes;
     private List<ComparaisonSaisieConsommationDto> comparaisonSaisieConsommation;
+    private List<EvolutionAnnuelleSubstanceDto> evolutionAnnuelleSubstances;
 
     @Data
     @Builder
@@ -174,5 +175,16 @@ public class StatistiquesMarcheDTO {
         private Double quantiteSaisie;
         private Long nombreConsommateurs;
         private String tendance;
+    }
+
+    @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class EvolutionAnnuelleSubstanceDto {
+        private Integer annee;
+        private String substance;
+        private Double quantiteTotale;
+        private Long nombreSaisies;
     }
 }

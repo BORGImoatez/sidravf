@@ -45,6 +45,7 @@ public class OffreDroguesStatistiquesService {
                 .arrestations(getArrestations(offres))
                 .profilInculpes(getProfilSocioDemographique(offres))
                 .comparaisonSaisieConsommation(getComparaisonSaisieConsommation(offres, formulaires))
+                .evolutionAnnuelleSubstances(getEvolutionAnnuelleSubstances(offres))
                 .build();
     }
 
@@ -79,6 +80,7 @@ public class OffreDroguesStatistiquesService {
                 .arrestations(getArrestations(offres))
                 .profilInculpes(getProfilSocioDemographique(offres))
                 .comparaisonSaisieConsommation(getComparaisonSaisieConsommation(offres, formulaires))
+                .evolutionAnnuelleSubstances(getEvolutionAnnuelleSubstances(offres))
                 .build();
     }
 
@@ -648,5 +650,62 @@ public class OffreDroguesStatistiquesService {
                         b.getQuantiteSaisie() + b.getNombreConsommateurs(),
                         a.getQuantiteSaisie() + a.getNombreConsommateurs()))
                 .collect(Collectors.toList());
+    }
+
+    private List<StatistiquesMarcheDTO.EvolutionAnnuelleSubstanceDto> getEvolutionAnnuelleSubstances(List<OffreDrogues> offres) {
+        Map<String, Map<Integer, EvolutionData>> evolutionMap = new HashMap<>();
+
+        for (OffreDrogues offre : offres) {
+            Integer annee = offre.getDateSaisie().getYear();
+
+            ajouterEvolution(evolutionMap, "Cannabis", annee, offre.getCannabis());
+            ajouterEvolution(evolutionMap, "Comprimés Tableau A", annee,
+                    offre.getComprimesTableauA() != null ? offre.getComprimesTableauA().doubleValue() : null);
+            ajouterEvolution(evolutionMap, "Ecstasy (comprimé)", annee,
+                    offre.getEcstasyComprime() != null ? offre.getEcstasyComprime().doubleValue() : null);
+            ajouterEvolution(evolutionMap, "Ecstasy (poudre)", annee, offre.getEcstasyPoudre());
+            ajouterEvolution(evolutionMap, "Subutex", annee,
+                    offre.getSubutex() != null ? offre.getSubutex().doubleValue() : null);
+            ajouterEvolution(evolutionMap, "Cocaïne", annee, offre.getCocaine());
+            ajouterEvolution(evolutionMap, "Héroïne", annee, offre.getHeroine());
+        }
+
+        List<StatistiquesMarcheDTO.EvolutionAnnuelleSubstanceDto> result = new ArrayList<>();
+        for (Map.Entry<String, Map<Integer, EvolutionData>> substanceEntry : evolutionMap.entrySet()) {
+            String substance = substanceEntry.getKey();
+            for (Map.Entry<Integer, EvolutionData> anneeEntry : substanceEntry.getValue().entrySet()) {
+                Integer annee = anneeEntry.getKey();
+                EvolutionData data = anneeEntry.getValue();
+                result.add(StatistiquesMarcheDTO.EvolutionAnnuelleSubstanceDto.builder()
+                        .annee(annee)
+                        .substance(substance)
+                        .quantiteTotale(data.quantiteTotale)
+                        .nombreSaisies(data.nombreSaisies)
+                        .build());
+            }
+        }
+
+        return result.stream()
+                .sorted((a, b) -> {
+                    int anneeCompare = Integer.compare(a.getAnnee(), b.getAnnee());
+                    if (anneeCompare != 0) return anneeCompare;
+                    return a.getSubstance().compareTo(b.getSubstance());
+                })
+                .collect(Collectors.toList());
+    }
+
+    private void ajouterEvolution(Map<String, Map<Integer, EvolutionData>> map, String substance,
+                                   Integer annee, Double quantite) {
+        if (quantite != null && quantite > 0) {
+            Map<Integer, EvolutionData> annees = map.computeIfAbsent(substance, k -> new HashMap<>());
+            EvolutionData data = annees.computeIfAbsent(annee, k -> new EvolutionData());
+            data.quantiteTotale += quantite;
+            data.nombreSaisies++;
+        }
+    }
+
+    private static class EvolutionData {
+        double quantiteTotale = 0;
+        long nombreSaisies = 0;
     }
 }

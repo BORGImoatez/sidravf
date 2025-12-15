@@ -216,6 +216,7 @@ export class DashboardStructureComponent implements OnInit {
   public comparaisonSaisieConsommationChartData: ChartConfiguration<'bar'>['data'] | null = null;
   public hospitalisationsChartData: ChartConfiguration<'bar'>['data'] | null = null;
   public echangeSeringuesChartData: ChartConfiguration<'doughnut'>['data'] | null = null;
+  public evolutionAnnuelleSubstancesChartData: ChartConfiguration<'line'>['data'] | null = null;
 
 // 2. Ajoutez ces méthodes dans buildCharts()
   private buildMissingCharts(): void {
@@ -1107,6 +1108,41 @@ export class DashboardStructureComponent implements OnInit {
           }]
         };
       }
+    }
+
+    // Évolution Annuelle des Substances Saisies
+    if (this.statistiquesMarche.evolutionAnnuelleSubstances && this.statistiquesMarche.evolutionAnnuelleSubstances.length > 0) {
+      const substancesMap = new Map<string, any[]>();
+      this.statistiquesMarche.evolutionAnnuelleSubstances.forEach((item: any) => {
+        if (!substancesMap.has(item.substance)) {
+          substancesMap.set(item.substance, []);
+        }
+        substancesMap.get(item.substance)!.push(item);
+      });
+
+      const anneesSet = Array.from(new Set(this.statistiquesMarche.evolutionAnnuelleSubstances.map((item: any) => item.annee as number)));
+      const annees = (anneesSet as number[]).sort((a, b) => a - b);
+
+      const datasets = Array.from(substancesMap.entries()).map(([substance, data], index) => ({
+        label: substance,
+        data: annees.map(annee => {
+          const found = data.find((item: any) => item.annee === annee);
+          return found ? found.quantiteTotale : 0;
+        }),
+        borderColor: this.colorPalettes.multi[index % this.colorPalettes.multi.length],
+        backgroundColor: `${this.colorPalettes.multi[index % this.colorPalettes.multi.length]}33`,
+        fill: false,
+        tension: 0.4,
+        pointBackgroundColor: this.colorPalettes.multi[index % this.colorPalettes.multi.length],
+        pointBorderColor: '#fff',
+        pointBorderWidth: 2,
+        pointRadius: 5
+      }));
+
+      this.evolutionAnnuelleSubstancesChartData = {
+        labels: annees.map(a => a.toString()),
+        datasets: datasets
+      };
     }
   }
 }

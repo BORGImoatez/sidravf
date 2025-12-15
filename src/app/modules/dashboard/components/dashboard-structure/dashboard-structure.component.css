@@ -514,6 +514,13 @@
   color: #64748b;
 }
 
+.kpi-value .percentage {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #64748b;
+  margin-left: 0.5rem;
+}
+
 /* ========== Stats Detail Section ========== */
 .stats-detail-section {
   margin: 3rem 0 2rem;

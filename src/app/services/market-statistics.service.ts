@@ -50,6 +50,13 @@ export interface ComparaisonSaisieConsommationDto {
   tendance: string;
 }
 
+export interface EvolutionAnnuelleSubstanceDto {
+  annee: number;
+  substance: string;
+  quantiteTotale: number;
+  nombreSaisies: number;
+}
+
 export interface StatistiquesMarcheDTO {
   totalSaisies: number;
   substancesSaisies: SubstanceSaisieDto[];
@@ -59,6 +66,7 @@ export interface StatistiquesMarcheDTO {
   arrestations: ArrestationsDto;
   profilInculpes: ProfilSocioDemographiqueDto;
   comparaisonSaisieConsommation: ComparaisonSaisieConsommationDto[];
+  evolutionAnnuelleSubstances: EvolutionAnnuelleSubstanceDto[];
 }
 
 export interface EchangeSeringuesONG {

@@ -193,7 +193,12 @@
                 </div>
                 <div class="kpi-content">
                     <div class="kpi-label">Hommes</div>
-                    <div class="kpi-value">{{ statistiques.repartitionSexe?.hommes || 0 | number }}</div>
+                    <div class="kpi-value">
+                        {{ statistiques.repartitionSexe?.hommes || 0 | number }}
+                        <span class="percentage" *ngIf="statistiques.totalConsultations && statistiques.totalConsultations > 0">
+                            ({{ ((statistiques.repartitionSexe?.hommes || 0) / statistiques.totalConsultations * 100).toFixed(1) }}%)
+                        </span>
+                    </div>
                 </div>
             </div>
 
@@ -205,7 +210,12 @@
                 </div>
                 <div class="kpi-content">
                     <div class="kpi-label">Femmes</div>
-                    <div class="kpi-value">{{ statistiques.repartitionSexe?.femmes || 0 | number }}</div>
+                    <div class="kpi-value">
+                        {{ statistiques.repartitionSexe?.femmes || 0 | number }}
+                        <span class="percentage" *ngIf="statistiques.totalConsultations && statistiques.totalConsultations > 0">
+                            ({{ ((statistiques.repartitionSexe?.femmes || 0) / statistiques.totalConsultations * 100).toFixed(1) }}%)
+                        </span>
+                    </div>
                 </div>
             </div>
 
@@ -242,7 +252,12 @@
                 </div>
                 <div class="kpi-content">
                     <div class="kpi-label">Consommateurs tabac</div>
-                    <div class="kpi-value">{{ statistiques.tabac?.frequenceTabagiques || 0 | number }}</div>
+                    <div class="kpi-value">
+                        {{ statistiques.tabac?.frequenceTabagiques || 0 | number }}
+                        <span class="percentage" *ngIf="statistiques.totalConsultations && statistiques.totalConsultations > 0">
+                            ({{ ((statistiques.tabac?.frequenceTabagiques || 0) / statistiques.totalConsultations * 100).toFixed(1) }}%)
+                        </span>
+                    </div>
                 </div>
             </div>
 
@@ -1178,6 +1193,22 @@
                             [data]="nouvellesSubstancesChartData"
                             [type]="barChartType"
                             [options]="barChartOptions">
+                    </canvas>
+                </div>
+            </div>
+
+            <div class="chart-card wide" *ngIf="evolutionAnnuelleSubstancesChartData">
+                <div class="chart-header">
+                    <h3>
+                        <span class="chart-icon">📈</span>
+                        Évolution Annuelle des Saisies par Substance
+                    </h3>
+                </div>
+                <div class="chart-body">
+                    <canvas baseChart
+                            [data]="evolutionAnnuelleSubstancesChartData"
+                            [type]="lineChartType"
+                            [options]="lineChartOptions">
                     </canvas>
                 </div>
             </div>
