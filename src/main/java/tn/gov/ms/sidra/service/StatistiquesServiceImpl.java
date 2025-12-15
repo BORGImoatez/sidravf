@@ -880,6 +880,17 @@ public class StatistiquesServiceImpl {
     private StatistiquesDTO.ComportementsEtTests getComportementsEtTests(List<Formulaire> formulaires) {
         List<StatistiquesDTO.ParVoieAdministration> voies = getDistributionVoieAdministration(formulaires);
 
+        long usagersInjecteurs = formulaires.stream()
+                .filter(f -> f.getVoieAdministration() != null &&
+                           Boolean.TRUE.equals(f.getVoieAdministration().getInjectee()))
+                .count();
+
+        long usagersInjecteursAvecEchange = formulaires.stream()
+                .filter(f -> f.getVoieAdministration() != null &&
+                           Boolean.TRUE.equals(f.getVoieAdministration().getInjectee()) &&
+                           Boolean.TRUE.equals(f.getEchangeSeringues()))
+                .count();
+
         return StatistiquesDTO.ComportementsEtTests.builder()
                 .parVoieAdministration(voies)
                 .voiesAdministrationPlusFrequentes(voies.stream()
@@ -888,6 +899,10 @@ public class StatistiquesServiceImpl {
                 .frequencePartageSeringues(formulaires.stream()
                         .filter(f -> "OUI".equalsIgnoreCase(f.getPartageSeringues()))
                         .count())
+                .proportionEchangeSeringues(usagersInjecteurs > 0 ?
+                        (usagersInjecteursAvecEchange * 100 / usagersInjecteurs) : 0L)
+                .echangeSeringuesParONG(getEchangeSeringuesParONG(formulaires))
+                .hospitalisations(getHospitalisations(formulaires))
                 .testsDepistage(getTestsDepistage(formulaires))
                 .build();
     }
@@ -915,6 +930,73 @@ public class StatistiquesServiceImpl {
                 .sorted(Comparator.comparing(StatistiquesDTO.ParVoieAdministration::getNombre).reversed())
                 .collect(Collectors.toList());
     }
+
+    private List<StatistiquesDTO.EchangeSeringuesONG> getEchangeSeringuesParONG(List<Formulaire> formulaires) {
+        Map<String, Long> ongMap = new HashMap<>();
+
+        for (Formulaire f : formulaires) {
+            if (Boolean.TRUE.equals(f.getEchangeSeringues()) &&
+                f.getEchangeSeringuesOng() != null && !f.getEchangeSeringuesOng().trim().isEmpty()) {
+                ongMap.merge(f.getEchangeSeringuesOng(), 1L, Long::sum);
+            }
+        }
+
+        return ongMap.entrySet().stream()
+                .map(e -> StatistiquesDTO.EchangeSeringuesONG.builder()
+                        .ong(e.getKey())
+                        .nombre(e.getValue())
+                        .build())
+                .sorted(Comparator.comparing(StatistiquesDTO.EchangeSeringuesONG::getNombre).reversed())
+                .collect(Collectors.toList());
+    }
+
+    private StatistiquesDTO.Hospitalisations getHospitalisations(List<Formulaire> formulaires) {
+        long hospitalisationsUsageDrogues = formulaires.stream()
+                .filter(f -> Boolean.TRUE.equals(f.getHospitalisationUsageDrogues()))
+                .count();
+
+        long hospitalisationsOverdose = formulaires.stream()
+                .filter(f -> Boolean.TRUE.equals(f.getHospitalisationOverdose()))
+                .count();
+
+        long hospitalisationsEndocardite = formulaires.stream()
+                .filter(f -> Boolean.TRUE.equals(f.getHospitalisationEndocardite()))
+                .count();
+
+        long nombreTotalHospitalisations = formulaires.stream()
+                .filter(f -> f.getNombreHospitalisations() != null && f.getNombreHospitalisations() > 0)
+                .mapToLong(f -> f.getNombreHospitalisations())
+                .sum();
+
+        List<StatistiquesDTO.TypeHospitalisation> parType = new ArrayList<>();
+        if (hospitalisationsOverdose > 0) {
+            parType.add(StatistiquesDTO.TypeHospitalisation.builder()
+                    .type("Overdose")
+                    .nombre(hospitalisationsOverdose)
+                    .build());
+        }
+        if (hospitalisationsEndocardite > 0) {
+            parType.add(StatistiquesDTO.TypeHospitalisation.builder()
+                    .type("Endocardite")
+                    .nombre(hospitalisationsEndocardite)
+                    .build());
+        }
+        if (hospitalisationsUsageDrogues > 0) {
+            parType.add(StatistiquesDTO.TypeHospitalisation.builder()
+                    .type("Autres complications liées aux drogues")
+                    .nombre(hospitalisationsUsageDrogues - hospitalisationsOverdose - hospitalisationsEndocardite)
+                    .build());
+        }
+
+        return StatistiquesDTO.Hospitalisations.builder()
+                .nombreHospitalisationsUsageDrogues(hospitalisationsUsageDrogues)
+                .nombreHospitalisationsOverdose(hospitalisationsOverdose)
+                .nombreHospitalisationsEndocardite(hospitalisationsEndocardite)
+                .nombreTotalHospitalisations(nombreTotalHospitalisations)
+                .parType(parType)
+                .build();
+    }
+
     private StatistiquesDTO.TestsDepistage getTestsDepistage(List<Formulaire> formulaires) {
 
         long testsVih = 0;

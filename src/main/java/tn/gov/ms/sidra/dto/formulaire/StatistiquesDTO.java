@@ -356,6 +356,9 @@ public class StatistiquesDTO {
         private List<ParVoieAdministration> parVoieAdministration;
         private List<ParVoieAdministration> voiesAdministrationPlusFrequentes;
         private Long frequencePartageSeringues;
+        private Long proportionEchangeSeringues;
+        private List<EchangeSeringuesONG> echangeSeringuesParONG;
+        private Hospitalisations hospitalisations;
         private TestsDepistage testsDepistage;
     }
 
@@ -365,6 +368,36 @@ public class StatistiquesDTO {
     @AllArgsConstructor
     public static class ParVoieAdministration {
         private String voie;
+        private Long nombre;
+    }
+
+    @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class EchangeSeringuesONG {
+        private String ong;
+        private Long nombre;
+    }
+
+    @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class Hospitalisations {
+        private Long nombreHospitalisationsUsageDrogues;
+        private Long nombreHospitalisationsOverdose;
+        private Long nombreHospitalisationsEndocardite;
+        private Long nombreTotalHospitalisations;
+        private List<TypeHospitalisation> parType;
+    }
+
+    @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class TypeHospitalisation {
+        private String type;
         private Long nombre;
     }
 

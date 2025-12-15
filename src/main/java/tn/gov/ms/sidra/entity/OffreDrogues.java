@@ -40,23 +40,65 @@ public class OffreDrogues {
     @Column(name = "cannabis")
     private Double cannabis;
 
+    @Column(name = "cannabis_prix_kg")
+    private Double cannabisPrixKg;
+
+    @Column(name = "cannabis_nouvelle_substance")
+    private Boolean cannabisNouvelleSubstance;
+
     @Column(name = "comprimes_tableau_a")
     private Integer comprimesTableauA;
+
+    @Column(name = "comprimes_tableau_a_prix_unite")
+    private Double comprimesTableauAPrixUnite;
+
+    @Column(name = "comprimes_tableau_a_nouvelle_substance")
+    private Boolean comprimesTableauANouvelleSubstance;
 
     @Column(name = "ecstasy_comprime")
     private Integer ecstasyComprime;
 
+    @Column(name = "ecstasy_comprime_prix_unite")
+    private Double ecstasyComprimePrixUnite;
+
+    @Column(name = "ecstasy_comprime_nouvelle_substance")
+    private Boolean ecstasyComprimeNouvelleSubstance;
+
     @Column(name = "ecstasy_poudre")
     private Double ecstasyPoudre;
+
+    @Column(name = "ecstasy_poudre_prix_kg")
+    private Double ecstasyPoudrePrixKg;
+
+    @Column(name = "ecstasy_poudre_nouvelle_substance")
+    private Boolean ecstasyPoudreNouvelleSubstance;
 
     @Column(name = "subutex")
     private Integer subutex;
 
+    @Column(name = "subutex_prix_unite")
+    private Double subutexPrixUnite;
+
+    @Column(name = "subutex_nouvelle_substance")
+    private Boolean subutexNouvelleSubstance;
+
     @Column(name = "cocaine")
     private Double cocaine;
 
+    @Column(name = "cocaine_prix_kg")
+    private Double cocainePrixKg;
+
+    @Column(name = "cocaine_nouvelle_substance")
+    private Boolean cocaineNouvelleSubstance;
+
     @Column(name = "heroine")
     private Double heroine;
+
+    @Column(name = "heroine_prix_kg")
+    private Double heroinePrixKg;
+
+    @Column(name = "heroine_nouvelle_substance")
+    private Boolean heroineNouvelleSubstance;
 
     // Personnes inculpées - Consommateur
     @Column(name = "consommateur_nombre")

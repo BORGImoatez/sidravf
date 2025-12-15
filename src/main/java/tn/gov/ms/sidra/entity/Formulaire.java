@@ -248,6 +248,12 @@ public class Formulaire {
  @Column(name = "accompagnement_sevrage_non_raison")
  private String accompagnementSevrageNonRaison;
 
+ @Column(name = "echange_seringues")
+ private Boolean echangeSeringues;
+
+ @Column(name = "echange_seringues_ong")
+ private String echangeSeringuesOng;
+
  @Column(name = "tentative_sevrage")
  private Boolean tentativeSevrage;
 
@@ -291,12 +297,27 @@ public class Formulaire {
  @Column(name = "duree_detention_annees")
  private Integer dureeDetentionAnnees;
 
- // Partie 6: Décès induit par les SPA dans l'entourage
+ // Partie 6: Décès induit par les SPA dans l'entourage et hospitalisations
  @Column(name = "nombre_deces_spa_entourage")
  private Integer nombreDecesSpaDansEntourage;
 
  @Column(name = "causes_deces_spa_entourage")
  private String causesDecesSpaDansEntourage;
+
+ @Column(name = "hospitalisation_usage_drogues")
+ private Boolean hospitalisationUsageDrogues;
+
+ @Column(name = "hospitalisation_overdose")
+ private Boolean hospitalisationOverdose;
+
+ @Column(name = "hospitalisation_endocardite")
+ private Boolean hospitalisationEndocardite;
+
+ @Column(name = "hospitalisation_autres_complications")
+ private String hospitalisationAutresComplications;
+
+ @Column(name = "nombre_hospitalisations")
+ private Integer nombreHospitalisations;
 
  // Partie 7: Conduite à tenir thérapeutique
  @Column(name = "prise_en_charge_medicale")
