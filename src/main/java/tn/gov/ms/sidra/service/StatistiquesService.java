@@ -40,11 +40,11 @@ public class StatistiquesService {
     public StatistiquesDTO getStatistiquesStructure(
             Long structureId, String sexe, Integer anneeConsultation,
             Integer moisConsultation, LocalDate dateDebut, LocalDate dateFin,
-            Integer ageMin, Integer ageMax
+            Integer ageMin, Integer ageMax, Long userId
     ) {
         return statistiquesServiceImpl.getStatistiquesStructure(
                 structureId, sexe, anneeConsultation, moisConsultation,
-                dateDebut, dateFin, ageMin, ageMax
+                dateDebut, dateFin, ageMin, ageMax, userId
         );
     }
 

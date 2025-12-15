@@ -15,6 +15,7 @@ export interface FilterParams {
   gouvernorat?: string;
   ageMin?: number;
   ageMax?: number;
+  mesDonneesUniquement?: boolean;
 }
 
 export interface StatistiquesData {
@@ -190,6 +191,9 @@ export class StatisticsService {
       }
       if (filters.ageMax !== undefined) {
         params = params.set('ageMax', filters.ageMax.toString());
+      }
+      if (filters.mesDonneesUniquement !== undefined) {
+        params = params.set('mesDonneesUniquement', filters.mesDonneesUniquement.toString());
       }
     }
 

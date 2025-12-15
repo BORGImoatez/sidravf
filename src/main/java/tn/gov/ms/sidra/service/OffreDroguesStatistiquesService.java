@@ -33,7 +33,7 @@ public class OffreDroguesStatistiquesService {
         log.info("Récupération des statistiques du marché - période: {} - {}, gouvernorat: {}",
                  dateDebut, dateFin, gouvernorat);
 
-        List<OffreDrogues> offres = getOffresWithFilters(dateDebut, dateFin, gouvernorat, null);
+        List<OffreDrogues> offres = getOffresWithFilters(dateDebut, dateFin, gouvernorat, null, null);
         List<Formulaire> formulaires = getFormulairesWithFilters(dateDebut, dateFin, gouvernorat);
 
         return StatistiquesMarcheDTO.builder()
@@ -50,17 +50,23 @@ public class OffreDroguesStatistiquesService {
 
     @Transactional(readOnly = true)
     public StatistiquesMarcheDTO getStatistiquesStructure(
-            Long structureId, LocalDate dateDebut, LocalDate dateFin) {
+            Long structureId, LocalDate dateDebut, LocalDate dateFin, Long userId) {
 
-        log.info("Récupération des statistiques du marché pour structure: {}", structureId);
+        log.info("Récupération des statistiques du marché pour structure: {}, userId: {}", structureId, userId);
 
-        List<OffreDrogues> offres = getOffresWithFilters(dateDebut, dateFin, null, structureId);
+        List<OffreDrogues> offres = getOffresWithFilters(dateDebut, dateFin, null, structureId, userId);
         List<Formulaire> formulaires = formulaireRepository.findByStructureId(structureId);
 
         if (dateDebut != null && dateFin != null) {
             formulaires = formulaires.stream()
                     .filter(f -> !f.getDateConsultation().isBefore(dateDebut) &&
                                  !f.getDateConsultation().isAfter(dateFin))
+                    .collect(Collectors.toList());
+        }
+
+        if (userId != null) {
+            formulaires = formulaires.stream()
+                    .filter(f -> f.getUtilisateur() != null && f.getUtilisateur().getId().equals(userId))
                     .collect(Collectors.toList());
         }
 
@@ -77,7 +83,7 @@ public class OffreDroguesStatistiquesService {
     }
 
     private List<OffreDrogues> getOffresWithFilters(
-            LocalDate dateDebut, LocalDate dateFin, String gouvernorat, Long structureId) {
+            LocalDate dateDebut, LocalDate dateFin, String gouvernorat, Long structureId, Long userId) {
 
         List<OffreDrogues> offres;
 
@@ -99,6 +105,12 @@ public class OffreDroguesStatistiquesService {
             offres = offres.stream()
                     .filter(o -> o.getStructure() != null &&
                                  structureId.equals(o.getStructure().getId()))
+                    .collect(Collectors.toList());
+        }
+
+        if (userId != null) {
+            offres = offres.stream()
+                    .filter(o -> o.getUtilisateur() != null && userId.equals(o.getUtilisateur().getId()))
                     .collect(Collectors.toList());
         }
 

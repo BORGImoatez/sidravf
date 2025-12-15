@@ -118,6 +118,14 @@
                 </div>
             </div>
 
+            <div class="filter-group-checkbox">
+                <label class="checkbox-label">
+                    <input type="checkbox" [(ngModel)]="voirMesStatistiques" (change)="onFilterChange()">
+                    <span class="checkbox-custom"></span>
+                    <span>Voir mes statistiques uniquement</span>
+                </label>
+            </div>
+
             <div class="tranches-age">
                 <h3>Filtres rapides par tranche d'âge</h3>
                 <div class="tranches-buttons">

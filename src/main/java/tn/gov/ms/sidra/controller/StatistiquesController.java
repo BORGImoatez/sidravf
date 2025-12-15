@@ -56,7 +56,8 @@ public class StatistiquesController {
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateDebut,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateFin,
             @RequestParam(required = false) Integer ageMin,
-            @RequestParam(required = false) Integer ageMax
+            @RequestParam(required = false) Integer ageMax,
+            @RequestParam(required = false, defaultValue = "false") Boolean mesDonneesUniquement
     ) {
         User user = (User) authentication.getPrincipal();
 
@@ -67,7 +68,7 @@ public class StatistiquesController {
         StatistiquesDTO stats = statistiquesService.getStatistiquesStructure(
                 user.getStructure().getId(),
                 sexe, anneeConsultation, moisConsultation, dateDebut, dateFin,
-                ageMin, ageMax
+                ageMin, ageMax, mesDonneesUniquement ? user.getId() : null
         );
         return ResponseEntity.ok(stats);
     }

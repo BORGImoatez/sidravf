@@ -28,26 +28,26 @@ public class StatistiquesServiceImpl {
             Integer ageMin, Integer ageMax
     ) {
         return buildStatistiques(sexe, anneeConsultation, moisConsultation,
-                dateDebut, dateFin, gouvernorat, null, ageMin, ageMax);
+                dateDebut, dateFin, gouvernorat, null, ageMin, ageMax, null);
     }
 
     public StatistiquesDTO getStatistiquesStructure(
             Long structureId, String sexe, Integer anneeConsultation,
             Integer moisConsultation, LocalDate dateDebut, LocalDate dateFin,
-            Integer ageMin, Integer ageMax
+            Integer ageMin, Integer ageMax, Long userId
     ) {
         return buildStatistiques(sexe, anneeConsultation, moisConsultation,
-                dateDebut, dateFin, null, structureId, ageMin, ageMax);
+                dateDebut, dateFin, null, structureId, ageMin, ageMax, userId);
     }
 
     private StatistiquesDTO buildStatistiques(
             String sexe, Integer anneeConsultation, Integer moisConsultation,
             LocalDate dateDebut, LocalDate dateFin, String gouvernorat,
-            Long structureId, Integer ageMin, Integer ageMax
+            Long structureId, Integer ageMin, Integer ageMax, Long userId
     ) {
         List<Formulaire> formulaires = getFormulairesWithFilters(
                 sexe, anneeConsultation, moisConsultation, dateDebut, dateFin,
-                gouvernorat, structureId, ageMin, ageMax
+                gouvernorat, structureId, ageMin, ageMax, userId
         );
         log.info("Comorbidites = {}", getComorbidites(formulaires));
 
@@ -74,7 +74,7 @@ public class StatistiquesServiceImpl {
     private List<Formulaire> getFormulairesWithFilters(
             String sexe, Integer anneeConsultation, Integer moisConsultation,
             LocalDate dateDebut, LocalDate dateFin, String gouvernorat,
-            Long structureId, Integer ageMin, Integer ageMax
+            Long structureId, Integer ageMin, Integer ageMax, Long userId
     ) {
         List<Formulaire> formulaires;
 
@@ -94,12 +94,12 @@ public class StatistiquesServiceImpl {
 
         return formulaires.stream()
                 .filter(f -> filterFormulaire(f, sexe, anneeConsultation, moisConsultation,
-                        gouvernorat, ageMin, ageMax))
+                        gouvernorat, ageMin, ageMax, userId))
                 .collect(Collectors.toList());
     }
 
     private boolean filterFormulaire(Formulaire f, String sexe, Integer annee, Integer mois,
-                                     String gouvernorat, Integer ageMin, Integer ageMax) {
+                                     String gouvernorat, Integer ageMin, Integer ageMax, Long userId) {
         if (sexe != null && !sexe.equalsIgnoreCase("tous") &&
                 !f.getPatient().getGenre().equalsIgnoreCase(sexe)) {
             return false;
@@ -125,6 +125,10 @@ public class StatistiquesServiceImpl {
             if (ageMax != null && age > ageMax) {
                 return false;
             }
+        }
+
+        if (userId != null && f.getUtilisateur() != null && !f.getUtilisateur().getId().equals(userId)) {
+            return false;
         }
 
         return true;

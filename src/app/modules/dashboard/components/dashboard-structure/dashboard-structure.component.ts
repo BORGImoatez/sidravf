@@ -16,6 +16,7 @@ interface FilterParams {
   dateFin?: string;
   ageMin?: number;
   ageMax?: number;
+  mesDonneesUniquement?: boolean;
 }
 
 @Component({
@@ -31,6 +32,7 @@ export class DashboardStructureComponent implements OnInit {
   loading = false;
   error: string | null = null;
   showFilters = true;
+  voirMesStatistiques = false;
 
   filters: FilterParams = {
     sexe: 'tous'
@@ -499,8 +501,9 @@ export class DashboardStructureComponent implements OnInit {
   loadStatistiquesMarche(): void {
     const dateDebut = this.filters.dateDebut;
     const dateFin = this.filters.dateFin;
+    const mesDonneesUniquement = this.filters.mesDonneesUniquement;
 
-    this.marketStatisticsService.getStatistiquesStructure(dateDebut, dateFin).subscribe({
+    this.marketStatisticsService.getStatistiquesStructure(dateDebut, dateFin, mesDonneesUniquement).subscribe({
       next: (data) => {
         this.statistiquesMarche = data;
         this.buildMarketCharts();
@@ -886,6 +889,7 @@ export class DashboardStructureComponent implements OnInit {
   }
 
   onFilterChange(): void {
+    this.filters.mesDonneesUniquement = this.voirMesStatistiques;
     this.loadStatistiques();
     this.loadStatistiquesMarche();
   }
@@ -895,6 +899,7 @@ export class DashboardStructureComponent implements OnInit {
       sexe: 'tous'
     };
     this.usePeriode = false;
+    this.voirMesStatistiques = false;
     this.loadStatistiques();
   }
 

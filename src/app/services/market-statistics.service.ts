@@ -104,7 +104,7 @@ export class MarketStatisticsService {
     return this.http.get<StatistiquesMarcheDTO>(`${this.apiUrl}/nationales`, { params });
   }
 
-  getStatistiquesStructure(dateDebut?: string, dateFin?: string): Observable<StatistiquesMarcheDTO> {
+  getStatistiquesStructure(dateDebut?: string, dateFin?: string, mesDonneesUniquement?: boolean): Observable<StatistiquesMarcheDTO> {
     let params = new HttpParams();
 
     if (dateDebut) {
@@ -112,6 +112,9 @@ export class MarketStatisticsService {
     }
     if (dateFin) {
       params = params.set('dateFin', dateFin);
+    }
+    if (mesDonneesUniquement !== undefined) {
+      params = params.set('mesDonneesUniquement', mesDonneesUniquement.toString());
     }
 
     return this.http.get<StatistiquesMarcheDTO>(`${this.apiUrl}/structure`, { params });

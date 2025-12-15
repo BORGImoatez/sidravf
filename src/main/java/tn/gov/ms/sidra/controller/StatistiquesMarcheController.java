@@ -44,12 +44,13 @@ public class StatistiquesMarcheController {
     public ResponseEntity<StatistiquesMarcheDTO> getStatistiquesStructure(
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateDebut,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateFin,
+            @RequestParam(required = false, defaultValue = "false") Boolean mesDonneesUniquement,
             @AuthenticationPrincipal User currentUser) {
 
         log.info("Récupération des statistiques du marché pour structure par: {}", currentUser.getEmail());
 
         Long structureId = null;
-        if (currentUser.getRole() == UserRole.ADMIN_STRUCTURE) {
+        if (currentUser.getRole() == UserRole.ADMIN_STRUCTURE || currentUser.getRole() == UserRole.UTILISATEUR) {
             if (currentUser.getStructure() == null) {
                 return ResponseEntity.badRequest().build();
             }
@@ -57,7 +58,7 @@ public class StatistiquesMarcheController {
         }
 
         StatistiquesMarcheDTO statistiques = statistiquesService.getStatistiquesStructure(
-                structureId, dateDebut, dateFin);
+                structureId, dateDebut, dateFin, mesDonneesUniquement ? currentUser.getId() : null);
 
         return ResponseEntity.ok(statistiques);
     }
