@@ -319,8 +319,28 @@
                 </div>
             </div>
         </div>
-        <!-- Charts Grid -->
-        <div class="charts-container">
+
+        <!-- Tabs Container -->
+        <div class="tabs-container">
+            <!-- Tab Headers -->
+            <div class="tabs-header">
+                <button class="tab-button" [class.active]="activeTab === 'general'" (click)="switchTab('general')">
+                    Indicateurs Généraux
+                </button>
+                <button class="tab-button" [class.active]="activeTab === 'demographie'" (click)="switchTab('demographie')">
+                    Démographie
+                </button>
+                <button class="tab-button" [class.active]="activeTab === 'substances'" (click)="switchTab('substances')">
+                    Substances
+                </button>
+                <button class="tab-button" [class.active]="activeTab === 'sante'" (click)="switchTab('sante')">
+                    Santé
+                </button>
+            </div>
+
+            <!-- Tab Content: Général -->
+            <div class="tab-content" [class.active]="activeTab === 'general'">
+                <div class="charts-container">
             <!-- Ajoutez ces cartes dans charts-container après vos charts existants -->
 
             <!-- Situation Familiale -->
@@ -404,6 +424,164 @@
                             [data]="natureLogementChartData"
                             [type]="doughnutChartType"
                             [options]="doughnutChartOptions">
+                    </canvas>
+                </div>
+            </div>
+                </div>
+            </div>
+
+            <!-- Tab Content: Démographie -->
+            <div class="tab-content" [class.active]="activeTab === 'demographie'">
+                <div class="charts-container">
+            <!-- Répartition démographique -->
+            <div class="chart-card" *ngIf="sexeChartData">
+                <div class="chart-header">
+                    <h3>
+                        <span class="chart-icon">👥</span>
+                        Répartition par Sexe
+                    </h3>
+                </div>
+                <div class="chart-body">
+                    <canvas baseChart
+                            [data]="sexeChartData"
+                            [type]="doughnutChartType"
+                            [options]="doughnutChartOptions">
+                    </canvas>
+                </div>
+            </div>
+
+            <div class="chart-card" *ngIf="ageChartData">
+                <div class="chart-header">
+                    <h3>
+                        <span class="chart-icon">📊</span>
+                        Répartition par Tranche d'Âge
+                    </h3>
+                </div>
+                <div class="chart-body">
+                    <canvas baseChart
+                            [data]="ageChartData"
+                            [type]="barChartType"
+                            [options]="barChartOptions">
+                    </canvas>
+                </div>
+            </div>
+
+            <!-- Profil socio-économique -->
+            <div class="chart-card" *ngIf="professionChartData">
+                <div class="chart-header">
+                    <h3>
+                        <span class="chart-icon">💼</span>
+                        Répartition par Profession
+                    </h3>
+                </div>
+                <div class="chart-body">
+                    <canvas baseChart
+                            [data]="professionChartData"
+                            [type]="doughnutChartType"
+                            [options]="doughnutChartOptions">
+                    </canvas>
+                </div>
+            </div>
+
+            <div class="chart-card" *ngIf="secteurChartData">
+                <div class="chart-header">
+                    <h3>
+                        <span class="chart-icon">🏢</span>
+                        Répartition par Secteur
+                    </h3>
+                </div>
+                <div class="chart-body">
+                    <canvas baseChart
+                            [data]="secteurChartData"
+                            [type]="doughnutChartType"
+                            [options]="doughnutChartOptions">
+                    </canvas>
+                </div>
+            </div>
+
+            <div class="chart-card" *ngIf="nationaliteChartData">
+                <div class="chart-header">
+                    <h3>
+                        <span class="chart-icon">🌍</span>
+                        Répartition par Nationalité
+                    </h3>
+                </div>
+                <div class="chart-body">
+                    <canvas baseChart
+                            [data]="nationaliteChartData"
+                            [type]="barChartType"
+                            [options]="barChartOptions">
+                    </canvas>
+                </div>
+            </div>
+
+            <div class="chart-card" *ngIf="niveauScolaireChartData">
+                <div class="chart-header">
+                    <h3>
+                        <span class="chart-icon">🎓</span>
+                        Répartition par Niveau Scolaire
+                    </h3>
+                </div>
+                <div class="chart-body">
+                    <canvas baseChart
+                            [data]="niveauScolaireChartData"
+                            [type]="barChartType"
+                            [options]="barChartOptions">
+                    </canvas>
+                </div>
+            </div>
+
+            <!-- Géographie -->
+            <div class="chart-card wide" *ngIf="regionChartData">
+                <div class="chart-header">
+                    <h3>
+                        <span class="chart-icon">🗺️</span>
+                        Répartition par Région (Top 10)
+                    </h3>
+                </div>
+                <div class="chart-body">
+                    <canvas baseChart
+                            [data]="regionChartData"
+                            [type]="barChartType"
+                            [options]="barChartOptions">
+                    </canvas>
+                </div>
+            </div>
+                </div>
+            </div>
+
+            <!-- Tab Content: Substances -->
+            <div class="tab-content" [class.active]="activeTab === 'substances'">
+                <div class="charts-container">
+            <!-- Substances -->
+            <div class="chart-card wide" *ngIf="substancesChartData">
+                <div class="chart-header">
+                    <h3>
+                        <span class="chart-icon">💊</span>
+                        Substances Psychoactives les Plus Consommées
+                    </h3>
+                </div>
+                <div class="chart-body">
+                    <canvas baseChart
+                            [data]="substancesChartData"
+                            [type]="barChartType"
+                            [options]="barChartOptions">
+                    </canvas>
+                </div>
+            </div>
+
+            <div class="chart-card wide" *ngIf="demandesTraitementSubstanceChartData">
+                <div class="chart-header">
+                    <h3>
+                        <span class="chart-icon">📋</span>
+                        Demandes de Traitement par Substance
+                    </h3>
+                </div>
+                <div class="chart-body">
+                    <canvas baseChart
+                            [data]="demandesTraitementSubstanceChartData"
+                            [type]="barChartType"
+                            [options]="barChartOptions">
                     </canvas>
                 </div>
             </div>
@@ -820,7 +998,12 @@
                     </canvas>
                 </div>
             </div>
+                </div>
+            </div>
 
+            <!-- Tab Content: Santé -->
+            <div class="tab-content" [class.active]="activeTab === 'sante'">
+                <div class="charts-container">
             <!-- Santé -->
             <div class="chart-card wide" *ngIf="testDepistageChartData">
                 <div class="chart-header">
@@ -937,8 +1120,8 @@
                     </canvas>
                 </div>
             </div>
-
-
+                </div>
+            </div>
         </div>
     </div>
 </div>
