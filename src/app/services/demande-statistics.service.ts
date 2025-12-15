@@ -24,12 +24,14 @@ export interface CertificatMedical {
 
 export interface ParDelegation {
   delegation: string;
+  delegationLibelle:string;
   nombre: number;
   pourcentage: number;
 }
 
 export interface ParGouvernorat {
   gouvernorat: string;
+  gouvernoratLibelle:string;
   nombre: number;
   pourcentage: number;
   parDelegation: ParDelegation[];

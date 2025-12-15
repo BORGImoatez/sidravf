@@ -339,7 +339,7 @@
                     Substances
                 </button>
                 <button class="tab-button" [class.active]="activeTab === 'sante'" (click)="switchTab('sante')">
-                    Santé
+                    Indicateurs du Marché des Drogues
                 </button>
                 <button class="tab-button" [class.active]="activeTab === 'demandes'" (click)="switchTab('demandes')">
                     Demandes de Prise en Charge
@@ -438,6 +438,122 @@
                 </div>
             </div>
                 </div>
+                <div class="chart-card wide" *ngIf="testDepistageChartData">
+                    <div class="chart-header">
+                        <h3>
+                            <span class="chart-icon">🧪</span>
+                            Tests de Dépistage
+                        </h3>
+                    </div>
+                    <div class="chart-body">
+                        <canvas baseChart
+                                [data]="testDepistageChartData"
+                                [type]="barChartType"
+                                [options]="barChartOptions">
+                        </canvas>
+                    </div>
+                </div>
+
+
+                <div class="chart-card" *ngIf="comorbiditeChartData">
+                    <div class="chart-header">
+                        <h3>
+                            <span class="chart-icon">🏥</span>
+                            Comorbidités
+                        </h3>
+                    </div>
+                    <div class="chart-body">
+                        <canvas baseChart
+                                [data]="comorbiditeChartData"
+                                [type]="barChartType"
+                                [options]="barChartOptions">
+                        </canvas>
+                    </div>
+                </div>
+
+                <!-- Addictions -->
+                <div class="chart-card" *ngIf="autresAddictionsChartData">
+                    <div class="chart-header">
+                        <h3>
+                            <span class="chart-icon">🎮</span>
+                            Autres Addictions
+                        </h3>
+                    </div>
+                    <div class="chart-body">
+                        <canvas baseChart
+                                [data]="autresAddictionsChartData"
+                                [type]="barChartType"
+                                [options]="barChartOptions">
+                        </canvas>
+                    </div>
+                </div>
+
+                <!-- Prise en charge -->
+                <div class="chart-card wide" *ngIf="modalitesChartData">
+                    <div class="chart-header">
+                        <h3>
+                            <span class="chart-icon">🏨</span>
+                            Modalités de Prise en Charge
+                        </h3>
+                    </div>
+                    <div class="chart-body">
+                        <canvas baseChart
+                                [data]="modalitesChartData"
+                                [type]="barChartType"
+                                [options]="barChartOptions">
+                        </canvas>
+                    </div>
+                </div>
+
+                <div class="chart-card" *ngIf="consultationsChartData">
+                    <div class="chart-header">
+                        <h3>
+                            <span class="chart-icon">📅</span>
+                            Nombre Moyen de Consultations
+                        </h3>
+                    </div>
+                    <div class="chart-body">
+                        <canvas baseChart
+                                [data]="consultationsChartData"
+                                [type]="lineChartType"
+                                [options]="lineChartOptions">
+                        </canvas>
+                    </div>
+                </div>
+
+                <!-- Health Indicators -->
+                <div class="chart-card wide" *ngIf="hospitalisationsChartData">
+                    <div class="chart-header">
+                        <h3>
+                            <span class="chart-icon">🏥</span>
+                            Hospitalisations Liées aux Drogues
+                        </h3>
+                    </div>
+                    <div class="chart-body">
+                        <canvas baseChart
+                                [data]="hospitalisationsChartData"
+                                [type]="barChartType"
+                                [options]="barChartOptions">
+                        </canvas>
+                    </div>
+                </div>
+
+                <div class="chart-card" *ngIf="echangeSeringuesChartData">
+                    <div class="chart-header">
+                        <h3>
+                            <span class="chart-icon">💉</span>
+                            Échange de Seringues par ONG
+                        </h3>
+                    </div>
+                    <div class="chart-body">
+                        <canvas baseChart
+                                [data]="echangeSeringuesChartData"
+                                [type]="doughnutChartType"
+                                [options]="doughnutChartOptions">
+                        </canvas>
+                    </div>
+                </div>
+
             </div>
 
             <!-- Tab Content: Démographie -->
@@ -1015,129 +1131,8 @@
             <div class="tab-content" [class.active]="activeTab === 'sante'">
                 <div class="charts-container">
             <!-- Santé -->
-            <div class="chart-card wide" *ngIf="testDepistageChartData">
-                <div class="chart-header">
-                    <h3>
-                        <span class="chart-icon">🧪</span>
-                        Tests de Dépistage
-                    </h3>
-                </div>
-                <div class="chart-body">
-                    <canvas baseChart
-                            [data]="testDepistageChartData"
-                            [type]="barChartType"
-                            [options]="barChartOptions">
-                    </canvas>
-                </div>
-            </div>
 
 
-            <div class="chart-card" *ngIf="comorbiditeChartData">
-                <div class="chart-header">
-                    <h3>
-                        <span class="chart-icon">🏥</span>
-                        Comorbidités
-                    </h3>
-                </div>
-                <div class="chart-body">
-                    <canvas baseChart
-                            [data]="comorbiditeChartData"
-                            [type]="barChartType"
-                            [options]="barChartOptions">
-                    </canvas>
-                </div>
-            </div>
-
-            <!-- Addictions -->
-            <div class="chart-card" *ngIf="autresAddictionsChartData">
-                <div class="chart-header">
-                    <h3>
-                        <span class="chart-icon">🎮</span>
-                        Autres Addictions
-                    </h3>
-                </div>
-                <div class="chart-body">
-                    <canvas baseChart
-                            [data]="autresAddictionsChartData"
-                            [type]="barChartType"
-                            [options]="barChartOptions">
-                    </canvas>
-                </div>
-            </div>
-
-            <!-- Prise en charge -->
-            <div class="chart-card wide" *ngIf="modalitesChartData">
-                <div class="chart-header">
-                    <h3>
-                        <span class="chart-icon">🏨</span>
-                        Modalités de Prise en Charge
-                    </h3>
-                </div>
-                <div class="chart-body">
-                    <canvas baseChart
-                            [data]="modalitesChartData"
-                            [type]="barChartType"
-                            [options]="barChartOptions">
-                    </canvas>
-                </div>
-            </div>
-
-            <div class="chart-card" *ngIf="consultationsChartData">
-                <div class="chart-header">
-                    <h3>
-                        <span class="chart-icon">📅</span>
-                        Nombre Moyen de Consultations
-                    </h3>
-                </div>
-                <div class="chart-body">
-                    <canvas baseChart
-                            [data]="consultationsChartData"
-                            [type]="lineChartType"
-                            [options]="lineChartOptions">
-                    </canvas>
-                </div>
-            </div>
-
-            <!-- Health Indicators -->
-            <div class="chart-card wide" *ngIf="hospitalisationsChartData">
-                <div class="chart-header">
-                    <h3>
-                        <span class="chart-icon">🏥</span>
-                        Hospitalisations Liées aux Drogues
-                    </h3>
-                </div>
-                <div class="chart-body">
-                    <canvas baseChart
-                            [data]="hospitalisationsChartData"
-                            [type]="barChartType"
-                            [options]="barChartOptions">
-                    </canvas>
-                </div>
-            </div>
-
-            <div class="chart-card" *ngIf="echangeSeringuesChartData">
-                <div class="chart-header">
-                    <h3>
-                        <span class="chart-icon">💉</span>
-                        Échange de Seringues par ONG
-                    </h3>
-                </div>
-                <div class="chart-body">
-                    <canvas baseChart
-                            [data]="echangeSeringuesChartData"
-                            [type]="doughnutChartType"
-                            [options]="doughnutChartOptions">
-                    </canvas>
-                </div>
-            </div>
-
-            <!-- Market Statistics Section -->
-            <div class="section-divider">
-                <h2 class="section-title">
-                    <span class="section-icon">🚔</span>
-                    Indicateurs du Marché des Drogues
-                </h2>
-            </div>
 
             <div class="chart-card wide" *ngIf="substancesSaisiesChartData">
                 <div class="chart-header">
@@ -1349,16 +1344,14 @@
                             </canvas>
 
                             <div class="gouvernorat-selector" style="margin-top: 20px;">
-                                <label style="font-weight: 600; margin-bottom: 10px; display: block;">
-                                    Sélectionnez un gouvernorat pour voir les détails par délégation:
-                                </label>
+
                                 <select
                                     [(ngModel)]="selectedGouvernorat"
                                     (change)="selectGouvernoratForDelegation(selectedGouvernorat!)"
                                     style="padding: 8px; border-radius: 8px; border: 1px solid #dee2e6; width: 100%;">
                                     <option [value]="null">-- Choisir un gouvernorat --</option>
                                     <option *ngFor="let gouv of statistiquesDemande.parGouvernorat" [value]="gouv.gouvernorat">
-                                        {{ gouv.gouvernorat }} ({{ gouv.nombre }} demandes - {{ gouv.pourcentage.toFixed(1) }}%)
+                                        {{ gouv.gouvernoratLibelle }} ({{ gouv.nombre }} demandes - {{ gouv.pourcentage.toFixed(1) }}%)
                                     </option>
                                 </select>
                             </div>

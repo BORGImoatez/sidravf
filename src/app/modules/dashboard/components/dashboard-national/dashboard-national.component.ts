@@ -542,7 +542,7 @@ export class DashboardNationalComponent implements OnInit {
 
     if (this.statistiquesDemande.parGouvernorat) {
       this.demandeGouvernoratChartData = {
-        labels: this.statistiquesDemande.parGouvernorat.map(g => g.gouvernorat),
+        labels: this.statistiquesDemande.parGouvernorat.map(g => g.gouvernoratLibelle),
         datasets: [{
           label: 'Nombre de demandes',
           data: this.statistiquesDemande.parGouvernorat.map(g => g.nombre),
@@ -560,7 +560,7 @@ export class DashboardNationalComponent implements OnInit {
 
     if (gouvernoratData && gouvernoratData.parDelegation) {
       this.demandeDelegationChartData = {
-        labels: gouvernoratData.parDelegation.map(d => d.delegation),
+        labels: gouvernoratData.parDelegation.map(d => d.delegationLibelle.replace(/_/g, ' ')),
         datasets: [{
           label: 'Nombre de demandes par délégation',
           data: gouvernoratData.parDelegation.map(d => d.nombre),

@@ -4,9 +4,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import tn.gov.ms.sidra.dto.demande.StatistiquesDemandeDTO;
+import tn.gov.ms.sidra.entity.Delegation;
 import tn.gov.ms.sidra.entity.DemandePriseEnCharge;
 import tn.gov.ms.sidra.entity.Genre;
+import tn.gov.ms.sidra.entity.Gouvernorat;
+import tn.gov.ms.sidra.repository.DelegationRepository;
 import tn.gov.ms.sidra.repository.DemandeRepository;
+import tn.gov.ms.sidra.repository.GouvernoratRepository;
 
 import java.time.LocalDate;
 import java.util.*;
@@ -39,9 +43,7 @@ public class StatistiquesDemandeService {
                 .medianeAge(getMedianeAge(demandes))
                 .auteursDemandes(getAuteursDemandes(demandes, total))
                 .certificatsMedicaux(getCertificatsMedicaux(demandes, total))
-                .parGouvernorat(getRepar
-
-titionParGouvernorat(demandes, total))
+                .parGouvernorat(getRepartitionParGouvernorat(demandes, total))
                 .build();
     }
 
@@ -85,10 +87,10 @@ titionParGouvernorat(demandes, total))
     private StatistiquesDemandeDTO.RepartitionSexe getRepartitionSexe(
             List<DemandePriseEnCharge> demandes, long total) {
         long hommes = demandes.stream()
-                .filter(d -> d.getGenre() == Genre.HOMME)
+                .filter(d -> d.getGenre() == Genre.MASCULIN)
                 .count();
         long femmes = demandes.stream()
-                .filter(d -> d.getGenre() == Genre.FEMME)
+                .filter(d -> d.getGenre() == Genre.FEMININ)
                 .count();
 
         double pourcentageHommes = total > 0 ? (hommes * 100.0 / total) : 0.0;
@@ -166,36 +168,48 @@ titionParGouvernorat(demandes, total))
                 .sorted(Comparator.comparing(StatistiquesDemandeDTO.CertificatMedical::getNombre).reversed())
                 .collect(Collectors.toList());
     }
+    private final GouvernoratRepository gouvernoratRepository;
 
     private List<StatistiquesDemandeDTO.ParGouvernorat> getRepartitionParGouvernorat(
             List<DemandePriseEnCharge> demandes, long total) {
+
         Map<String, List<DemandePriseEnCharge>> parGouvernorat = demandes.stream()
                 .filter(d -> d.getGouvernorat() != null)
                 .collect(Collectors.groupingBy(DemandePriseEnCharge::getGouvernorat));
 
         return parGouvernorat.entrySet().stream()
                 .map(e -> {
-                    String gouvernorat = e.getKey();
+                    String gouvernoratCode = e.getKey();
                     List<DemandePriseEnCharge> demandesGouv = e.getValue();
                     long nombreGouv = demandesGouv.size();
 
-                    List<StatistiquesDemandeDTO.ParDelegation> delegations = getDelegations(
-                            demandesGouv, nombreGouv
-                    );
+                    // 🔹 Récupération du libellé depuis la base
+                    String gouvernoratLibelle = gouvernoratRepository
+                            .findById(Long.valueOf(gouvernoratCode))
+                            .map(Gouvernorat::getNom)
+                            .orElse(gouvernoratCode); // fallback si non trouvé
+
+                    List<StatistiquesDemandeDTO.ParDelegation> delegations =
+                            getDelegations(demandesGouv, nombreGouv);
 
                     return StatistiquesDemandeDTO.ParGouvernorat.builder()
-                            .gouvernorat(gouvernorat)
+                            .gouvernorat(gouvernoratCode)
+                            .gouvernoratLibelle(gouvernoratLibelle)
                             .nombre(nombreGouv)
                             .pourcentage(total > 0 ? (nombreGouv * 100.0 / total) : 0.0)
                             .parDelegation(delegations)
                             .build();
                 })
-                .sorted(Comparator.comparing(StatistiquesDemandeDTO.ParGouvernorat::getNombre).reversed())
+                .sorted(Comparator.comparing(
+                        StatistiquesDemandeDTO.ParGouvernorat::getNombre).reversed())
                 .collect(Collectors.toList());
     }
 
+    private final DelegationRepository delegationRepository;
+
     private List<StatistiquesDemandeDTO.ParDelegation> getDelegations(
             List<DemandePriseEnCharge> demandes, long totalGouv) {
+
         Map<String, Long> parDelegation = demandes.stream()
                 .filter(d -> d.getDelegation() != null)
                 .collect(Collectors.groupingBy(
@@ -204,14 +218,28 @@ titionParGouvernorat(demandes, total))
                 ));
 
         return parDelegation.entrySet().stream()
-                .map(e -> StatistiquesDemandeDTO.ParDelegation.builder()
-                        .delegation(e.getKey())
-                        .nombre(e.getValue())
-                        .pourcentage(totalGouv > 0 ? (e.getValue() * 100.0 / totalGouv) : 0.0)
-                        .build())
-                .sorted(Comparator.comparing(StatistiquesDemandeDTO.ParDelegation::getNombre).reversed())
+                .map(e -> {
+                    String delegationCode = e.getKey();
+                    long nombre = e.getValue();
+
+                    // 🔹 Récupération du libellé depuis la base
+                    String delegationLibelle = delegationRepository
+                            .findById(Long.valueOf(delegationCode))
+                            .map(Delegation::getNom)
+                            .orElse(delegationCode); // fallback
+
+                    return StatistiquesDemandeDTO.ParDelegation.builder()
+                            .delegation(delegationCode)
+                            .delegationLibelle(delegationLibelle)
+                            .nombre(nombre)
+                            .pourcentage(totalGouv > 0 ? (nombre * 100.0 / totalGouv) : 0.0)
+                            .build();
+                })
+                .sorted(Comparator.comparing(
+                        StatistiquesDemandeDTO.ParDelegation::getNombre).reversed())
                 .collect(Collectors.toList());
     }
+
 
     private String formatAuteurType(String auteurType) {
         return switch (auteurType.toLowerCase()) {

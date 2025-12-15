@@ -58,6 +58,7 @@ public class StatistiquesDemandeDTO {
     @AllArgsConstructor
     public static class ParGouvernorat {
         private String gouvernorat;
+        private String gouvernoratLibelle;
         private Long nombre;
         private Double pourcentage;
         private List<ParDelegation> parDelegation;
@@ -69,6 +70,7 @@ public class StatistiquesDemandeDTO {
     @AllArgsConstructor
     public static class ParDelegation {
         private String delegation;
+        private String delegationLibelle;
         private Long nombre;
         private Double pourcentage;
     }
