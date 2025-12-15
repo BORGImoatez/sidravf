@@ -896,6 +896,159 @@
                     </canvas>
                 </div>
             </div>
+
+            <!-- Health Indicators -->
+            <div class="chart-card wide" *ngIf="hospitalisationsChartData">
+                <div class="chart-header">
+                    <h3>
+                        <span class="chart-icon">🏥</span>
+                        Hospitalisations Liées aux Drogues
+                    </h3>
+                </div>
+                <div class="chart-body">
+                    <canvas baseChart
+                            [data]="hospitalisationsChartData"
+                            [type]="barChartType"
+                            [options]="barChartOptions">
+                    </canvas>
+                </div>
+            </div>
+
+            <div class="chart-card" *ngIf="echangeSeringuesChartData">
+                <div class="chart-header">
+                    <h3>
+                        <span class="chart-icon">💉</span>
+                        Échange de Seringues par ONG
+                    </h3>
+                </div>
+                <div class="chart-body">
+                    <canvas baseChart
+                            [data]="echangeSeringuesChartData"
+                            [type]="doughnutChartType"
+                            [options]="doughnutChartOptions">
+                    </canvas>
+                </div>
+            </div>
+
+            <!-- Market Statistics Section -->
+            <div class="section-divider">
+                <h2 class="section-title">
+                    <span class="section-icon">🚔</span>
+                    Indicateurs du Marché des Drogues
+                </h2>
+            </div>
+
+            <div class="chart-card wide" *ngIf="substancesSaisiesChartData">
+                <div class="chart-header">
+                    <h3>
+                        <span class="chart-icon">📦</span>
+                        Substances Saisies par Type
+                    </h3>
+                </div>
+                <div class="chart-body">
+                    <canvas baseChart
+                            [data]="substancesSaisiesChartData"
+                            [type]="barChartType"
+                            [options]="barChartOptions">
+                    </canvas>
+                </div>
+            </div>
+
+            <div class="chart-card wide" *ngIf="saisiesParRegionChartData">
+                <div class="chart-header">
+                    <h3>
+                        <span class="chart-icon">🗺️</span>
+                        Saisies par Région (Top 10)
+                    </h3>
+                </div>
+                <div class="chart-body">
+                    <canvas baseChart
+                            [data]="saisiesParRegionChartData"
+                            [type]="barChartType"
+                            [options]="barChartOptions">
+                    </canvas>
+                </div>
+            </div>
+
+            <div class="chart-card" *ngIf="nouvellesSubstancesChartData">
+                <div class="chart-header">
+                    <h3>
+                        <span class="chart-icon">⚠️</span>
+                        Nouvelles Substances Psychoactives
+                    </h3>
+                </div>
+                <div class="chart-body">
+                    <canvas baseChart
+                            [data]="nouvellesSubstancesChartData"
+                            [type]="barChartType"
+                            [options]="barChartOptions">
+                    </canvas>
+                </div>
+            </div>
+
+            <div class="chart-card wide" *ngIf="evolutionPrixChartData">
+                <div class="chart-header">
+                    <h3>
+                        <span class="chart-icon">💰</span>
+                        Évolution des Prix des Substances
+                    </h3>
+                </div>
+                <div class="chart-body">
+                    <canvas baseChart
+                            [data]="evolutionPrixChartData"
+                            [type]="lineChartType"
+                            [options]="lineChartOptions">
+                    </canvas>
+                </div>
+            </div>
+
+            <div class="chart-card" *ngIf="arrestationsChartData">
+                <div class="chart-header">
+                    <h3>
+                        <span class="chart-icon">👮</span>
+                        Arrestations par Type
+                    </h3>
+                </div>
+                <div class="chart-body">
+                    <canvas baseChart
+                            [data]="arrestationsChartData"
+                            [type]="barChartType"
+                            [options]="barChartOptions">
+                    </canvas>
+                </div>
+            </div>
+
+            <div class="chart-card" *ngIf="profilInculpesChartData">
+                <div class="chart-header">
+                    <h3>
+                        <span class="chart-icon">👥</span>
+                        Profil des Inculpés
+                    </h3>
+                </div>
+                <div class="chart-body">
+                    <canvas baseChart
+                            [data]="profilInculpesChartData"
+                            [type]="doughnutChartType"
+                            [options]="doughnutChartOptions">
+                    </canvas>
+                </div>
+            </div>
+
+            <div class="chart-card wide" *ngIf="comparaisonSaisieConsommationChartData">
+                <div class="chart-header">
+                    <h3>
+                        <span class="chart-icon">📊</span>
+                        Comparaison Saisies vs Consommation
+                    </h3>
+                </div>
+                <div class="chart-body">
+                    <canvas baseChart
+                            [data]="comparaisonSaisieConsommationChartData"
+                            [type]="barChartType"
+                            [options]="barChartOptions">
+                    </canvas>
+                </div>
+            </div>
         </div>
     </div>
 </div>

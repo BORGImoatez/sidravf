@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { StatisticsService } from '../../../../services/statistics.service';
+import { MarketStatisticsService } from '../../../../services/market-statistics.service';
 import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration, ChartOptions, ChartType } from 'chart.js';
 import {Gouvernorat} from "../../../../models/user.model";
@@ -26,6 +27,7 @@ interface FilterParams {
 })
 export class DashboardStructureComponent implements OnInit {
   statistiques: any;
+  statistiquesMarche: any;
   loading = false;
   error: string | null = null;
   showFilters = true;
@@ -201,6 +203,16 @@ export class DashboardStructureComponent implements OnInit {
   public voiesAdministrationChartData: ChartConfiguration<'bar'>['data'] | null = null;
   public atcdPsychiatriquesChartData: ChartConfiguration<'bar'>['data'] | null = null;
   public atcdSomatiquesChartData: ChartConfiguration<'bar'>['data'] | null = null;
+
+  public substancesSaisiesChartData: ChartConfiguration<'bar'>['data'] | null = null;
+  public saisiesParRegionChartData: ChartConfiguration<'bar'>['data'] | null = null;
+  public nouvellesSubstancesChartData: ChartConfiguration<'bar'>['data'] | null = null;
+  public evolutionPrixChartData: ChartConfiguration<'line'>['data'] | null = null;
+  public arrestationsChartData: ChartConfiguration<'bar'>['data'] | null = null;
+  public profilInculpesChartData: ChartConfiguration<'doughnut'>['data'] | null = null;
+  public comparaisonSaisieConsommationChartData: ChartConfiguration<'bar'>['data'] | null = null;
+  public hospitalisationsChartData: ChartConfiguration<'bar'>['data'] | null = null;
+  public echangeSeringuesChartData: ChartConfiguration<'doughnut'>['data'] | null = null;
 
 // 2. Ajoutez ces méthodes dans buildCharts()
   private buildMissingCharts(): void {
@@ -427,12 +439,17 @@ export class DashboardStructureComponent implements OnInit {
     multi: ['#667eea', '#764ba2', '#f093fb', '#4facfe', '#00f2fe', '#43e97b', '#fa709a', '#fee140']
   };
 
-  constructor(private statisticsService: StatisticsService,private userService: UserService) {}
+  constructor(
+    private statisticsService: StatisticsService,
+    private marketStatisticsService: MarketStatisticsService,
+    private userService: UserService
+  ) {}
 
   ngOnInit(): void {
     this.loadAnneesDisponibles();
     this.loadGouvernoratsDisponibles();
     this.loadStatistiques();
+    this.loadStatistiquesMarche();
   }
 
   toggleFilters(): void {
@@ -479,9 +496,26 @@ export class DashboardStructureComponent implements OnInit {
     });
   }
 
+  loadStatistiquesMarche(): void {
+    const dateDebut = this.filters.dateDebut;
+    const dateFin = this.filters.dateFin;
+
+    this.marketStatisticsService.getStatistiquesStructure(dateDebut, dateFin).subscribe({
+      next: (data) => {
+        this.statistiquesMarche = data;
+        this.buildMarketCharts();
+        console.log('Statistiques marché structure:', this.statistiquesMarche);
+      },
+      error: (error) => {
+        console.error('Erreur lors du chargement des statistiques marché:', error);
+      }
+    });
+  }
+
   buildCharts(): void {
     if (!this.statistiques) return;
     this.buildMissingCharts();
+    this.buildHealthCharts();
 
     // Répartition par sexe (Doughnut)
     if (this.statistiques.repartitionSexe) {
@@ -853,6 +887,7 @@ export class DashboardStructureComponent implements OnInit {
 
   onFilterChange(): void {
     this.loadStatistiques();
+    this.loadStatistiquesMarche();
   }
 
   resetFilters(): void {
@@ -886,6 +921,183 @@ export class DashboardStructureComponent implements OnInit {
         this.error = 'Erreur lors de l\'export des données';
       }
     });
+  }
+
+  buildHealthCharts(): void {
+    if (!this.statistiques?.comportementsEtTests) return;
+
+    if (this.statistiques.comportementsEtTests.hospitalisations) {
+      const hosp = this.statistiques.comportementsEtTests.hospitalisations;
+      this.hospitalisationsChartData = {
+        labels: ['Usage drogues', 'Overdose', 'Endocardite', 'Total'],
+        datasets: [{
+          label: 'Nombre d\'hospitalisations',
+          data: [
+            hosp.nombreHospitalisationsUsageDrogues || 0,
+            hosp.nombreHospitalisationsOverdose || 0,
+            hosp.nombreHospitalisationsEndocardite || 0,
+            hosp.nombreTotalHospitalisations || 0
+          ],
+          backgroundColor: this.colorPalettes.warm,
+          borderRadius: 8,
+          borderSkipped: false
+        }]
+      };
+    }
+
+    if (this.statistiques.comportementsEtTests.echangeSeringuesParONG) {
+      const echangeData = this.statistiques.comportementsEtTests.echangeSeringuesParONG;
+      if (echangeData && echangeData.length > 0) {
+        this.echangeSeringuesChartData = {
+          labels: echangeData.map((item: any) => item.nomONG),
+          datasets: [{
+            data: echangeData.map((item: any) => item.nombreUsagers),
+            backgroundColor: this.colorPalettes.primary,
+            borderWidth: 0
+          }]
+        };
+      }
+    }
+  }
+
+  buildMarketCharts(): void {
+    if (!this.statistiquesMarche) return;
+
+    if (this.statistiquesMarche.substancesSaisies) {
+      this.substancesSaisiesChartData = {
+        labels: this.statistiquesMarche.substancesSaisies.map((item: any) => item.nomSubstance),
+        datasets: [{
+          label: 'Quantité saisie',
+          data: this.statistiquesMarche.substancesSaisies.map((item: any) => item.quantiteTotale),
+          backgroundColor: this.colorPalettes.gradient,
+          borderRadius: 8,
+          borderSkipped: false
+        }]
+      };
+    }
+
+    if (this.statistiquesMarche.saisiesParRegion) {
+      const regionsMap = new Map<string, number>();
+      this.statistiquesMarche.saisiesParRegion.forEach((item: any) => {
+        const current = regionsMap.get(item.region) || 0;
+        regionsMap.set(item.region, current + item.quantite);
+      });
+      const top10Regions = Array.from(regionsMap.entries())
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 10);
+
+      this.saisiesParRegionChartData = {
+        labels: top10Regions.map(item => item[0]),
+        datasets: [{
+          label: 'Quantité totale saisie',
+          data: top10Regions.map(item => item[1]),
+          backgroundColor: this.colorPalettes.warm,
+          borderRadius: 8,
+          borderSkipped: false
+        }]
+      };
+    }
+
+    if (this.statistiquesMarche.nouvellesSubstances && this.statistiquesMarche.nouvellesSubstances.length > 0) {
+      this.nouvellesSubstancesChartData = {
+        labels: this.statistiquesMarche.nouvellesSubstances.map((item: any) => item.nomSubstance),
+        datasets: [{
+          label: 'Nombre de saisies',
+          data: this.statistiquesMarche.nouvellesSubstances.map((item: any) => item.nombreSaisies),
+          backgroundColor: this.colorPalettes.primary,
+          borderRadius: 8,
+          borderSkipped: false
+        }]
+      };
+    }
+
+    if (this.statistiquesMarche.evolutionPrix && this.statistiquesMarche.evolutionPrix.length > 0) {
+      const substancesMap = new Map<string, any[]>();
+      this.statistiquesMarche.evolutionPrix.forEach((item: any) => {
+        if (!substancesMap.has(item.substance)) {
+          substancesMap.set(item.substance, []);
+        }
+        substancesMap.get(item.substance)!.push(item);
+      });
+
+      const datasets = Array.from(substancesMap.entries()).map(([substance, data], index) => ({
+        label: substance,
+        data: data.map((item: any) => item.prixMoyen),
+        borderColor: this.colorPalettes.multi[index % this.colorPalettes.multi.length],
+        backgroundColor: `${this.colorPalettes.multi[index % this.colorPalettes.multi.length]}33`,
+        fill: false,
+        tension: 0.4,
+        pointBackgroundColor: this.colorPalettes.multi[index % this.colorPalettes.multi.length],
+        pointBorderColor: '#fff',
+        pointBorderWidth: 2,
+        pointRadius: 4
+      }));
+
+      this.evolutionPrixChartData = {
+        labels: Array.from(new Set(this.statistiquesMarche.evolutionPrix.map((item: any) => item.periode))),
+        datasets: datasets
+      };
+    }
+
+    if (this.statistiquesMarche.comparaisonSaisieConsommation && this.statistiquesMarche.comparaisonSaisieConsommation.length > 0) {
+      const substances = this.statistiquesMarche.comparaisonSaisieConsommation.map((item: any) => item.substance);
+      const saisies = this.statistiquesMarche.comparaisonSaisieConsommation.map((item: any) => item.quantiteSaisie);
+      const consommateurs = this.statistiquesMarche.comparaisonSaisieConsommation.map((item: any) => item.nombreConsommateurs);
+
+      this.comparaisonSaisieConsommationChartData = {
+        labels: substances,
+        datasets: [
+          {
+            label: 'Quantité saisie',
+            data: saisies,
+            backgroundColor: '#667eea',
+            borderRadius: 8,
+            borderSkipped: false
+          },
+          {
+            label: 'Nombre consommateurs',
+            data: consommateurs,
+            backgroundColor: '#f093fb',
+            borderRadius: 8,
+            borderSkipped: false
+          }
+        ]
+      };
+    }
+
+    if (this.statistiquesMarche.arrestations) {
+      const arr = this.statistiquesMarche.arrestations;
+      if (arr.arrestationsParType) {
+        const types = Object.keys(arr.arrestationsParType);
+        const values = Object.values(arr.arrestationsParType);
+        this.arrestationsChartData = {
+          labels: types,
+          datasets: [{
+            label: 'Nombre d\'arrestations',
+            data: values as number[],
+            backgroundColor: this.colorPalettes.gradient,
+            borderRadius: 8,
+            borderSkipped: false
+          }]
+        };
+      }
+    }
+
+    if (this.statistiquesMarche.profilInculpes) {
+      const profil = this.statistiquesMarche.profilInculpes;
+      if (profil.repartitionGenre) {
+        const genres = Object.keys(profil.repartitionGenre);
+        const values = Object.values(profil.repartitionGenre);
+        this.profilInculpesChartData = {
+          labels: genres,
+          datasets: [{
+            data: values as number[],
+            backgroundColor: this.colorPalettes.primary,
+            borderWidth: 0
+          }]
+        };
+      }
+    }
   }
 }
 
