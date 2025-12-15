@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import {Environment} from "@angular/cli/lib/config/workspace-schema";
 import {environment} from "../../environments/environment";
+import {Gouvernorat} from "../models/user.model";
 
 export interface FilterParams {
   sexe?: string;
@@ -241,8 +242,9 @@ export class StatisticsService {
   /**
    * Récupère les gouvernorats disponibles pour le filtre
    */
-  getGouvernoratsDisponibles(): Observable<string[]> {
-    return this.http.get<string[]>(`${this.apiUrl}/gouvernorats`);
+
+  getGouvernoratsDisponibles(): Observable<Gouvernorat[]> {
+    return this.http.get<Gouvernorat[]>(`${this.apiUrl}/gouvernorats`);
   }
 
   /**

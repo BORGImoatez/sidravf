@@ -165,17 +165,7 @@ import { User, UserRole } from '../../models/user.model';
               <span class="nav-label" *ngIf="!isSidebarCollapsed || isMobile">Structures</span>
             </a>
 
-            <a
-                routerLink="/admin/rapports"
-                routerLinkActive="active"
-                class="nav-item"
-                *ngIf="isSuperAdmin() || isUser() || isRoleBns()"
-                [title]="isSidebarCollapsed && !isMobile ? 'Rapports et statistiques' : ''"
-                (click)="onNavItemClick()"
-            >
-              <span class="nav-icon">📈</span>
-              <span class="nav-label" *ngIf="!isSidebarCollapsed || isMobile">Tableau de bord national</span>
-            </a>
+        
 
             <a
                 routerLink="/admin/pending-users"
@@ -189,7 +179,28 @@ import { User, UserRole } from '../../models/user.model';
               <span class="nav-label" *ngIf="!isSidebarCollapsed || isMobile">Demandes d'inscription</span>
             </a>
           </div>
-
+          <a
+              routerLink="/dashboardNational"
+              routerLinkActive="active"
+              class="nav-item"
+              *ngIf="isSuperAdmin() || isUser() || isRoleBns()"
+              [title]="isSidebarCollapsed && !isMobile ? 'Rapports et statistiques' : ''"
+              (click)="onNavItemClick()"
+          >
+            <span class="nav-icon">📈</span>
+            <span class="nav-label" *ngIf="!isSidebarCollapsed || isMobile">Tableau de bord national</span>
+          </a>
+          <a
+              routerLink="/dashboardStrucutre"
+              routerLinkActive="active"
+              class="nav-item"
+              *ngIf="isUser()"
+              [title]="isSidebarCollapsed && !isMobile ? 'Rapports et statistiques' : ''"
+              (click)="onNavItemClick()"
+          >
+            <span class="nav-icon">📈</span>
+            <span class="nav-label" *ngIf="!isSidebarCollapsed || isMobile">Tableau de Bord de la structure</span>
+          </a>
           <div class="nav-section">
             <h3 class="nav-section-title" *ngIf="!isSidebarCollapsed || isMobile">Support</h3>
 

@@ -5,6 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import tn.gov.ms.sidra.dto.formulaire.StatistiquesDTO;
 import tn.gov.ms.sidra.entity.Formulaire;
+import tn.gov.ms.sidra.entity.Gouvernorat;
+import tn.gov.ms.sidra.entity.TestDepistage;
 import tn.gov.ms.sidra.repository.FormulaireRepository;
 import tn.gov.ms.sidra.repository.GouvernoratRepository;
 
@@ -47,6 +49,7 @@ public class StatistiquesServiceImpl {
                 sexe, anneeConsultation, moisConsultation, dateDebut, dateFin,
                 gouvernorat, structureId, ageMin, ageMax
         );
+        log.info("Comorbidites = {}", getComorbidites(formulaires));
 
         return StatistiquesDTO.builder()
                 .totalConsultations((long) formulaires.size())
@@ -98,7 +101,7 @@ public class StatistiquesServiceImpl {
     private boolean filterFormulaire(Formulaire f, String sexe, Integer annee, Integer mois,
                                      String gouvernorat, Integer ageMin, Integer ageMax) {
         if (sexe != null && !sexe.equalsIgnoreCase("tous") &&
-                !f.getPatient().getGenre().name().equalsIgnoreCase(sexe)) {
+                !f.getPatient().getGenre().equalsIgnoreCase(sexe)) {
             return false;
         }
 
@@ -129,10 +132,10 @@ public class StatistiquesServiceImpl {
 
     private StatistiquesDTO.RepartitionSexe getRepartitionSexe(List<Formulaire> formulaires) {
         long hommes = formulaires.stream()
-                .filter(f -> f.getPatient().getGenre().name().equalsIgnoreCase("HOMME"))
+                .filter(f -> f.getPatient().getGenre().equalsIgnoreCase("HOMME"))
                 .count();
         long femmes = formulaires.stream()
-                .filter(f -> f.getPatient().getGenre().name().equalsIgnoreCase("FEMME"))
+                .filter(f -> f.getPatient().getGenre().equalsIgnoreCase("FEMME"))
                 .count();
 
         return StatistiquesDTO.RepartitionSexe.builder()
@@ -247,7 +250,7 @@ public class StatistiquesServiceImpl {
     private List<StatistiquesDTO.ParSexe> getDemandesParSexe(List<Formulaire> formulaires) {
         Map<String, Long> sexes = formulaires.stream()
                 .collect(Collectors.groupingBy(
-                        f -> f.getPatient().getGenre().name(),
+                        f -> f.getPatient().getGenre(),
                         Collectors.counting()
                 ));
 
@@ -258,23 +261,30 @@ public class StatistiquesServiceImpl {
                         .build())
                 .collect(Collectors.toList());
     }
-
     private List<StatistiquesDTO.ParRegion> getDemandesParRegion(List<Formulaire> formulaires) {
+
         Map<String, Long> regions = formulaires.stream()
                 .filter(f -> f.getGouvernoratResidence() != null)
                 .collect(Collectors.groupingBy(
-                        Formulaire::getGouvernoratResidence,
+                        Formulaire::getGouvernoratResidence, // ID gouvernorat
                         Collectors.counting()
                 ));
 
         return regions.entrySet().stream()
-                .map(e -> StatistiquesDTO.ParRegion.builder()
-                        .region(e.getKey())
-                        .nombre(e.getValue())
-                        .build())
+                .map(e -> {
+                    Gouvernorat gouvernorat = gouvernoratRepository
+                            .findById(Long.valueOf(e.getKey()))
+                            .orElse(null);
+
+                    return StatistiquesDTO.ParRegion.builder()
+                            .region(gouvernorat != null ? gouvernorat.getNom() : "Inconnu")
+                            .nombre(e.getValue())
+                            .build();
+                })
                 .sorted(Comparator.comparing(StatistiquesDTO.ParRegion::getNombre).reversed())
                 .collect(Collectors.toList());
     }
+
 
     private List<StatistiquesDTO.ParProfession> getDemandesParProfession(List<Formulaire> formulaires) {
         Map<String, Long> professions = formulaires.stream()
@@ -401,9 +411,9 @@ public class StatistiquesServiceImpl {
             List<Formulaire> formulaires) {
         Map<String, Long> motifs = formulaires.stream()
                 .filter(f -> f.getCadreConsultation() != null &&
-                        f.getCadreConsultation().getMotifConsultation() != null)
+                        f.getMotifConsultationAnterieure() != null)
                 .collect(Collectors.groupingBy(
-                        f -> f.getCadreConsultation().getMotifConsultation(),
+                        Formulaire::getMotifConsultationAnterieure,
                         Collectors.counting()
                 ));
 
@@ -578,8 +588,12 @@ public class StatistiquesServiceImpl {
             if (f.getTypeAlcool() != null) {
                 var typeAlcool = f.getTypeAlcool();
                 if (Boolean.TRUE.equals(typeAlcool.getBiere())) types.merge("Bière", 1L, Long::sum);
-                if (Boolean.TRUE.equals(typeAlcool.getVin())) types.merge("Vin", 1L, Long::sum);
-                if (Boolean.TRUE.equals(typeAlcool.getAlcoolFort())) types.merge("Alcool fort", 1L, Long::sum);
+                if (Boolean.TRUE.equals(typeAlcool.getLiqueurs())) types.merge("Liqueurs", 1L, Long::sum);
+                if (Boolean.TRUE.equals(typeAlcool.getAlcoolBruler())) types.merge("Alcool à brûler", 1L, Long::sum);
+                if (Boolean.TRUE.equals(typeAlcool.getLegmi())) types.merge("Legmi", 1L, Long::sum);
+                if (Boolean.TRUE.equals(typeAlcool.getLegmi())) types.merge("Boukha", 1L, Long::sum);
+
+
             }
         }
 
@@ -614,12 +628,12 @@ public class StatistiquesServiceImpl {
         for (Formulaire f : formulaires) {
             if (f.getEntourageSpa() != null) {
                 var entourage = f.getEntourageSpa();
-                if (Boolean.TRUE.equals(entourage.getPere())) liens.merge("Père", 1L, Long::sum);
-                if (Boolean.TRUE.equals(entourage.getMere())) liens.merge("Mère", 1L, Long::sum);
-                if (Boolean.TRUE.equals(entourage.getFrere())) liens.merge("Frère", 1L, Long::sum);
-                if (Boolean.TRUE.equals(entourage.getSoeur())) liens.merge("Sœur", 1L, Long::sum);
-                if (Boolean.TRUE.equals(entourage.getConjoint())) liens.merge("Conjoint", 1L, Long::sum);
-                if (Boolean.TRUE.equals(entourage.getAmi())) liens.merge("Ami", 1L, Long::sum);
+                if (Boolean.TRUE.equals(entourage.getMembresFamille())) liens.merge("Membre(s) de la famille", 1L, Long::sum);
+                if (Boolean.TRUE.equals(entourage.getAmis())) liens.merge("Ami(e)s", 1L, Long::sum);
+                if (Boolean.TRUE.equals(entourage.getMilieuProfessionnel())) liens.merge("Milieu professionnel", 1L, Long::sum);
+                if (Boolean.TRUE.equals(entourage.getMilieuSportif())) liens.merge("Milieu sportif", 1L, Long::sum);
+                if (Boolean.TRUE.equals(entourage.getMilieuScolaire())) liens.merge("Milieu scolaire et universitaire ", 1L, Long::sum);
+                if (Boolean.TRUE.equals(entourage.getAutre())) liens.merge("Autres", 1L, Long::sum);
             }
         }
 
@@ -901,29 +915,30 @@ public class StatistiquesServiceImpl {
                 .sorted(Comparator.comparing(StatistiquesDTO.ParVoieAdministration::getNombre).reversed())
                 .collect(Collectors.toList());
     }
-
     private StatistiquesDTO.TestsDepistage getTestsDepistage(List<Formulaire> formulaires) {
-        long testsVih = 0, testsVhc = 0, testsVhb = 0, testsSyphilis = 0, positifs = 0;
+
+        long testsVih = 0;
+        long testsVhc = 0;
+        long testsVhb = 0;
+        long testsSyphilis = 0;
 
         for (Formulaire f : formulaires) {
-            for (var test : f.getTestsDepistage()) {
+            if (f.getTestsDepistage() == null) {
+                continue;
+            }
+
+            for (TestDepistage test : f.getTestsDepistage()) {
+
+                // ✅ Ne compter que les tests réalisés
+                if (!Boolean.TRUE.equals(test.getRealise())) {
+                    continue;
+                }
+
                 switch (test.getTypeTest()) {
-                    case VIH -> {
-                        testsVih++;
-                        if ("POSITIF".equalsIgnoreCase(test.getResultat())) positifs++;
-                    }
-                    case VHC -> {
-                        testsVhc++;
-                        if ("POSITIF".equalsIgnoreCase(test.getResultat())) positifs++;
-                    }
-                    case VHB -> {
-                        testsVhb++;
-                        if ("POSITIF".equalsIgnoreCase(test.getResultat())) positifs++;
-                    }
-                    case SYPHILIS -> {
-                        testsSyphilis++;
-                        if ("POSITIF".equalsIgnoreCase(test.getResultat())) positifs++;
-                    }
+                    case VIH -> testsVih++;
+                    case VHC -> testsVhc++;
+                    case VHB -> testsVhb++;
+                    case SYPHILIS -> testsSyphilis++;
                 }
             }
         }
@@ -933,25 +948,36 @@ public class StatistiquesServiceImpl {
                 .nombreTestsVhc(testsVhc)
                 .nombreTestsVhb(testsVhb)
                 .nombreTestsSyphilis(testsSyphilis)
-                .nombreUsagersAtteints(positifs)
                 .build();
     }
 
+
     private StatistiquesDTO.Comorbidites getComorbidites(List<Formulaire> formulaires) {
+
+        long troublesAlimentairesCount = formulaires.stream()
+                .filter(f -> Boolean.TRUE.equals(f.getTroublesAlimentaires()))
+                .count();
+        log.info("Comorbidités - Troubles alimentaires : {}", troublesAlimentairesCount);
+
+        long atcdPsychPersoCount = formulaires.stream()
+                .filter(f -> Boolean.TRUE.equals(f.getComorbiditePsychiatriquePersonnelle()))
+                .count();
+        log.info("Comorbidités - ATCD psychiatriques personnels : {}", atcdPsychPersoCount);
+
+        long atcdSomatiquesPersoCount = formulaires.stream()
+                .filter(f -> Boolean.TRUE.equals(f.getComorbiditeSomatiquePersonnelle()))
+                .count();
+        log.info("Comorbidités - ATCD somatiques personnels : {}", atcdSomatiquesPersoCount);
+
         return StatistiquesDTO.Comorbidites.builder()
-                .frequenceTroublesAlimentaires(formulaires.stream()
-                        .filter(f -> Boolean.TRUE.equals(f.getTroublesAlimentaires()))
-                        .count())
-                .frequenceAtcdPsychiatriquesPersonnels(formulaires.stream()
-                        .filter(f -> Boolean.TRUE.equals(f.getComorbiditePsychiatriquePersonnelle()))
-                        .count())
-                .frequenceAtcdSomatiquesPersonnels(formulaires.stream()
-                        .filter(f -> Boolean.TRUE.equals(f.getComorbiditeSomatiquePersonnelle()))
-                        .count())
+                .frequenceTroublesAlimentaires(troublesAlimentairesCount)
+                .frequenceAtcdPsychiatriquesPersonnels(atcdPsychPersoCount)
+                .frequenceAtcdSomatiquesPersonnels(atcdSomatiquesPersoCount)
                 .atcdPsychiatriquesPlusFrequents(getAtcdPsychiatriques(formulaires))
                 .atcdSomatiquesPlusFrequents(getAtcdSomatiques(formulaires))
                 .build();
     }
+
 
     private List<StatistiquesDTO.ParTypeComorbidite> getAtcdPsychiatriques(List<Formulaire> formulaires) {
         Map<String, Long> atcds = formulaires.stream()
@@ -961,7 +987,7 @@ public class StatistiquesServiceImpl {
                         Formulaire::getComorbiditePsychiatriquePersonnellePrecision,
                         Collectors.counting()
                 ));
-
+            log.info("ani hne");
         return atcds.entrySet().stream()
                 .map(e -> StatistiquesDTO.ParTypeComorbidite.builder()
                         .type(e.getKey())

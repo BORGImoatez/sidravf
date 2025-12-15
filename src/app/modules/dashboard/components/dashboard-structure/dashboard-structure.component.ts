@@ -4,6 +4,8 @@ import { FormsModule } from '@angular/forms';
 import { StatisticsService } from '../../../../services/statistics.service';
 import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration, ChartOptions, ChartType } from 'chart.js';
+import {Gouvernorat} from "../../../../models/user.model";
+import {UserService} from "../../../../services/user.service";
 
 interface FilterParams {
   sexe?: string;
@@ -26,12 +28,370 @@ export class DashboardStructureComponent implements OnInit {
   statistiques: any;
   loading = false;
   error: string | null = null;
+  showFilters = true;
 
   filters: FilterParams = {
     sexe: 'tous'
   };
 
+  // Enhanced Chart Options
+  public pieChartOptions: ChartOptions<'pie'> = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        position: 'bottom',
+        labels: {
+          padding: 15,
+          font: { size: 12 },
+          usePointStyle: true
+        }
+      },
+      tooltip: {
+        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+        padding: 12,
+        titleFont: { size: 14, weight: 'bold' },
+        bodyFont: { size: 13 },
+        cornerRadius: 8
+      }
+    }
+  };
+
+  public barChartOptions: ChartOptions<'bar'> = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        position: 'top',
+        labels: {
+          padding: 15,
+          font: { size: 12 },
+          usePointStyle: true
+        }
+      },
+      tooltip: {
+        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+        padding: 12,
+        titleFont: { size: 14, weight: 'bold' },
+        bodyFont: { size: 13 },
+        cornerRadius: 8
+      }
+    },
+    scales: {
+      y: {
+        beginAtZero: true,
+        grid: {
+          color: 'rgba(0, 0, 0, 0.05)'
+        },
+        ticks: {
+          font: { size: 11 }
+        }
+      },
+      x: {
+        grid: {
+          display: false
+        },
+        ticks: {
+          font: { size: 11 }
+        }
+      }
+    }
+  };
+
+  public lineChartOptions: ChartOptions<'line'> = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        position: 'top',
+        labels: {
+          padding: 15,
+          font: { size: 12 },
+          usePointStyle: true
+        }
+      },
+      tooltip: {
+        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+        padding: 12,
+        titleFont: { size: 14, weight: 'bold' },
+        bodyFont: { size: 13 },
+        cornerRadius: 8
+      }
+    },
+    scales: {
+      y: {
+        beginAtZero: true,
+        grid: {
+          color: 'rgba(0, 0, 0, 0.05)'
+        }
+      },
+      x: {
+        grid: {
+          display: false
+        }
+      }
+    }
+  };
+
+  public doughnutChartOptions: ChartOptions<'doughnut'> = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        position: 'bottom',
+        labels: {
+          padding: 15,
+          font: { size: 12 },
+          usePointStyle: true
+        }
+      },
+      tooltip: {
+        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+        padding: 12,
+        titleFont: { size: 14, weight: 'bold' },
+        bodyFont: { size: 13 },
+        cornerRadius: 8
+      }
+    },
+    cutout: '65%'
+  };
+
+  public pieChartType = 'pie' as const;
+  public barChartType = 'bar' as const;
+  public lineChartType = 'line' as const;
+  public doughnutChartType = 'doughnut' as const;
+
+  // Chart Data
+  public sexeChartData: ChartConfiguration<'doughnut'>['data'] | null = null;
+  public ageChartData: ChartConfiguration<'bar'>['data'] | null = null;
+  public substancesChartData: ChartConfiguration<'bar'>['data'] | null = null;
+  public regionChartData: ChartConfiguration<'bar'>['data'] | null = null;
+  public professionChartData: ChartConfiguration<'doughnut'>['data'] | null = null;
+  public modesAdministrationChartData: ChartConfiguration<'pie'>['data'] | null = null;
+  public testDepistageChartData: ChartConfiguration<'bar'>['data'] | null = null;
+  public modalitesChartData: ChartConfiguration<'bar'>['data'] | null = null;
+  public secteurChartData: ChartConfiguration<'doughnut'>['data'] | null = null;
+  public nationaliteChartData: ChartConfiguration<'bar'>['data'] | null = null;
+  public niveauScolaireChartData: ChartConfiguration<'bar'>['data'] | null = null;
+  public typesAlcoolChartData: ChartConfiguration<'bar'>['data'] | null = null;
+  public spaEntourageChartData: ChartConfiguration<'bar'>['data'] | null = null;
+  public associationsSpaChartData: ChartConfiguration<'bar'>['data'] | null = null;
+  public substancesPrincipalesChartData: ChartConfiguration<'bar'>['data'] | null = null;
+  public autresAddictionsChartData: ChartConfiguration<'bar'>['data'] | null = null;
+  public testDepistageDetailChartData: ChartConfiguration<'bar'>['data'] | null = null;
+
+  // New charts for remaining indicators
+  public tabacChartData: ChartConfiguration<'line'>['data'] | null = null;
+  public alcoolChartData: ChartConfiguration<'bar'>['data'] | null = null;
+  public comorbiditeChartData: ChartConfiguration<'bar'>['data'] | null = null;
+  public consultationsChartData: ChartConfiguration<'line'>['data'] | null = null;
+  public demandesTraitementSexeChartData: ChartConfiguration<'doughnut'>['data'] | null = null;
+  public demandesTraitementSubstanceChartData: ChartConfiguration<'bar'>['data'] | null = null;
+// 1. Charts manquants à déclarer
+  public situationFamilialeChartData: ChartConfiguration<'doughnut'>['data'] | null = null;
+  public motifConsultationChartData: ChartConfiguration<'bar'>['data'] | null = null;
+  public couvertureSocialeChartData: ChartConfiguration<'doughnut'>['data'] | null = null;
+  public situationLogementChartData: ChartConfiguration<'bar'>['data'] | null = null;
+  public natureLogementChartData: ChartConfiguration<'doughnut'>['data'] | null = null;
+  public frequenceTabacChartData: ChartConfiguration<'bar'>['data'] | null = null;
+  public frequenceAlcoolChartData: ChartConfiguration<'bar'>['data'] | null = null;
+  public lienConsommateurEntourageChartData: ChartConfiguration<'bar'>['data'] | null = null;
+  public spaInitiationChartData: ChartConfiguration<'bar'>['data'] | null = null;
+  public frequenceSubstancePrincipaleChartData: ChartConfiguration<'bar'>['data'] | null = null;
+  public voiesAdministrationChartData: ChartConfiguration<'bar'>['data'] | null = null;
+  public atcdPsychiatriquesChartData: ChartConfiguration<'bar'>['data'] | null = null;
+  public atcdSomatiquesChartData: ChartConfiguration<'bar'>['data'] | null = null;
+
+// 2. Ajoutez ces méthodes dans buildCharts()
+  private buildMissingCharts(): void {
+    // Situation Familiale
+    if (this.statistiques.demandesTraitement?.parSituationFamiliale) {
+      this.situationFamilialeChartData = {
+        labels: this.statistiques.demandesTraitement.parSituationFamiliale.map((item: any) => item.situation),
+        datasets: [{
+          data: this.statistiques.demandesTraitement.parSituationFamiliale.map((item: any) => item.nombre),
+          backgroundColor: this.colorPalettes.primary,
+          borderWidth: 0
+        }]
+      };
+    }
+
+    // Motif de Consultation
+    if (this.statistiques.cse?.parMotifConsultation) {
+      this.motifConsultationChartData = {
+        labels: this.statistiques.cse.parMotifConsultation.map((item: any) =>
+            item.motif.replace(/_/g, ' ')
+        ),
+        datasets: [{
+          label: 'Patients',
+          data: this.statistiques.cse.parMotifConsultation.map((item: any) => item.nombre),
+          backgroundColor: this.colorPalettes.warm,
+          borderRadius: 8,
+          borderSkipped: false
+        }]
+      };
+    }
+
+    // Couverture Sociale
+    if (this.statistiques.cse?.parCouvertureSociale) {
+      this.couvertureSocialeChartData = {
+        labels: this.statistiques.cse.parCouvertureSociale.map((item: any) => item.type),
+        datasets: [{
+          data: this.statistiques.cse.parCouvertureSociale.map((item: any) => item.nombre),
+          backgroundColor: this.colorPalettes.gradient,
+          borderWidth: 0
+        }]
+      };
+    }
+
+    // Situation de Logement
+    if (this.statistiques.cse?.parSituationLogement) {
+      this.situationLogementChartData = {
+        labels: this.statistiques.cse.parSituationLogement.map((item: any) =>
+            item.situation.replace(/_/g, ' ')
+        ),
+        datasets: [{
+          label: 'Patients',
+          data: this.statistiques.cse.parSituationLogement.map((item: any) => item.nombre),
+          backgroundColor: this.colorPalettes.multi,
+          borderRadius: 8,
+          borderSkipped: false
+        }]
+      };
+    }
+
+    // Nature du Logement
+    if (this.statistiques.cse?.parNatureLogement) {
+      this.natureLogementChartData = {
+        labels: this.statistiques.cse.parNatureLogement.map((item: any) => item.nature),
+        datasets: [{
+          data: this.statistiques.cse.parNatureLogement.map((item: any) => item.nombre),
+          backgroundColor: ['#667eea', '#fa709a'],
+          borderWidth: 0
+        }]
+      };
+    }
+
+    // Fréquence Tabac
+    if (this.statistiques.tabac?.parFrequenceTabac) {
+      this.frequenceTabacChartData = {
+        labels: this.statistiques.tabac.parFrequenceTabac.map((item: any) => item.frequence),
+        datasets: [{
+          label: 'Fumeurs',
+          data: this.statistiques.tabac.parFrequenceTabac.map((item: any) => item.nombre),
+          backgroundColor: this.colorPalettes.warm,
+          borderRadius: 8,
+          borderSkipped: false
+        }]
+      };
+    }
+
+    // Fréquence Alcool
+    if (this.statistiques.alcool?.parFrequenceAlcool) {
+      this.frequenceAlcoolChartData = {
+        labels: this.statistiques.alcool.parFrequenceAlcool.map((item: any) =>
+            item.frequence.replace(/_/g, ' ')
+        ),
+        datasets: [{
+          label: 'Consommateurs',
+          data: this.statistiques.alcool.parFrequenceAlcool.map((item: any) => item.nombre),
+          backgroundColor: this.colorPalettes.gradient,
+          borderRadius: 8,
+          borderSkipped: false
+        }]
+      };
+    }
+
+    // Lien Consommateur dans l'Entourage
+    if (this.statistiques.spaEntourage?.parLienConsommateur) {
+      this.lienConsommateurEntourageChartData = {
+        labels: this.statistiques.spaEntourage.parLienConsommateur.map((item: any) => item.lien),
+        datasets: [{
+          label: 'Fréquence',
+          data: this.statistiques.spaEntourage.parLienConsommateur.map((item: any) => item.nombre),
+          backgroundColor: this.colorPalettes.primary,
+          borderRadius: 8,
+          borderSkipped: false
+        }]
+      };
+    }
+
+    // SPA d'Initiation
+    if (this.statistiques.spaPersonnelle?.spaInitiation) {
+      this.spaInitiationChartData = {
+        labels: this.statistiques.spaPersonnelle.spaInitiation.map((item: any) => item.type),
+        datasets: [{
+          label: 'Nombre',
+          data: this.statistiques.spaPersonnelle.spaInitiation.map((item: any) => item.nombre),
+          backgroundColor: this.colorPalettes.warm,
+          borderRadius: 8,
+          borderSkipped: false
+        }]
+      };
+    }
+
+    // Fréquence Substance Principale
+    if (this.statistiques.spaPersonnelle?.frequenceSubstancePrincipale) {
+      this.frequenceSubstancePrincipaleChartData = {
+        labels: this.statistiques.spaPersonnelle.frequenceSubstancePrincipale.map((item: any) =>
+            item.frequence.replace(/_/g, ' ')
+        ),
+        datasets: [{
+          label: 'Usagers',
+          data: this.statistiques.spaPersonnelle.frequenceSubstancePrincipale.map((item: any) => item.nombre),
+          backgroundColor: this.colorPalettes.gradient,
+          borderRadius: 8,
+          borderSkipped: false
+        }]
+      };
+    }
+
+    // Voies d'Administration
+    if (this.statistiques.comportementsEtTests?.parVoieAdministration) {
+      this.voiesAdministrationChartData = {
+        labels: this.statistiques.comportementsEtTests.parVoieAdministration.map((item: any) => item.voie),
+        datasets: [{
+          label: 'Fréquence',
+          data: this.statistiques.comportementsEtTests.parVoieAdministration.map((item: any) => item.nombre),
+          backgroundColor: this.colorPalettes.multi,
+          borderRadius: 8,
+          borderSkipped: false
+        }]
+      };
+    }
+
+    // ATCD Psychiatriques (Top 5)
+    if (this.statistiques.comorbidites?.atcdPsychiatriquesPlusFrequents) {
+      const top5Psy = this.statistiques.comorbidites.atcdPsychiatriquesPlusFrequents.slice(0, 5);
+      this.atcdPsychiatriquesChartData = {
+        labels: top5Psy.map((item: any) => item.type),
+        datasets: [{
+          label: 'Fréquence',
+          data: top5Psy.map((item: any) => item.nombre),
+          backgroundColor: this.colorPalettes.warm,
+          borderRadius: 8,
+          borderSkipped: false
+        }]
+      };
+    }
+
+    // ATCD Somatiques (Top 5)
+    if (this.statistiques.comorbidites?.atcdSomatiquesPlusFrequents) {
+      const top5Som = this.statistiques.comorbidites.atcdSomatiquesPlusFrequents.slice(0, 5);
+      this.atcdSomatiquesChartData = {
+        labels: top5Som.map((item: any) => item.type),
+        datasets: [{
+          label: 'Fréquence',
+          data: top5Som.map((item: any) => item.nombre),
+          backgroundColor: this.colorPalettes.primary,
+          borderRadius: 8,
+          borderSkipped: false
+        }]
+      };
+    }
+  }
   anneesDisponibles: number[] = [];
+  gouvernoratsDisponibles: Gouvernorat[] = [];
   moisOptions = [
     { value: 0, label: 'Tous' },
     { value: 1, label: 'Janvier' },
@@ -59,56 +419,24 @@ export class DashboardStructureComponent implements OnInit {
 
   usePeriode = false;
 
-  public pieChartOptions: ChartOptions<'pie'> = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: {
-        position: 'bottom'
-      }
-    }
+  // Color palettes
+  private colorPalettes = {
+    primary: ['#667eea', '#764ba2', '#f093fb', '#4facfe'],
+    gradient: ['#667eea', '#764ba2', '#f093fb', '#4facfe', '#00f2fe', '#43e97b'],
+    warm: ['#fa709a', '#fee140', '#30cfd0', '#667eea'],
+    multi: ['#667eea', '#764ba2', '#f093fb', '#4facfe', '#00f2fe', '#43e97b', '#fa709a', '#fee140']
   };
 
-  public barChartOptions: ChartOptions<'bar'> = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: {
-        position: 'top'
-      }
-    },
-    scales: {
-      y: {
-        beginAtZero: true
-      }
-    }
-  };
-
-  public pieChartType = 'pie' as const;
-  public barChartType = 'bar' as const;
-
-  public sexeChartData: ChartConfiguration<'pie'>['data'] | null = null;
-  public ageChartData: ChartConfiguration<'bar'>['data'] | null = null;
-  public substancesChartData: ChartConfiguration<'bar'>['data'] | null = null;
-  public professionChartData: ChartConfiguration<'pie'>['data'] | null = null;
-  public modesAdministrationChartData: ChartConfiguration<'pie'>['data'] | null = null;
-  public testDepistageChartData: ChartConfiguration<'bar'>['data'] | null = null;
-  public modalitesChartData: ChartConfiguration<'bar'>['data'] | null = null;
-  public secteurChartData: ChartConfiguration<'pie'>['data'] | null = null;
-  public nationaliteChartData: ChartConfiguration<'bar'>['data'] | null = null;
-  public niveauScolaireChartData: ChartConfiguration<'bar'>['data'] | null = null;
-  public typesAlcoolChartData: ChartConfiguration<'bar'>['data'] | null = null;
-  public spaEntourageChartData: ChartConfiguration<'bar'>['data'] | null = null;
-  public associationsSpaChartData: ChartConfiguration<'bar'>['data'] | null = null;
-  public substancesPrincipalesChartData: ChartConfiguration<'bar'>['data'] | null = null;
-  public autresAddictionsChartData: ChartConfiguration<'bar'>['data'] | null = null;
-  public testDepistageDetailChartData: ChartConfiguration<'bar'>['data'] | null = null;
-
-  constructor(private statisticsService: StatisticsService) {}
+  constructor(private statisticsService: StatisticsService,private userService: UserService) {}
 
   ngOnInit(): void {
     this.loadAnneesDisponibles();
+    this.loadGouvernoratsDisponibles();
     this.loadStatistiques();
+  }
+
+  toggleFilters(): void {
+    this.showFilters = !this.showFilters;
   }
 
   loadAnneesDisponibles(): void {
@@ -118,6 +446,17 @@ export class DashboardStructureComponent implements OnInit {
       },
       error: (error) => {
         console.error('Erreur lors du chargement des années:', error);
+      }
+    });
+  }
+
+  loadGouvernoratsDisponibles(): void {
+    this.userService.getGouvernorats().subscribe({
+      next: (gouvernorats) => {
+        this.gouvernoratsDisponibles = gouvernorats;
+      },
+      error: (error) => {
+        console.error('Erreur lors du chargement des gouvernorats:', error);
       }
     });
   }
@@ -142,7 +481,9 @@ export class DashboardStructureComponent implements OnInit {
 
   buildCharts(): void {
     if (!this.statistiques) return;
+    this.buildMissingCharts();
 
+    // Répartition par sexe (Doughnut)
     if (this.statistiques.repartitionSexe) {
       this.sexeChartData = {
         labels: ['Hommes', 'Femmes'],
@@ -151,174 +492,309 @@ export class DashboardStructureComponent implements OnInit {
             this.statistiques.repartitionSexe.hommes || 0,
             this.statistiques.repartitionSexe.femmes || 0
           ],
-          backgroundColor: ['#3498db', '#e74c3c'],
-          hoverBackgroundColor: ['#2980b9', '#c0392b']
+          backgroundColor: ['#667eea', '#f093fb'],
+          borderWidth: 0
         }]
       };
     }
 
+    // Répartition par âge
     if (this.statistiques.demandesTraitement?.parAge) {
       this.ageChartData = {
         labels: this.statistiques.demandesTraitement.parAge.map((item: any) => item.tranche),
         datasets: [{
-          label: 'Nombre de demandes',
+          label: 'Demandes',
           data: this.statistiques.demandesTraitement.parAge.map((item: any) => item.nombre),
-          backgroundColor: '#3498db',
-          hoverBackgroundColor: '#2980b9'
+          backgroundColor: this.colorPalettes.gradient,
+          borderRadius: 8,
+          borderSkipped: false
         }]
       };
     }
 
+    // Substances consommées
     if (this.statistiques.spaPersonnelle?.topSpaConsommees) {
       this.substancesChartData = {
         labels: this.statistiques.spaPersonnelle.topSpaConsommees.map((item: any) => item.type),
         datasets: [{
-          label: 'Nombre de consommateurs',
+          label: 'Consommateurs',
           data: this.statistiques.spaPersonnelle.topSpaConsommees.map((item: any) => item.nombre),
-          backgroundColor: '#27ae60',
-          hoverBackgroundColor: '#229954'
+          backgroundColor: this.colorPalettes.warm,
+          borderRadius: 8,
+          borderSkipped: false
         }]
       };
     }
 
+    // Répartition par région
+    if (this.statistiques.demandesTraitement?.parRegion) {
+      const topRegions = this.statistiques.demandesTraitement.parRegion.slice(0, 10);
+      this.regionChartData = {
+        labels: topRegions.map((item: any) => item.region),
+        datasets: [{
+          label: 'Demandes',
+          data: topRegions.map((item: any) => item.nombre),
+          backgroundColor: this.colorPalettes.primary,
+          borderRadius: 8,
+          borderSkipped: false
+        }]
+      };
+    }
+
+    // Répartition par profession (Doughnut)
     if (this.statistiques.demandesTraitement?.parProfession) {
       const topProfessions = this.statistiques.demandesTraitement.parProfession.slice(0, 8);
       this.professionChartData = {
         labels: topProfessions.map((item: any) => item.profession),
         datasets: [{
           data: topProfessions.map((item: any) => item.nombre),
-          backgroundColor: [
-            '#e74c3c', '#3498db', '#2ecc71', '#f39c12',
-            '#1abc9c', '#34495e', '#e67e22', '#95a5a6'
-          ]
+          backgroundColor: this.colorPalettes.multi,
+          borderWidth: 0
         }]
       };
     }
 
+    // Demandes traitement par sexe
+    if (this.statistiques.demandesTraitement?.parSexe) {
+      this.demandesTraitementSexeChartData = {
+        labels: this.statistiques.demandesTraitement.parSexe.map((item: any) => item.sexe),
+        datasets: [{
+          data: this.statistiques.demandesTraitement.parSexe.map((item: any) => item.nombre),
+          backgroundColor: ['#667eea', '#f093fb'],
+          borderWidth: 0
+        }]
+      };
+    }
+
+    // Demandes traitement par substance
+    if (this.statistiques.demandesTraitement?.parSubstance) {
+      const topSubstances = this.statistiques.demandesTraitement.parSubstance.slice(0, 10);
+      this.demandesTraitementSubstanceChartData = {
+        labels: topSubstances.map((item: any) => item.substance),
+        datasets: [{
+          label: 'Demandes',
+          data: topSubstances.map((item: any) => item.nombre),
+          backgroundColor: this.colorPalettes.gradient,
+          borderRadius: 8,
+          borderSkipped: false
+        }]
+      };
+    }
+
+    // Modes d'administration
     if (this.statistiques.modesAdministration) {
       this.modesAdministrationChartData = {
         labels: this.statistiques.modesAdministration.map((item: any) => item.mode),
         datasets: [{
           data: this.statistiques.modesAdministration.map((item: any) => item.frequence),
-          backgroundColor: [
-            '#e74c3c', '#3498db', '#2ecc71', '#f39c12', '#1abc9c'
-          ]
+          backgroundColor: this.colorPalettes.warm,
+          borderWidth: 0
         }]
       };
     }
 
+    // Tests de dépistage
     if (this.statistiques.comportementsEtTests?.testsDepistage) {
       const tests = this.statistiques.comportementsEtTests.testsDepistage;
       this.testDepistageChartData = {
         labels: ['VIH', 'VHC', 'VHB', 'Syphilis'],
         datasets: [{
-          label: 'Nombre de tests',
+          label: 'Tests effectués',
           data: [
             tests.nombreTestsVih || 0,
             tests.nombreTestsVhc || 0,
             tests.nombreTestsVhb || 0,
             tests.nombreTestsSyphilis || 0
           ],
-          backgroundColor: '#e67e22',
-          hoverBackgroundColor: '#d35400'
+          backgroundColor: this.colorPalettes.primary,
+          borderRadius: 8,
+          borderSkipped: false
         }]
+      };
+
+      // Tests détaillés
+      this.testDepistageDetailChartData = {
+        labels: ['VIH', 'VHC', 'VHB', 'Syphilis'],
+        datasets: [
+          {
+            label: 'Tests effectués',
+            data: [
+              tests.nombreTestsVih || 0,
+              tests.nombreTestsVhc || 0,
+              tests.nombreTestsVhb || 0,
+              tests.nombreTestsSyphilis || 0
+            ],
+            backgroundColor: '#667eea',
+            borderRadius: 8,
+            borderSkipped: false
+          },
+          {
+            label: 'Usagers atteints',
+            data: [
+              tests.nombreUsagersAtteints || 0,
+              0,
+              0,
+              0
+            ],
+            backgroundColor: '#fa709a',
+            borderRadius: 8,
+            borderSkipped: false
+          }
+        ]
       };
     }
 
+    // Modalités de prise en charge
     if (this.statistiques.conduiteTherapeutique?.parModalitePriseEnCharge) {
       this.modalitesChartData = {
         labels: this.statistiques.conduiteTherapeutique.parModalitePriseEnCharge.map((item: any) => item.modalite),
         datasets: [{
-          label: 'Nombre de patients',
+          label: 'Patients',
           data: this.statistiques.conduiteTherapeutique.parModalitePriseEnCharge.map((item: any) => item.nombre),
-          backgroundColor: '#1abc9c',
-          hoverBackgroundColor: '#16a085'
+          backgroundColor: this.colorPalettes.gradient,
+          borderRadius: 8,
+          borderSkipped: false
         }]
       };
     }
 
+    // Secteur socio-économique
     if (this.statistiques.cse?.parSecteur) {
       this.secteurChartData = {
         labels: this.statistiques.cse.parSecteur.map((item: any) => item.secteur),
         datasets: [{
           data: this.statistiques.cse.parSecteur.map((item: any) => item.nombre),
-          backgroundColor: ['#3498db', '#e74c3c', '#2ecc71', '#f39c12', '#9b59b6']
+          backgroundColor: this.colorPalettes.primary,
+          borderWidth: 0
         }]
       };
     }
 
+    // Nationalité
     if (this.statistiques.cse?.parNationalite) {
       this.nationaliteChartData = {
         labels: this.statistiques.cse.parNationalite.map((item: any) => item.nationalite),
         datasets: [{
-          label: 'Nombre de patients',
+          label: 'Patients',
           data: this.statistiques.cse.parNationalite.map((item: any) => item.nombre),
-          backgroundColor: '#16a085',
-          hoverBackgroundColor: '#138d75'
+          backgroundColor: this.colorPalettes.warm,
+          borderRadius: 8,
+          borderSkipped: false
         }]
       };
     }
 
+    // Niveau scolaire
     if (this.statistiques.cse?.parNiveauScolaire) {
       this.niveauScolaireChartData = {
         labels: this.statistiques.cse.parNiveauScolaire.map((item: any) => item.niveau),
         datasets: [{
-          label: 'Nombre de patients',
+          label: 'Patients',
           data: this.statistiques.cse.parNiveauScolaire.map((item: any) => item.nombre),
-          backgroundColor: '#8e44ad',
-          hoverBackgroundColor: '#7d3c98'
+          backgroundColor: this.colorPalettes.gradient,
+          borderRadius: 8,
+          borderSkipped: false
         }]
       };
     }
 
+    // Types d'alcool
     if (this.statistiques.alcool?.parTypeAlcool) {
       this.typesAlcoolChartData = {
         labels: this.statistiques.alcool.parTypeAlcool.map((item: any) => item.type),
         datasets: [{
-          label: 'Nombre',
+          label: 'Fréquence',
           data: this.statistiques.alcool.parTypeAlcool.map((item: any) => item.nombre),
-          backgroundColor: '#c0392b',
-          hoverBackgroundColor: '#a93226'
+          backgroundColor: this.colorPalettes.warm,
+          borderRadius: 8,
+          borderSkipped: false
         }]
       };
     }
 
+    // Alcool - Chart général
+    if (this.statistiques.alcool) {
+      this.alcoolChartData = {
+        labels: ['Consommateurs', 'Âge 1ère conso.'],
+        datasets: [{
+          label: 'Statistiques Alcool',
+          data: [
+            this.statistiques.alcool.frequenceConsommateursAlcool || 0,
+            this.statistiques.alcool.moyenneAgePremiereConsommation || 0
+          ],
+          backgroundColor: ['#667eea', '#f093fb'],
+          borderRadius: 8,
+          borderSkipped: false
+        }]
+      };
+    }
+
+    // Tabac - Line chart
+    if (this.statistiques.tabac) {
+      this.tabacChartData = {
+        labels: ['Fumeurs', 'Âge 1ère cigarette', 'Sevrage assisté'],
+        datasets: [{
+          label: 'Statistiques Tabac',
+          data: [
+            this.statistiques.tabac.frequenceTabagiques || 0,
+            this.statistiques.tabac.moyenneAgePremiereCigarette || 0,
+            this.statistiques.tabac.frequenceSevrageAssiste || 0
+          ],
+          borderColor: '#667eea',
+          backgroundColor: 'rgba(102, 126, 234, 0.1)',
+          fill: true,
+          tension: 0.4,
+          pointBackgroundColor: '#667eea',
+          pointBorderColor: '#fff',
+          pointBorderWidth: 2,
+          pointRadius: 6
+        }]
+      };
+    }
+
+    // SPA Entourage
     if (this.statistiques.spaEntourage?.parTypeSpaEntourage) {
       this.spaEntourageChartData = {
         labels: this.statistiques.spaEntourage.parTypeSpaEntourage.map((item: any) => item.type),
         datasets: [{
-          label: 'Nombre',
+          label: 'Fréquence',
           data: this.statistiques.spaEntourage.parTypeSpaEntourage.map((item: any) => item.nombre),
-          backgroundColor: '#d68910',
-          hoverBackgroundColor: '#b9770e'
+          backgroundColor: this.colorPalettes.primary,
+          borderRadius: 8,
+          borderSkipped: false
         }]
       };
     }
 
+    // Associations de SPA
     if (this.statistiques.spaPersonnelle?.associationsUsageFrequentes) {
       this.associationsSpaChartData = {
         labels: this.statistiques.spaPersonnelle.associationsUsageFrequentes.map((item: any) => item.association),
         datasets: [{
-          label: 'Nombre',
+          label: 'Fréquence',
           data: this.statistiques.spaPersonnelle.associationsUsageFrequentes.map((item: any) => item.nombre),
-          backgroundColor: '#28b463',
-          hoverBackgroundColor: '#239b56'
+          backgroundColor: this.colorPalettes.gradient,
+          borderRadius: 8,
+          borderSkipped: false
         }]
       };
     }
 
+    // Substances principales polyconsommateurs
     if (this.statistiques.spaPersonnelle?.substancesPrincipalesPolyConsommateurs) {
       this.substancesPrincipalesChartData = {
         labels: this.statistiques.spaPersonnelle.substancesPrincipalesPolyConsommateurs.map((item: any) => item.type),
         datasets: [{
-          label: 'Nombre',
+          label: 'Fréquence',
           data: this.statistiques.spaPersonnelle.substancesPrincipalesPolyConsommateurs.map((item: any) => item.nombre),
-          backgroundColor: '#2874a6',
-          hoverBackgroundColor: '#21618c'
+          backgroundColor: this.colorPalettes.warm,
+          borderRadius: 8,
+          borderSkipped: false
         }]
       };
     }
 
+    // Autres addictions
     if (this.statistiques.autresAddictions) {
       const addictions = this.statistiques.autresAddictions;
       this.autresAddictionsChartData = {
@@ -330,41 +806,49 @@ export class DashboardStructureComponent implements OnInit {
             addictions.prevalenceAddictionEcrans || 0,
             addictions.prevalenceComportementsSexuelsAddictifs || 0
           ],
-          backgroundColor: ['#cb4335', '#2874a6', '#1e8449'],
-          hoverBackgroundColor: ['#a93226', '#21618c', '#196f3d']
+          backgroundColor: this.colorPalettes.primary,
+          borderRadius: 8,
+          borderSkipped: false
         }]
       };
     }
 
-    if (this.statistiques.comportementsEtTests?.testsDepistage) {
-      const tests = this.statistiques.comportementsEtTests.testsDepistage;
-      this.testDepistageDetailChartData = {
-        labels: ['Tests effectués', 'Usagers atteints'],
-        datasets: [
-          {
-            label: 'VIH',
-            data: [tests.nombreTestsVih || 0, 0],
-            backgroundColor: '#e74c3c'
-          },
-          {
-            label: 'VHC',
-            data: [tests.nombreTestsVhc || 0, 0],
-            backgroundColor: '#3498db'
-          },
-          {
-            label: 'VHB',
-            data: [tests.nombreTestsVhb || 0, 0],
-            backgroundColor: '#2ecc71'
-          },
-          {
-            label: 'Syphilis',
-            data: [tests.nombreTestsSyphilis || 0, 0],
-            backgroundColor: '#f39c12'
-          }
-        ]
+    // Comorbidités
+    if (this.statistiques.comorbidites) {
+      this.comorbiditeChartData = {
+        labels: ['Troubles alimentaires', 'ATCD psychiatriques', 'ATCD somatiques'],
+        datasets: [{
+          label: 'Fréquence',
+          data: [
+            this.statistiques.comorbidites.frequenceTroublesAlimentaires || 0,
+            this.statistiques.comorbidites.frequenceAtcdPsychiatriquesPersonnels || 0,
+            this.statistiques.comorbidites.frequenceAtcdSomatiquesPersonnels || 0
+          ],
+          backgroundColor: this.colorPalettes.warm,
+          borderRadius: 8,
+          borderSkipped: false
+        }]
       };
     }
 
+    // Consultations (Line chart)
+    if (this.statistiques.conduiteTherapeutique) {
+      this.consultationsChartData = {
+        labels: ['Moyenne consultations'],
+        datasets: [{
+          label: 'Nombre de consultations',
+          data: [this.statistiques.conduiteTherapeutique.moyenneNombreConsultations || 0],
+          borderColor: '#f093fb',
+          backgroundColor: 'rgba(240, 147, 251, 0.1)',
+          fill: true,
+          tension: 0.4,
+          pointBackgroundColor: '#f093fb',
+          pointBorderColor: '#fff',
+          pointBorderWidth: 2,
+          pointRadius: 6
+        }]
+      };
+    }
   }
 
   onFilterChange(): void {
@@ -391,7 +875,7 @@ export class DashboardStructureComponent implements OnInit {
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `statistiques_structure_${new Date().toISOString()}.xlsx`;
+        a.download = `statistiques_${new Date().toISOString()}.xlsx`;
         document.body.appendChild(a);
         a.click();
         window.URL.revokeObjectURL(url);
@@ -404,3 +888,4 @@ export class DashboardStructureComponent implements OnInit {
     });
   }
 }
+

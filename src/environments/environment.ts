@@ -1,5 +1,5 @@
 export const environment = {
   production: false,
-  apiUrl: 'https://api.sidra.rns.tn/api'
+  apiUrl: 'http://localhost:9090/api'
 };
 //https://api.sidra.rns.tn/api

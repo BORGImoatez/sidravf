@@ -21,7 +21,7 @@ public class StatistiquesService {
     private final StatistiquesServiceImpl statistiquesServiceImpl;
 
     /**
-     * Récupère les statistiques nationales avec filtres complets
+     * Récupère les statigetGouvernoratResidencestiques nationales avec filtres complets
      */
     public StatistiquesDTO getStatistiquesNationales(
             String sexe, Integer anneeConsultation, Integer moisConsultation,

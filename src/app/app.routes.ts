@@ -1,6 +1,9 @@
 import { Routes } from '@angular/router';
 import { AuthGuard } from './guards/auth.guard';
 import { AdminGuard } from './guards/admin.guard';
+import {
+  DashboardNationalComponent
+} from "./modules/dashboard/components/dashboard-national/dashboard-national.component";
 
 export const routes: Routes = [
   {
@@ -29,6 +32,14 @@ export const routes: Routes = [
     loadComponent: () => import('./components/layout/layout.component').then(m => m.LayoutComponent),
     canActivate: [AuthGuard],
     children: [
+      {
+        path: 'dashboardNational',
+        loadComponent: () => import('./modules/dashboard/components/dashboard-national/dashboard-national.component').then(m => m.DashboardNationalComponent)
+      },
+      {
+        path: 'dashboardStrucutre',
+        loadComponent: () => import('./modules/dashboard/components/dashboard-structure/dashboard-structure.component').then(m => m.DashboardStructureComponent)
+      },
       {
         path: 'dashboard',
         loadComponent: () => import('./components/dashboard/dashboard.component').then(m => m.DashboardComponent)

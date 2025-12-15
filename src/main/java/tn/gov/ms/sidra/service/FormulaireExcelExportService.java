@@ -16,6 +16,7 @@ import tn.gov.ms.sidra.repository.GouvernoratRepository;
 
 import java.io.ByteArrayOutputStream;
 import java.util.Objects;
+import java.util.Optional;
 
 @Service
 @AllArgsConstructor
@@ -135,9 +136,29 @@ public class FormulaireExcelExportService {
             createCell(row, colNum++, f.getGouvernoratStructure());
             createCell(row, colNum++, f.getNationalite());
             createCell(row, colNum++, f.getResidence());
-            createCell(row, colNum++, Objects.requireNonNull(gouvernoratRepository.findById(Long.valueOf(f.getGouvernoratResidence())).orElse(null)).getNom());
-            createCell(row, colNum++, Objects.requireNonNull(delegationRepository.findById(Long.valueOf(f.getDelegationResidence())).orElse(null)).getNom());
-            createCell(row, colNum++, f.getPaysResidence());
+            createCell(
+                    row,
+                    colNum++,
+                    Optional.ofNullable(f.getGouvernoratResidence())
+                            .filter(id -> !id.isBlank())
+                            .map(Long::valueOf)
+                            .flatMap(gouvernoratRepository::findById)
+                            .map(Gouvernorat::getNom)
+                            .orElse("")
+            );
+            createCell(
+                    row,
+                    colNum++,
+                    Optional.ofNullable(f.getDelegationResidence())
+                            .filter(id -> !id.isBlank())
+                            .map(Long::valueOf)
+                            .flatMap(delegationRepository::findById)
+                            .map(Delegation::getNom)
+                            .orElse("")
+            );
+
+
+             createCell(row, colNum++, f.getPaysResidence());
             createCell(row, colNum++, f.getCouvertureSociale());
             createCell(row, colNum++, f.getTypeCouvertureSociale());
             createCell(row, colNum++, f.getTypeCarnetCnam());

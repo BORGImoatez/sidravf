@@ -1,507 +1,901 @@
-<div class="dashboard-structure">
-  <div class="dashboard-header">
-    <h1>Tableau de Bord - Ma Structure</h1>
-    <button class="btn-export" (click)="exportData()">
-      Exporter les données
-    </button>
-  </div>
-
-  <div class="filters-section">
-    <h2>Filtres</h2>
-    <div class="filters-grid">
-      <div class="filter-group">
-        <label>Sexe</label>
-        <select [(ngModel)]="filters.sexe" (change)="onFilterChange()">
-          <option value="tous">Tous</option>
-          <option value="homme">Homme</option>
-          <option value="femme">Femme</option>
-        </select>
-      </div>
-
-      <div class="filter-group">
-        <label>Année de consultation</label>
-        <select [(ngModel)]="filters.anneeConsultation" (change)="onFilterChange()">
-          <option [value]="0">Toutes</option>
-          <option *ngFor="let annee of anneesDisponibles" [value]="annee">{{ annee }}</option>
-        </select>
-      </div>
-
-      <div class="filter-group">
-        <label>Mois de consultation</label>
-        <select [(ngModel)]="filters.moisConsultation" (change)="onFilterChange()">
-          <option *ngFor="let mois of moisOptions" [value]="mois.value">{{ mois.label }}</option>
-        </select>
-      </div>
-
-      <div class="filter-group full-width">
-        <label>
-          <input type="checkbox" [(ngModel)]="usePeriode" (change)="onFilterChange()">
-          Filtrer par période
-        </label>
-      </div>
-
-      <div class="filter-group" *ngIf="usePeriode">
-        <label>Date début</label>
-        <input type="date" [(ngModel)]="filters.dateDebut" (change)="onFilterChange()">
-      </div>
-
-      <div class="filter-group" *ngIf="usePeriode">
-        <label>Date fin</label>
-        <input type="date" [(ngModel)]="filters.dateFin" (change)="onFilterChange()">
-      </div>
-
-      <div class="filter-group">
-        <label>Âge minimum</label>
-        <input type="number" [(ngModel)]="filters.ageMin" (change)="onFilterChange()" min="0">
-      </div>
-
-      <div class="filter-group">
-        <label>Âge maximum</label>
-        <input type="number" [(ngModel)]="filters.ageMax" (change)="onFilterChange()" min="0">
-      </div>
+<div class="dashboard-national">
+    <!-- Header -->
+    <div class="dashboard-header">
+        <div class="header-content">
+            <div class="header-text">
+                <h1>Tableau de Bord de la structure</h1>
+                <p class="subtitle">Système d'Information sur les Drogues et Addictions</p>
+            </div>
+            <div class="header-actions">
+                <button class="btn-icon" (click)="toggleFilters()" title="Filtres">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </button>
+                <button class="btn-export" (click)="exportData()">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    Exporter
+                </button>
+            </div>
+        </div>
     </div>
 
-    <div class="tranches-age">
-      <h3>Filtres rapides par tranche d'âge</h3>
-      <div class="tranches-buttons">
-        <button *ngFor="let tranche of tranchesAge" (click)="selectTrancheAge(tranche)" class="btn-tranche">
-          {{ tranche.label }}
-        </button>
-      </div>
+    <!-- Filters Section -->
+    <div class="filters-section" [class.collapsed]="!showFilters">
+        <div class="filters-header">
+            <h2>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <circle cx="11" cy="11" r="8" stroke-width="2"/>
+                    <path d="M21 21l-4.35-4.35" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+                Filtres de recherche
+            </h2>
+        </div>
+
+        <div class="filters-content">
+            <div class="filters-grid">
+                <div class="filter-group">
+                    <label>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2M12 11a4 4 0 100-8 4 4 0 000 8z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        Sexe
+                    </label>
+                    <select [(ngModel)]="filters.sexe" (change)="onFilterChange()">
+                        <option value="tous">Tous</option>
+                        <option value="homme">Homme</option>
+                        <option value="femme">Femme</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2" stroke-width="2"/>
+                            <path d="M16 2v4M8 2v4M3 10h18" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                        Année
+                    </label>
+                    <select [(ngModel)]="filters.anneeConsultation" (change)="onFilterChange()">
+                        <option [value]="0">Toutes</option>
+                        <option *ngFor="let annee of anneesDisponibles" [value]="annee">{{ annee }}</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2" stroke-width="2"/>
+                            <path d="M16 2v4M8 2v4M3 10h18" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                        Mois
+                    </label>
+                    <select [(ngModel)]="filters.moisConsultation" (change)="onFilterChange()">
+                        <option *ngFor="let mois of moisOptions" [value]="mois.value">{{ mois.label }}</option>
+                    </select>
+                </div>
+
+
+                <div class="filter-group">
+                    <label>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path d="M12 2v20M2 12h20" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                        Âge minimum
+                    </label>
+                    <input type="number" [(ngModel)]="filters.ageMin" (change)="onFilterChange()" min="0" placeholder="Ex: 18">
+                </div>
+
+                <div class="filter-group">
+                    <label>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path d="M12 2v20M2 12h20" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                        Âge maximum
+                    </label>
+                    <input type="number" [(ngModel)]="filters.ageMax" (change)="onFilterChange()" min="0" placeholder="Ex: 65">
+                </div>
+            </div>
+
+            <div class="filter-group-checkbox">
+                <label class="checkbox-label">
+                    <input type="checkbox" [(ngModel)]="usePeriode" (change)="onFilterChange()">
+                    <span class="checkbox-custom"></span>
+                    <span>Filtrer par période spécifique</span>
+                </label>
+            </div>
+
+            <div class="filters-grid" *ngIf="usePeriode">
+                <div class="filter-group">
+                    <label>Date début</label>
+                    <input type="date" [(ngModel)]="filters.dateDebut" (change)="onFilterChange()">
+                </div>
+                <div class="filter-group">
+                    <label>Date fin</label>
+                    <input type="date" [(ngModel)]="filters.dateFin" (change)="onFilterChange()">
+                </div>
+            </div>
+
+            <div class="tranches-age">
+                <h3>Filtres rapides par tranche d'âge</h3>
+                <div class="tranches-buttons">
+                    <button *ngFor="let tranche of tranchesAge"
+                            (click)="selectTrancheAge(tranche)"
+                            class="btn-tranche">
+                        {{ tranche.label }}
+                    </button>
+                </div>
+            </div>
+
+            <div class="filter-actions">
+                <button class="btn-reset" (click)="resetFilters()">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path d="M1 4v6h6M23 20v-6h-6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M20.49 9A9 9 0 005.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 013.51 15" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    Réinitialiser
+                </button>
+            </div>
+        </div>
     </div>
 
-    <div class="filter-actions">
-      <button class="btn-reset" (click)="resetFilters()">Réinitialiser les filtres</button>
-    </div>
-  </div>
-
-  <div class="loading" *ngIf="loading">
-    Chargement des statistiques...
-  </div>
-
-  <div class="error" *ngIf="error">
-    {{ error }}
-  </div>
-
-  <div class="statistics-content" *ngIf="statistiques && !loading">
-    <div class="stats-overview">
-      <div class="stat-card">
-        <h3>Total consultations</h3>
-        <p class="stat-value">{{ statistiques.totalConsultations || 0 }}</p>
-      </div>
-
-      <div class="stat-card">
-        <h3>Hommes</h3>
-        <p class="stat-value">{{ statistiques.repartitionSexe?.hommes || 0 }}</p>
-      </div>
-
-      <div class="stat-card">
-        <h3>Femmes</h3>
-        <p class="stat-value">{{ statistiques.repartitionSexe?.femmes || 0 }}</p>
-      </div>
-
-      <div class="stat-card">
-        <h3>Âge moyen</h3>
-        <p class="stat-value">{{ (statistiques.moyenneAge || 0).toFixed(1) }} ans</p>
-      </div>
-
-      <div class="stat-card">
-        <h3>Décès liés aux drogues</h3>
-        <p class="stat-value">{{ statistiques.decesLieDrogues || 0 }}</p>
-      </div>
+    <!-- Loading State -->
+    <div class="loading-state" *ngIf="loading">
+        <div class="spinner"></div>
+        <p>Chargement des statistiques...</p>
     </div>
 
-    <div class="charts-grid">
-      <div class="chart-card" *ngIf="sexeChartData">
-        <h3>Répartition par Sexe</h3>
-        <div class="chart-container">
-          <canvas baseChart
-                  [data]="sexeChartData"
-                  [type]="pieChartType"
-                  [options]="pieChartOptions">
-          </canvas>
-        </div>
-      </div>
-
-      <div class="chart-card" *ngIf="ageChartData">
-        <h3>Répartition par Âge</h3>
-        <div class="chart-container">
-          <canvas baseChart
-                  [data]="ageChartData"
-                  [type]="barChartType"
-                  [options]="barChartOptions">
-          </canvas>
-        </div>
-      </div>
-
-      <div class="chart-card" *ngIf="substancesChartData">
-        <h3>Substances Psychoactives les Plus Consommées</h3>
-        <div class="chart-container">
-          <canvas baseChart
-                  [data]="substancesChartData"
-                  [type]="barChartType"
-                  [options]="barChartOptions">
-          </canvas>
-        </div>
-      </div>
-
-      <div class="chart-card" *ngIf="professionChartData">
-        <h3>Répartition par Profession</h3>
-        <div class="chart-container">
-          <canvas baseChart
-                  [data]="professionChartData"
-                  [type]="pieChartType"
-                  [options]="pieChartOptions">
-          </canvas>
-        </div>
-      </div>
-
-      <div class="chart-card" *ngIf="modesAdministrationChartData">
-        <h3>Modes d'Administration</h3>
-        <div class="chart-container">
-          <canvas baseChart
-                  [data]="modesAdministrationChartData"
-                  [type]="pieChartType"
-                  [options]="pieChartOptions">
-          </canvas>
-        </div>
-      </div>
-
-      <div class="chart-card" *ngIf="testDepistageChartData">
-        <h3>Tests de Dépistage</h3>
-        <div class="chart-container">
-          <canvas baseChart
-                  [data]="testDepistageChartData"
-                  [type]="barChartType"
-                  [options]="barChartOptions">
-          </canvas>
-        </div>
-      </div>
-
-      <div class="chart-card" *ngIf="modalitesChartData">
-        <h3>Modalités de Prise en Charge</h3>
-        <div class="chart-container">
-          <canvas baseChart
-                  [data]="modalitesChartData"
-                  [type]="barChartType"
-                  [options]="barChartOptions">
-          </canvas>
-        </div>
-      </div>
-
-      <div class="chart-card" *ngIf="secteurChartData">
-        <h3>Répartition par Secteur</h3>
-        <div class="chart-container">
-          <canvas baseChart
-                  [data]="secteurChartData"
-                  [type]="pieChartType"
-                  [options]="pieChartOptions">
-          </canvas>
-        </div>
-      </div>
-
-      <div class="chart-card" *ngIf="nationaliteChartData">
-        <h3>Répartition par Nationalité</h3>
-        <div class="chart-container">
-          <canvas baseChart
-                  [data]="nationaliteChartData"
-                  [type]="barChartType"
-                  [options]="barChartOptions">
-          </canvas>
-        </div>
-      </div>
-
-      <div class="chart-card" *ngIf="niveauScolaireChartData">
-        <h3>Répartition par Niveau Scolaire</h3>
-        <div class="chart-container">
-          <canvas baseChart
-                  [data]="niveauScolaireChartData"
-                  [type]="barChartType"
-                  [options]="barChartOptions">
-          </canvas>
-        </div>
-      </div>
-
-      <div class="chart-card" *ngIf="typesAlcoolChartData">
-        <h3>Types d'Alcool Consommés</h3>
-        <div class="chart-container">
-          <canvas baseChart
-                  [data]="typesAlcoolChartData"
-                  [type]="barChartType"
-                  [options]="barChartOptions">
-          </canvas>
-        </div>
-      </div>
-
-      <div class="chart-card" *ngIf="spaEntourageChartData">
-        <h3>SPA Consommées par l'Entourage</h3>
-        <div class="chart-container">
-          <canvas baseChart
-                  [data]="spaEntourageChartData"
-                  [type]="barChartType"
-                  [options]="barChartOptions">
-          </canvas>
-        </div>
-      </div>
-
-      <div class="chart-card" *ngIf="associationsSpaChartData">
-        <h3>Associations de SPA Fréquentes</h3>
-        <div class="chart-container">
-          <canvas baseChart
-                  [data]="associationsSpaChartData"
-                  [type]="barChartType"
-                  [options]="barChartOptions">
-          </canvas>
-        </div>
-      </div>
-
-      <div class="chart-card" *ngIf="substancesPrincipalesChartData">
-        <h3>Substances Principales</h3>
-        <div class="chart-container">
-          <canvas baseChart
-                  [data]="substancesPrincipalesChartData"
-                  [type]="barChartType"
-                  [options]="barChartOptions">
-          </canvas>
-        </div>
-      </div>
-
-      <div class="chart-card" *ngIf="autresAddictionsChartData">
-        <h3>Autres Addictions</h3>
-        <div class="chart-container">
-          <canvas baseChart
-                  [data]="autresAddictionsChartData"
-                  [type]="barChartType"
-                  [options]="barChartOptions">
-          </canvas>
-        </div>
-      </div>
-
-      <div class="chart-card" *ngIf="testDepistageDetailChartData">
-        <h3>Tests de Dépistage Détaillés</h3>
-        <div class="chart-container">
-          <canvas baseChart
-                  [data]="testDepistageDetailChartData"
-                  [type]="barChartType"
-                  [options]="barChartOptions">
-          </canvas>
-        </div>
-      </div>
+    <!-- Error State -->
+    <div class="error-state" *ngIf="error">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <circle cx="12" cy="12" r="10" stroke-width="2"/>
+            <path d="M12 8v4M12 16h.01" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        <p>{{ error }}</p>
     </div>
 
-    <div class="stats-sections">
-      <section class="stats-section" *ngIf="statistiques.demandesTraitement">
-        <h2>Demandes de Traitement</h2>
-        <p><strong>Total:</strong> {{ statistiques.demandesTraitement.total || 0 }}</p>
+    <!-- Statistics Content -->
+    <div class="statistics-content" *ngIf="statistiques && !loading">
+        <!-- KPI Cards -->
+        <div class="kpi-section">
+            <div class="kpi-card primary">
+                <div class="kpi-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M9 11a4 4 0 100-8 4 4 0 000 8zM23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+                <div class="kpi-content">
+                    <div class="kpi-label">Total consultations</div>
+                    <div class="kpi-value">{{ statistiques.totalConsultations || 0 | number }}</div>
+                </div>
+            </div>
 
-        <div class="stats-grid">
-          <div class="stats-item" *ngIf="statistiques.demandesTraitement.parAge?.length">
-            <h3>Par Âge</h3>
-            <ul>
-              <li *ngFor="let item of statistiques.demandesTraitement.parAge">
-                {{ item.tranche }}: {{ item.nombre }}
-              </li>
-            </ul>
-          </div>
+            <div class="kpi-card success">
+                <div class="kpi-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M8.5 11a4 4 0 100-8 4 4 0 000 8z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+                <div class="kpi-content">
+                    <div class="kpi-label">Hommes</div>
+                    <div class="kpi-value">{{ statistiques.repartitionSexe?.hommes || 0 | number }}</div>
+                </div>
+            </div>
 
-          <div class="stats-item" *ngIf="statistiques.demandesTraitement.parSexe?.length">
-            <h3>Par Sexe</h3>
-            <ul>
-              <li *ngFor="let item of statistiques.demandesTraitement.parSexe">
-                {{ item.sexe }}: {{ item.nombre }}
-              </li>
-            </ul>
-          </div>
+            <div class="kpi-card warning">
+                <div class="kpi-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M8.5 11a4 4 0 100-8 4 4 0 000 8z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+                <div class="kpi-content">
+                    <div class="kpi-label">Femmes</div>
+                    <div class="kpi-value">{{ statistiques.repartitionSexe?.femmes || 0 | number }}</div>
+                </div>
+            </div>
 
-          <div class="stats-item" *ngIf="statistiques.demandesTraitement.parProfession?.length">
-            <h3>Par Profession</h3>
-            <ul>
-              <li *ngFor="let item of statistiques.demandesTraitement.parProfession">
-                {{ item.profession }}: {{ item.nombre }}
-              </li>
-            </ul>
-          </div>
+            <div class="kpi-card info">
+                <div class="kpi-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <circle cx="12" cy="12" r="10" stroke-width="2"/>
+                        <path d="M12 16v-4M12 8h.01" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                </div>
+                <div class="kpi-content">
+                    <div class="kpi-label">Âge moyen</div>
+                    <div class="kpi-value">{{ (statistiques.moyenneAge || 0).toFixed(1) }}<span class="unit">ans</span></div>
+                </div>
+            </div>
 
-          <div class="stats-item" *ngIf="statistiques.demandesTraitement.parSubstance?.length">
-            <h3>Par Substance</h3>
-            <ul>
-              <li *ngFor="let item of statistiques.demandesTraitement.parSubstance">
-                {{ item.substance }}: {{ item.nombre }}
-              </li>
-            </ul>
-          </div>
+            <div class="kpi-card danger">
+                <div class="kpi-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0zM12 9v4M12 17h.01" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+                <div class="kpi-content">
+                    <div class="kpi-label">Décès liés aux drogues</div>
+                    <div class="kpi-value">{{ statistiques.decesLieDrogues || 0 }}</div>
+                </div>
+            </div>
+            <!-- Ajoutez ces KPIs supplémentaires dans la section kpi-section -->
+
+
+
+            <div class="kpi-card smoke">
+                <div class="kpi-icon">🚬
+                </div>
+                <div class="kpi-content">
+                    <div class="kpi-label">Consommateurs tabac</div>
+                    <div class="kpi-value">{{ statistiques.tabac?.frequenceTabagiques || 0 | number }}</div>
+                </div>
+            </div>
+
+
+
+            <!-- Section des statistiques détaillées -->
+
         </div>
-      </section>
+        <div class="stats-detail-section">
+            <h2 class="section-title">
+                <span class="section-icon">📈</span>
+                Statistiques Détaillées
+            </h2>
 
-      <section class="stats-section" *ngIf="statistiques.cse">
-        <h2>Caractéristiques Socio-Économiques</h2>
-        <div class="stats-grid">
-          <div class="stats-item" *ngIf="statistiques.cse.parSecteur?.length">
-            <h3>Par Secteur</h3>
-            <ul>
-              <li *ngFor="let item of statistiques.cse.parSecteur">
-                {{ item.secteur }}: {{ item.nombre }}
-              </li>
-            </ul>
-          </div>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-label">Âge médian</div>
+                    <div class="stat-value">{{ statistiques.medianeAge || 0 }} <span class="unit">ans</span></div>
+                </div>
 
-          <div class="stats-item" *ngIf="statistiques.cse.parNationalite?.length">
-            <h3>Par Nationalité</h3>
-            <ul>
-              <li *ngFor="let item of statistiques.cse.parNationalite">
-                {{ item.nationalite }}: {{ item.nombre }}
-              </li>
-            </ul>
-          </div>
+                <div class="stat-item">
+                    <div class="stat-label">Âge moyen initiation SPA</div>
+                    <div class="stat-value">{{ (statistiques.spaPersonnelle?.moyenneAgeInitiation || 0).toFixed(1) }} <span class="unit">ans</span></div>
+                </div>
 
-          <div class="stats-item" *ngIf="statistiques.cse.parNiveauScolaire?.length">
-            <h3>Par Niveau Scolaire</h3>
-            <ul>
-              <li *ngFor="let item of statistiques.cse.parNiveauScolaire">
-                {{ item.niveau }}: {{ item.nombre }}
-              </li>
-            </ul>
-          </div>
+                <div class="stat-item">
+                    <div class="stat-label">Âge médian initiation</div>
+                    <div class="stat-value">{{ statistiques.spaPersonnelle?.medianeAgeInitiation || 0 }} <span class="unit">ans</span></div>
+                </div>
+
+                <div class="stat-item">
+                    <div class="stat-label">Polyconsommation</div>
+                    <div class="stat-value">{{ statistiques.spaPersonnelle?.frequencePolyConsommation || 0 }}</div>
+                </div>
+
+                <div class="stat-item">
+                    <div class="stat-label">Accompagnement sevrage</div>
+                    <div class="stat-value">{{ statistiques.spaPersonnelle?.frequenceAccompagnementSevrage || 0 }}</div>
+                </div>
+
+                <div class="stat-item">
+                    <div class="stat-label">Partage de seringues</div>
+                    <div class="stat-value">{{ statistiques.comportementsEtTests?.frequencePartageSeringues || 0 }}</div>
+                </div>
+
+                <div class="stat-item">
+                    <div class="stat-label">Décès SPA (entourage)</div>
+                    <div class="stat-value">{{ statistiques.spaEntourage?.nombreDecesLiesSpaDansEntourage || 0 }}</div>
+                </div>
+
+                <div class="stat-item">
+                    <div class="stat-label">Consommation SPA entourage</div>
+                    <div class="stat-value">{{ statistiques.spaEntourage?.frequenceConsommationSpaEntourage || 0 }}</div>
+                </div>
+
+                <div class="stat-item">
+                    <div class="stat-label">Âge 1ère cigarette (moy.)</div>
+                    <div class="stat-value">{{ (statistiques.tabac?.moyenneAgePremiereCigarette || 0).toFixed(1) }} <span class="unit">ans</span></div>
+                </div>
+
+                <div class="stat-item">
+                    <div class="stat-label">Paquets/année (moy.)</div>
+                    <div class="stat-value">{{ (statistiques.tabac?.moyennePaquetsAnnee || 0).toFixed(1) }}</div>
+                </div>
+
+                <div class="stat-item">
+                    <div class="stat-label">Âge 1ère conso alcool (moy.)</div>
+                    <div class="stat-value">{{ (statistiques.alcool?.moyenneAgePremiereConsommation || 0).toFixed(1) }} <span class="unit">ans</span></div>
+                </div>
+
+                <div class="stat-item">
+                    <div class="stat-label">Quantité alcool (moy.)</div>
+                    <div class="stat-value">{{ (statistiques.alcool?.moyenneQuantiteConsommee || 0).toFixed(1) }}</div>
+                </div>
+
+                <div class="stat-item">
+                    <div class="stat-label">Médiane consultations</div>
+                    <div class="stat-value">{{ statistiques.conduiteTherapeutique?.medianeNombreConsultations || 0 }}</div>
+                </div>
+            </div>
         </div>
-      </section>
+        <!-- Charts Grid -->
+        <div class="charts-container">
+            <!-- Ajoutez ces cartes dans charts-container après vos charts existants -->
 
-      <section class="stats-section" *ngIf="statistiques.tabac">
-        <h2>Consommation de Tabac</h2>
-        <div class="stat-cards-row">
-          <div class="stat-mini-card">
-            <span class="label">Fumeurs</span>
-            <span class="value">{{ statistiques.tabac.frequenceTabagiques || 0 }}</span>
-          </div>
-          <div class="stat-mini-card">
-            <span class="label">Âge moyen 1ère cigarette</span>
-            <span class="value">{{ (statistiques.tabac.moyenneAgePremiereCigarette || 0).toFixed(1) }} ans</span>
-          </div>
-          <div class="stat-mini-card">
-            <span class="label">Sevrage assisté</span>
-            <span class="value">{{ statistiques.tabac.frequenceSevrageAssiste || 0 }}</span>
-          </div>
-        </div>
-      </section>
+            <!-- Situation Familiale -->
+            <div class="chart-card" *ngIf="situationFamilialeChartData">
+                <div class="chart-header">
+                    <h3>
+                        <span class="chart-icon">👨‍👩‍👧‍👦</span>
+                        Situation Familiale
+                    </h3>
+                </div>
+                <div class="chart-body">
+                    <canvas baseChart
+                            [data]="situationFamilialeChartData"
+                            [type]="doughnutChartType"
+                            [options]="doughnutChartOptions">
+                    </canvas>
+                </div>
+            </div>
 
-      <section class="stats-section" *ngIf="statistiques.alcool">
-        <h2>Consommation d'Alcool</h2>
-        <div class="stat-cards-row">
-          <div class="stat-mini-card">
-            <span class="label">Consommateurs</span>
-            <span class="value">{{ statistiques.alcool.frequenceConsommateursAlcool || 0 }}</span>
-          </div>
-          <div class="stat-mini-card">
-            <span class="label">Âge moyen 1ère consommation</span>
-            <span class="value">{{ (statistiques.alcool.moyenneAgePremiereConsommation || 0).toFixed(1) }} ans</span>
-          </div>
-        </div>
-      </section>
+            <!-- Motif de Consultation -->
+            <div class="chart-card" *ngIf="motifConsultationChartData">
+                <div class="chart-header">
+                    <h3>
+                        <span class="chart-icon">🏥</span>
+                        Motif de Consultation
+                    </h3>
+                </div>
+                <div class="chart-body">
+                    <canvas baseChart
+                            [data]="motifConsultationChartData"
+                            [type]="barChartType"
+                            [options]="barChartOptions">
+                    </canvas>
+                </div>
+            </div>
 
-      <section class="stats-section" *ngIf="statistiques.spaPersonnelle">
-        <h2>Consommation de Substances Psychoactives</h2>
-        <div class="stat-cards-row">
-          <div class="stat-mini-card">
-            <span class="label">Total demandes traitement</span>
-            <span class="value">{{ statistiques.spaPersonnelle.nombreTotalDemandesTraitement || 0 }}</span>
-          </div>
-          <div class="stat-mini-card">
-            <span class="label">Poly-consommation</span>
-            <span class="value">{{ statistiques.spaPersonnelle.frequencePolyConsommation || 0 }}</span>
-          </div>
-          <div class="stat-mini-card">
-            <span class="label">Accompagnement sevrage</span>
-            <span class="value">{{ statistiques.spaPersonnelle.frequenceAccompagnementSevrage || 0 }}</span>
-          </div>
-        </div>
+            <!-- Couverture Sociale -->
+            <div class="chart-card" *ngIf="couvertureSocialeChartData">
+                <div class="chart-header">
+                    <h3>
+                        <span class="chart-icon">🛡️</span>
+                        Couverture Sociale
+                    </h3>
+                </div>
+                <div class="chart-body">
+                    <canvas baseChart
+                            [data]="couvertureSocialeChartData"
+                            [type]="doughnutChartType"
+                            [options]="doughnutChartOptions">
+                    </canvas>
+                </div>
+            </div>
 
-        <div class="stats-grid" *ngIf="statistiques.spaPersonnelle.topSpaConsommees?.length">
-          <div class="stats-item">
-            <h3>Substances les plus consommées</h3>
-            <ul>
-              <li *ngFor="let item of statistiques.spaPersonnelle.topSpaConsommees">
-                {{ item.type }}: {{ item.nombre }}
-              </li>
-            </ul>
-          </div>
-        </div>
-      </section>
+            <!-- Situation de Logement -->
+            <div class="chart-card wide" *ngIf="situationLogementChartData">
+                <div class="chart-header">
+                    <h3>
+                        <span class="chart-icon">🏠</span>
+                        Situation de Logement
+                    </h3>
+                </div>
+                <div class="chart-body">
+                    <canvas baseChart
+                            [data]="situationLogementChartData"
+                            [type]="barChartType"
+                            [options]="barChartOptions">
+                    </canvas>
+                </div>
+            </div>
 
-      <section class="stats-section" *ngIf="statistiques.autresAddictions">
-        <h2>Autres Addictions</h2>
-        <div class="stat-cards-row">
-          <div class="stat-mini-card">
-            <span class="label">Jeux pathologiques</span>
-            <span class="value">{{ statistiques.autresAddictions.prevalenceAddictionJeuxPathologiques || 0 }}</span>
-          </div>
-          <div class="stat-mini-card">
-            <span class="label">Écrans</span>
-            <span class="value">{{ statistiques.autresAddictions.prevalenceAddictionEcrans || 0 }}</span>
-          </div>
-          <div class="stat-mini-card">
-            <span class="label">Comportements sexuels</span>
-            <span class="value">{{ statistiques.autresAddictions.prevalenceComportementsSexuelsAddictifs || 0 }}</span>
-          </div>
-        </div>
-      </section>
+            <!-- Nature du Logement -->
+            <div class="chart-card" *ngIf="natureLogementChartData">
+                <div class="chart-header">
+                    <h3>
+                        <span class="chart-icon">🏘️</span>
+                        Nature du Logement
+                    </h3>
+                </div>
+                <div class="chart-body">
+                    <canvas baseChart
+                            [data]="natureLogementChartData"
+                            [type]="doughnutChartType"
+                            [options]="doughnutChartOptions">
+                    </canvas>
+                </div>
+            </div>
 
-      <section class="stats-section" *ngIf="statistiques.comportementsEtTests">
-        <h2>Tests de Dépistage</h2>
-        <div class="stat-cards-row" *ngIf="statistiques.comportementsEtTests.testsDepistage">
-          <div class="stat-mini-card">
-            <span class="label">Tests VIH</span>
-            <span class="value">{{ statistiques.comportementsEtTests.testsDepistage.nombreTestsVih || 0 }}</span>
-          </div>
-          <div class="stat-mini-card">
-            <span class="label">Tests VHC</span>
-            <span class="value">{{ statistiques.comportementsEtTests.testsDepistage.nombreTestsVhc || 0 }}</span>
-          </div>
-          <div class="stat-mini-card">
-            <span class="label">Tests VHB</span>
-            <span class="value">{{ statistiques.comportementsEtTests.testsDepistage.nombreTestsVhb || 0 }}</span>
-          </div>
-          <div class="stat-mini-card">
-            <span class="label">Usagers atteints</span>
-            <span class="value">{{ statistiques.comportementsEtTests.testsDepistage.nombreUsagersAtteints || 0 }}</span>
-          </div>
-        </div>
-      </section>
+            <!-- Fréquence Tabac -->
+            <div class="chart-card" *ngIf="frequenceTabacChartData">
+                <div class="chart-header">
+                    <h3>
+                        <span class="chart-icon">🚬</span>
+                        Fréquence de Consommation - Tabac
+                    </h3>
+                </div>
+                <div class="chart-body">
+                    <canvas baseChart
+                            [data]="frequenceTabacChartData"
+                            [type]="barChartType"
+                            [options]="barChartOptions">
+                    </canvas>
+                </div>
+            </div>
 
-      <section class="stats-section" *ngIf="statistiques.comorbidites">
-        <h2>Comorbidités</h2>
-        <div class="stat-cards-row">
-          <div class="stat-mini-card">
-            <span class="label">Troubles alimentaires</span>
-            <span class="value">{{ statistiques.comorbidites.frequenceTroublesAlimentaires || 0 }}</span>
-          </div>
-          <div class="stat-mini-card">
-            <span class="label">ATCD psychiatriques</span>
-            <span class="value">{{ statistiques.comorbidites.frequenceAtcdPsychiatriquesPersonnels || 0 }}</span>
-          </div>
-          <div class="stat-mini-card">
-            <span class="label">ATCD somatiques</span>
-            <span class="value">{{ statistiques.comorbidites.frequenceAtcdSomatiquesPersonnels || 0 }}</span>
-          </div>
-        </div>
-      </section>
+            <!-- Fréquence Alcool -->
+            <div class="chart-card" *ngIf="frequenceAlcoolChartData">
+                <div class="chart-header">
+                    <h3>
+                        <span class="chart-icon">🍷</span>
+                        Fréquence de Consommation - Alcool
+                    </h3>
+                </div>
+                <div class="chart-body">
+                    <canvas baseChart
+                            [data]="frequenceAlcoolChartData"
+                            [type]="barChartType"
+                            [options]="barChartOptions">
+                    </canvas>
+                </div>
+            </div>
 
-      <section class="stats-section" *ngIf="statistiques.conduiteTherapeutique">
-        <h2>Conduite Thérapeutique</h2>
-        <div class="stat-cards-row">
-          <div class="stat-mini-card">
-            <span class="label">Nombre moyen de consultations</span>
-            <span class="value">{{ (statistiques.conduiteTherapeutique.moyenneNombreConsultations || 0).toFixed(1) }}</span>
-          </div>
-        </div>
+            <!-- Lien Consommateur Entourage -->
+            <div class="chart-card" *ngIf="lienConsommateurEntourageChartData">
+                <div class="chart-header">
+                    <h3>
+                        <span class="chart-icon">👥</span>
+                        Lien avec Consommateurs dans l'Entourage
+                    </h3>
+                </div>
+                <div class="chart-body">
+                    <canvas baseChart
+                            [data]="lienConsommateurEntourageChartData"
+                            [type]="barChartType"
+                            [options]="barChartOptions">
+                    </canvas>
+                </div>
+            </div>
 
-        <div class="stats-item" *ngIf="statistiques.conduiteTherapeutique.parModalitePriseEnCharge?.length">
-          <h3>Modalités de prise en charge</h3>
-          <ul>
-            <li *ngFor="let item of statistiques.conduiteTherapeutique.parModalitePriseEnCharge">
-              {{ item.modalite }}: {{ item.nombre }}
-            </li>
-          </ul>
+            <!-- SPA d'Initiation -->
+            <div class="chart-card" *ngIf="spaInitiationChartData">
+                <div class="chart-header">
+                    <h3>
+                        <span class="chart-icon">🎯</span>
+                        Substances d'Initiation
+                    </h3>
+                </div>
+                <div class="chart-body">
+                    <canvas baseChart
+                            [data]="spaInitiationChartData"
+                            [type]="barChartType"
+                            [options]="barChartOptions">
+                    </canvas>
+                </div>
+            </div>
+
+            <!-- Fréquence Substance Principale -->
+            <div class="chart-card wide" *ngIf="frequenceSubstancePrincipaleChartData">
+                <div class="chart-header">
+                    <h3>
+                        <span class="chart-icon">📊</span>
+                        Fréquence de Consommation - Substance Principale
+                    </h3>
+                </div>
+                <div class="chart-body">
+                    <canvas baseChart
+                            [data]="frequenceSubstancePrincipaleChartData"
+                            [type]="barChartType"
+                            [options]="barChartOptions">
+                    </canvas>
+                </div>
+            </div>
+
+            <!-- Voies d'Administration -->
+            <div class="chart-card" *ngIf="voiesAdministrationChartData">
+                <div class="chart-header">
+                    <h3>
+                        <span class="chart-icon">💉</span>
+                        Voies d'Administration des SPA
+                    </h3>
+                </div>
+                <div class="chart-body">
+                    <canvas baseChart
+                            [data]="voiesAdministrationChartData"
+                            [type]="barChartType"
+                            [options]="barChartOptions">
+                    </canvas>
+                </div>
+            </div>
+
+            <!-- ATCD Psychiatriques -->
+            <div class="chart-card" *ngIf="atcdPsychiatriquesChartData">
+                <div class="chart-header">
+                    <h3>
+                        <span class="chart-icon">🧠</span>
+                        Antécédents Psychiatriques (Top 5)
+                    </h3>
+                </div>
+                <div class="chart-body">
+                    <canvas baseChart
+                            [data]="atcdPsychiatriquesChartData"
+                            [type]="barChartType"
+                            [options]="barChartOptions">
+                    </canvas>
+                </div>
+            </div>
+
+            <!-- ATCD Somatiques -->
+            <div class="chart-card" *ngIf="atcdSomatiquesChartData">
+                <div class="chart-header">
+                    <h3>
+                        <span class="chart-icon">⚕️</span>
+                        Antécédents Somatiques (Top 5)
+                    </h3>
+                </div>
+                <div class="chart-body">
+                    <canvas baseChart
+                            [data]="atcdSomatiquesChartData"
+                            [type]="barChartType"
+                            [options]="barChartOptions">
+                    </canvas>
+                </div>
+            </div>
+            <!-- Répartition démographique -->
+            <div class="chart-card" *ngIf="sexeChartData">
+                <div class="chart-header">
+                    <h3>
+                        <span class="chart-icon">👥</span>
+                        Répartition par Sexe
+                    </h3>
+                </div>
+                <div class="chart-body">
+                    <canvas baseChart
+                            [data]="sexeChartData"
+                            [type]="doughnutChartType"
+                            [options]="doughnutChartOptions">
+                    </canvas>
+                </div>
+            </div>
+
+            <div class="chart-card" *ngIf="ageChartData">
+                <div class="chart-header">
+                    <h3>
+                        <span class="chart-icon">📊</span>
+                        Répartition par Tranche d'Âge
+                    </h3>
+                </div>
+                <div class="chart-body">
+                    <canvas baseChart
+                            [data]="ageChartData"
+                            [type]="barChartType"
+                            [options]="barChartOptions">
+                    </canvas>
+                </div>
+            </div>
+            <!--
+                       <div class="chart-card" *ngIf="demandesTraitementSexeChartData">
+                           <div class="chart-header">
+                               <h3>
+                                   <span class="chart-icon">🔍</span>
+                                   Demandes de Traitement par Sexe
+                               </h3>
+                           </div>
+                           <div class="chart-body">
+                               <canvas baseChart
+                                       [data]="demandesTraitementSexeChartData"
+                                       [type]="doughnutChartType"
+                                       [options]="doughnutChartOptions">
+                               </canvas>
+                           </div>
+                       </div>
+           -->
+            <!-- Substances -->
+            <div class="chart-card wide" *ngIf="substancesChartData">
+                <div class="chart-header">
+                    <h3>
+                        <span class="chart-icon">💊</span>
+                        Substances Psychoactives les Plus Consommées
+                    </h3>
+                </div>
+                <div class="chart-body">
+                    <canvas baseChart
+                            [data]="substancesChartData"
+                            [type]="barChartType"
+                            [options]="barChartOptions">
+                    </canvas>
+                </div>
+            </div>
+
+            <div class="chart-card wide" *ngIf="demandesTraitementSubstanceChartData">
+                <div class="chart-header">
+                    <h3>
+                        <span class="chart-icon">📋</span>
+                        Demandes de Traitement par Substance
+                    </h3>
+                </div>
+                <div class="chart-body">
+                    <canvas baseChart
+                            [data]="demandesTraitementSubstanceChartData"
+                            [type]="barChartType"
+                            [options]="barChartOptions">
+                    </canvas>
+                </div>
+            </div>
+
+            <!-- Géographie -->
+            <div class="chart-card wide" *ngIf="regionChartData">
+                <div class="chart-header">
+                    <h3>
+                        <span class="chart-icon">🗺️</span>
+                        Répartition par Région (Top 10)
+                    </h3>
+                </div>
+                <div class="chart-body">
+                    <canvas baseChart
+                            [data]="regionChartData"
+                            [type]="barChartType"
+                            [options]="barChartOptions">
+                    </canvas>
+                </div>
+            </div>
+
+            <!-- Profil socio-économique -->
+            <div class="chart-card" *ngIf="professionChartData">
+                <div class="chart-header">
+                    <h3>
+                        <span class="chart-icon">💼</span>
+                        Répartition par Profession
+                    </h3>
+                </div>
+                <div class="chart-body">
+                    <canvas baseChart
+                            [data]="professionChartData"
+                            [type]="doughnutChartType"
+                            [options]="doughnutChartOptions">
+                    </canvas>
+                </div>
+            </div>
+
+            <div class="chart-card" *ngIf="secteurChartData">
+                <div class="chart-header">
+                    <h3>
+                        <span class="chart-icon">🏢</span>
+                        Répartition par Secteur
+                    </h3>
+                </div>
+                <div class="chart-body">
+                    <canvas baseChart
+                            [data]="secteurChartData"
+                            [type]="doughnutChartType"
+                            [options]="doughnutChartOptions">
+                    </canvas>
+                </div>
+            </div>
+
+            <div class="chart-card" *ngIf="nationaliteChartData">
+                <div class="chart-header">
+                    <h3>
+                        <span class="chart-icon">🌍</span>
+                        Répartition par Nationalité
+                    </h3>
+                </div>
+                <div class="chart-body">
+                    <canvas baseChart
+                            [data]="nationaliteChartData"
+                            [type]="barChartType"
+                            [options]="barChartOptions">
+                    </canvas>
+                </div>
+            </div>
+
+            <div class="chart-card" *ngIf="niveauScolaireChartData">
+                <div class="chart-header">
+                    <h3>
+                        <span class="chart-icon">🎓</span>
+                        Répartition par Niveau Scolaire
+                    </h3>
+                </div>
+                <div class="chart-body">
+                    <canvas baseChart
+                            [data]="niveauScolaireChartData"
+                            [type]="barChartType"
+                            [options]="barChartOptions">
+                    </canvas>
+                </div>
+            </div>
+
+            <!-- Consommation -->
+            <div class="chart-card" *ngIf="modesAdministrationChartData">
+                <div class="chart-header">
+                    <h3>
+                        <span class="chart-icon">💉</span>
+                        Modes d'Administration
+                    </h3>
+                </div>
+                <div class="chart-body">
+                    <canvas baseChart
+                            [data]="modesAdministrationChartData"
+                            [type]="pieChartType"
+                            [options]="pieChartOptions">
+                    </canvas>
+                </div>
+            </div>
+
+            <div class="chart-card" *ngIf="typesAlcoolChartData">
+                <div class="chart-header">
+                    <h3>
+                        <span class="chart-icon">🍷</span>
+                        Types d'Alcool Consommés
+                    </h3>
+                </div>
+                <div class="chart-body">
+                    <canvas baseChart
+                            [data]="typesAlcoolChartData"
+                            [type]="barChartType"
+                            [options]="barChartOptions">
+                    </canvas>
+                </div>
+            </div>
+
+            <div class="chart-card" *ngIf="alcoolChartData">
+                <div class="chart-header">
+                    <h3>
+                        <span class="chart-icon">📈</span>
+                        Statistiques Alcool
+                    </h3>
+                </div>
+                <div class="chart-body">
+                    <canvas baseChart
+                            [data]="alcoolChartData"
+                            [type]="barChartType"
+                            [options]="barChartOptions">
+                    </canvas>
+                </div>
+            </div>
+
+            <div class="chart-card" *ngIf="tabacChartData">
+                <div class="chart-header">
+                    <h3>
+                        <span class="chart-icon">🚬</span>
+                        Statistiques Tabac
+                    </h3>
+                </div>
+                <div class="chart-body">
+                    <canvas baseChart
+                            [data]="tabacChartData"
+                            [type]="lineChartType"
+                            [options]="lineChartOptions">
+                    </canvas>
+                </div>
+            </div>
+
+            <!-- Associations et entourage -->
+            <div class="chart-card wide" *ngIf="associationsSpaChartData">
+                <div class="chart-header">
+                    <h3>
+                        <span class="chart-icon">🔗</span>
+                        Associations de SPA Fréquentes
+                    </h3>
+                </div>
+                <div class="chart-body">
+                    <canvas baseChart
+                            [data]="associationsSpaChartData"
+                            [type]="barChartType"
+                            [options]="barChartOptions">
+                    </canvas>
+                </div>
+            </div>
+
+            <div class="chart-card" *ngIf="spaEntourageChartData">
+                <div class="chart-header">
+                    <h3>
+                        <span class="chart-icon">👨‍👩‍👧‍👦</span>
+                        SPA Consommées par l'Entourage
+                    </h3>
+                </div>
+                <div class="chart-body">
+                    <canvas baseChart
+                            [data]="spaEntourageChartData"
+                            [type]="barChartType"
+                            [options]="barChartOptions">
+                    </canvas>
+                </div>
+            </div>
+
+            <div class="chart-card" *ngIf="substancesPrincipalesChartData">
+                <div class="chart-header">
+                    <h3>
+                        <span class="chart-icon">⚕️</span>
+                        Substances Principales Polyconsommateurs
+                    </h3>
+                </div>
+                <div class="chart-body">
+                    <canvas baseChart
+                            [data]="substancesPrincipalesChartData"
+                            [type]="barChartType"
+                            [options]="barChartOptions">
+                    </canvas>
+                </div>
+            </div>
+
+            <!-- Santé -->
+            <div class="chart-card wide" *ngIf="testDepistageChartData">
+                <div class="chart-header">
+                    <h3>
+                        <span class="chart-icon">🧪</span>
+                        Tests de Dépistage
+                    </h3>
+                </div>
+                <div class="chart-body">
+                    <canvas baseChart
+                            [data]="testDepistageChartData"
+                            [type]="barChartType"
+                            [options]="barChartOptions">
+                    </canvas>
+                </div>
+            </div>
+
+
+            <div class="chart-card" *ngIf="comorbiditeChartData">
+                <div class="chart-header">
+                    <h3>
+                        <span class="chart-icon">🏥</span>
+                        Comorbidités
+                    </h3>
+                </div>
+                <div class="chart-body">
+                    <canvas baseChart
+                            [data]="comorbiditeChartData"
+                            [type]="barChartType"
+                            [options]="barChartOptions">
+                    </canvas>
+                </div>
+            </div>
+
+            <!-- Addictions -->
+            <div class="chart-card" *ngIf="autresAddictionsChartData">
+                <div class="chart-header">
+                    <h3>
+                        <span class="chart-icon">🎮</span>
+                        Autres Addictions
+                    </h3>
+                </div>
+                <div class="chart-body">
+                    <canvas baseChart
+                            [data]="autresAddictionsChartData"
+                            [type]="barChartType"
+                            [options]="barChartOptions">
+                    </canvas>
+                </div>
+            </div>
+
+            <!-- Prise en charge -->
+            <div class="chart-card wide" *ngIf="modalitesChartData">
+                <div class="chart-header">
+                    <h3>
+                        <span class="chart-icon">🏨</span>
+                        Modalités de Prise en Charge
+                    </h3>
+                </div>
+                <div class="chart-body">
+                    <canvas baseChart
+                            [data]="modalitesChartData"
+                            [type]="barChartType"
+                            [options]="barChartOptions">
+                    </canvas>
+                </div>
+            </div>
+
+            <div class="chart-card" *ngIf="consultationsChartData">
+                <div class="chart-header">
+                    <h3>
+                        <span class="chart-icon">📅</span>
+                        Nombre Moyen de Consultations
+                    </h3>
+                </div>
+                <div class="chart-body">
+                    <canvas baseChart
+                            [data]="consultationsChartData"
+                            [type]="lineChartType"
+                            [options]="lineChartOptions">
+                    </canvas>
+                </div>
+            </div>
         </div>
-      </section>
     </div>
-  </div>
 </div>
