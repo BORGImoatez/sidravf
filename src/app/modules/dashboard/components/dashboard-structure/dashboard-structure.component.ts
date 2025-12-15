@@ -24,7 +24,7 @@ interface FilterParams {
   standalone: true,
   imports: [CommonModule, FormsModule, BaseChartDirective],
   templateUrl: './dashboard-structure.component.html',
-  styleUrls: ['./dashboard-structure.component.css']
+  styleUrls: ['./dashboard-structure.component.css', '../dashboard-tabs.css']
 })
 export class DashboardStructureComponent implements OnInit {
   statistiques: any;
@@ -33,6 +33,7 @@ export class DashboardStructureComponent implements OnInit {
   error: string | null = null;
   showFilters = true;
   voirMesStatistiques = false;
+  activeTab = 'general';
 
   filters: FilterParams = {
     sexe: 'tous'
@@ -452,6 +453,10 @@ export class DashboardStructureComponent implements OnInit {
     this.loadGouvernoratsDisponibles();
     this.loadStatistiques();
     this.loadStatistiquesMarche();
+  }
+
+  switchTab(tab: string): void {
+    this.activeTab = tab;
   }
 
   toggleFilters(): void {

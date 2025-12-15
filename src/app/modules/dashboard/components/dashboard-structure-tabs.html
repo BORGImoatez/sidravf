@@ -1,0 +1,241 @@
+<!--
+  STRUCTURE DES ONGLETS À INTÉGRER DANS LE DASHBOARD-STRUCTURE
+  Remplacez la section <div class="charts-container"> par cette structure
+-->
+
+<div class="tabs-container" *ngIf="statistiques && !loading">
+  <!-- En-tête des onglets -->
+  <div class="tabs-header">
+    <button
+      class="tab-button"
+      [class.active]="activeTab === 'general'"
+      (click)="switchTab('general')">
+      Indicateurs Généraux
+    </button>
+    <button
+      class="tab-button"
+      [class.active]="activeTab === 'demographie'"
+      (click)="switchTab('demographie')">
+      Démographie
+    </button>
+    <button
+      class="tab-button"
+      [class.active]="activeTab === 'substances'"
+      (click)="switchTab('substances')">
+      Substances
+    </button>
+    <button
+      class="tab-button"
+      [class.active]="activeTab === 'sante'"
+      (click)="switchTab('sante')">
+      Santé
+    </button>
+  </div>
+
+  <!-- Contenu de l'onglet Général -->
+  <div class="tab-content" [class.active]="activeTab === 'general'">
+    <div class="charts-container">
+      <div class="chart-card" *ngIf="situationFamilialeChartData">
+        <div class="chart-header">
+          <h3><span class="chart-icon">👨‍👩‍👧‍👦</span> Situation Familiale</h3>
+        </div>
+        <div class="chart-body">
+          <canvas baseChart
+                  [data]="situationFamilialeChartData"
+                  [type]="doughnutChartType"
+                  [options]="doughnutChartOptions">
+          </canvas>
+        </div>
+      </div>
+
+      <div class="chart-card" *ngIf="motifConsultationChartData">
+        <div class="chart-header">
+          <h3><span class="chart-icon">🏥</span> Motif de Consultation</h3>
+        </div>
+        <div class="chart-body">
+          <canvas baseChart
+                  [data]="motifConsultationChartData"
+                  [type]="barChartType"
+                  [options]="barChartOptions">
+          </canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Contenu de l'onglet Démographie -->
+  <div class="tab-content" [class.active]="activeTab === 'demographie'">
+    <div class="charts-container">
+      <div class="chart-card" *ngIf="sexeChartData">
+        <div class="chart-header">
+          <h3><span class="chart-icon">👥</span> Répartition par Sexe</h3>
+        </div>
+        <div class="chart-body">
+          <canvas baseChart
+                  [data]="sexeChartData"
+                  [type]="doughnutChartType"
+                  [options]="doughnutChartOptions">
+          </canvas>
+          <div class="stat-with-percentage" *ngIf="statistiques.repartitionSexe">
+            <span class="stat-label">Hommes:</span>
+            <div class="stat-value">
+              <span class="stat-number">{{ statistiques.repartitionSexe.hommes | number }}</span>
+              <span class="stat-percentage">
+                {{ (statistiques.repartitionSexe.hommes * 100 / statistiques.totalConsultations).toFixed(1) }}%
+              </span>
+            </div>
+          </div>
+          <div class="stat-with-percentage" *ngIf="statistiques.repartitionSexe">
+            <span class="stat-label">Femmes:</span>
+            <div class="stat-value">
+              <span class="stat-number">{{ statistiques.repartitionSexe.femmes | number }}</span>
+              <span class="stat-percentage">
+                {{ (statistiques.repartitionSexe.femmes * 100 / statistiques.totalConsultations).toFixed(1) }}%
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="chart-card" *ngIf="ageChartData">
+        <div class="chart-header">
+          <h3><span class="chart-icon">📊</span> Répartition par Tranche d'Âge</h3>
+        </div>
+        <div class="chart-body">
+          <canvas baseChart
+                  [data]="ageChartData"
+                  [type]="barChartType"
+                  [options]="barChartOptions">
+          </canvas>
+        </div>
+      </div>
+
+      <div class="chart-card" *ngIf="professionChartData">
+        <div class="chart-header">
+          <h3><span class="chart-icon">💼</span> Répartition par Profession</h3>
+        </div>
+        <div class="chart-body">
+          <canvas baseChart
+                  [data]="professionChartData"
+                  [type]="doughnutChartType"
+                  [options]="doughnutChartOptions">
+          </canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Contenu de l'onglet Substances -->
+  <div class="tab-content" [class.active]="activeTab === 'substances'">
+    <div class="charts-container">
+      <div class="chart-card wide" *ngIf="substancesChartData">
+        <div class="chart-header">
+          <h3><span class="chart-icon">💊</span> Substances Psychoactives les Plus Consommées</h3>
+        </div>
+        <div class="chart-body">
+          <canvas baseChart
+                  [data]="substancesChartData"
+                  [type]="barChartType"
+                  [options]="barChartOptions">
+          </canvas>
+        </div>
+      </div>
+
+      <div class="chart-card" *ngIf="frequenceTabacChartData">
+        <div class="chart-header">
+          <h3><span class="chart-icon">🚬</span> Fréquence Consommation - Tabac</h3>
+        </div>
+        <div class="chart-body">
+          <canvas baseChart
+                  [data]="frequenceTabacChartData"
+                  [type]="barChartType"
+                  [options]="barChartOptions">
+          </canvas>
+        </div>
+      </div>
+
+      <div class="chart-card" *ngIf="frequenceAlcoolChartData">
+        <div class="chart-header">
+          <h3><span class="chart-icon">🍷</span> Fréquence Consommation - Alcool</h3>
+        </div>
+        <div class="chart-body">
+          <canvas baseChart
+                  [data]="frequenceAlcoolChartData"
+                  [type]="barChartType"
+                  [options]="barChartOptions">
+          </canvas>
+        </div>
+      </div>
+
+      <div class="chart-card" *ngIf="voiesAdministrationChartData">
+        <div class="chart-header">
+          <h3><span class="chart-icon">💉</span> Voies d'Administration</h3>
+        </div>
+        <div class="chart-body">
+          <canvas baseChart
+                  [data]="voiesAdministrationChartData"
+                  [type]="barChartType"
+                  [options]="barChartOptions">
+          </canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Contenu de l'onglet Santé -->
+  <div class="tab-content" [class.active]="activeTab === 'sante'">
+    <div class="charts-container">
+      <div class="chart-card wide" *ngIf="testDepistageChartData">
+        <div class="chart-header">
+          <h3><span class="chart-icon">🧪</span> Tests de Dépistage</h3>
+        </div>
+        <div class="chart-body">
+          <canvas baseChart
+                  [data]="testDepistageChartData"
+                  [type]="barChartType"
+                  [options]="barChartOptions">
+          </canvas>
+        </div>
+      </div>
+
+      <div class="chart-card wide" *ngIf="hospitalisationsChartData">
+        <div class="chart-header">
+          <h3><span class="chart-icon">🏥</span> Hospitalisations Liées aux Drogues</h3>
+        </div>
+        <div class="chart-body">
+          <canvas baseChart
+                  [data]="hospitalisationsChartData"
+                  [type]="barChartType"
+                  [options]="barChartOptions">
+          </canvas>
+        </div>
+      </div>
+
+      <div class="chart-card" *ngIf="comorbiditeChartData">
+        <div class="chart-header">
+          <h3><span class="chart-icon">🏥</span> Comorbidités</h3>
+        </div>
+        <div class="chart-body">
+          <canvas baseChart
+                  [data]="comorbiditeChartData"
+                  [type]="barChartType"
+                  [options]="barChartOptions">
+          </canvas>
+        </div>
+      </div>
+
+      <div class="chart-card" *ngIf="echangeSeringuesChartData">
+        <div class="chart-header">
+          <h3><span class="chart-icon">💉</span> Échange de Seringues par ONG</h3>
+        </div>
+        <div class="chart-body">
+          <canvas baseChart
+                  [data]="echangeSeringuesChartData"
+                  [type]="doughnutChartType"
+                  [options]="doughnutChartOptions">
+          </canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

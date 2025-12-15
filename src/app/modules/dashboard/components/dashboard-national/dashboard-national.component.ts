@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { StatisticsService } from '../../../../services/statistics.service';
 import { MarketStatisticsService } from '../../../../services/market-statistics.service';
+import { DemandeStatisticsService, StatistiquesDemande } from '../../../../services/demande-statistics.service';
 import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration, ChartOptions, ChartType } from 'chart.js';
 import {Gouvernorat} from "../../../../models/user.model";
@@ -24,14 +25,16 @@ interface FilterParams {
   standalone: true,
   imports: [CommonModule, FormsModule, BaseChartDirective],
   templateUrl: './dashboard-national.component.html',
-  styleUrls: ['./dashboard-national.component.css']
+  styleUrls: ['./dashboard-national.component.css', '../dashboard-tabs.css']
 })
 export class DashboardNationalComponent implements OnInit {
   statistiques: any;
   statistiquesMarche: any;
+  statistiquesDemande: StatistiquesDemande | null = null;
   loading = false;
   error: string | null = null;
   showFilters = true;
+  activeTab = 'general';
 
   filters: FilterParams = {
     sexe: 'tous'
@@ -440,9 +443,17 @@ export class DashboardNationalComponent implements OnInit {
     multi: ['#667eea', '#764ba2', '#f093fb', '#4facfe', '#00f2fe', '#43e97b', '#fa709a', '#fee140']
   };
 
+  public demandeSexeChartData: ChartConfiguration<'doughnut'>['data'] | null = null;
+  public demandeAuteursChartData: ChartConfiguration<'bar'>['data'] | null = null;
+  public demandeCertificatsChartData: ChartConfiguration<'doughnut'>['data'] | null = null;
+  public demandeGouvernoratChartData: ChartConfiguration<'bar'>['data'] | null = null;
+  public demandeDelegationChartData: ChartConfiguration<'bar'>['data'] | null = null;
+  selectedGouvernorat: string | null = null;
+
   constructor(
     private statisticsService: StatisticsService,
     private marketStatisticsService: MarketStatisticsService,
+    private demandeStatisticsService: DemandeStatisticsService,
     private userService: UserService
   ) {}
 
@@ -451,6 +462,114 @@ export class DashboardNationalComponent implements OnInit {
     this.loadGouvernoratsDisponibles();
     this.loadStatistiques();
     this.loadStatistiquesMarche();
+    this.loadStatistiquesDemandes();
+  }
+
+  switchTab(tab: string): void {
+    this.activeTab = tab;
+  }
+
+  loadStatistiquesDemandes(): void {
+    const filterParams: any = {};
+
+    if (this.filters.gouvernorat) {
+      filterParams.gouvernorat = this.filters.gouvernorat;
+    }
+    if (this.filters.anneeConsultation) {
+      filterParams.annee = this.filters.anneeConsultation;
+    }
+    if (this.filters.moisConsultation) {
+      filterParams.mois = this.filters.moisConsultation;
+    }
+    if (this.filters.dateDebut) {
+      filterParams.dateDebut = this.filters.dateDebut;
+    }
+    if (this.filters.dateFin) {
+      filterParams.dateFin = this.filters.dateFin;
+    }
+
+    this.demandeStatisticsService.getStatistiquesDemandes(filterParams).subscribe({
+      next: (data) => {
+        this.statistiquesDemande = data;
+        this.buildDemandeCharts();
+      },
+      error: (error) => {
+        console.error('Erreur lors du chargement des statistiques de demande:', error);
+      }
+    });
+  }
+
+  buildDemandeCharts(): void {
+    if (!this.statistiquesDemande) return;
+
+    if (this.statistiquesDemande.repartitionSexe) {
+      this.demandeSexeChartData = {
+        labels: ['Hommes', 'Femmes'],
+        datasets: [{
+          data: [
+            this.statistiquesDemande.repartitionSexe.hommes,
+            this.statistiquesDemande.repartitionSexe.femmes
+          ],
+          backgroundColor: ['#667eea', '#f093fb'],
+          borderWidth: 0
+        }]
+      };
+    }
+
+    if (this.statistiquesDemande.auteursDemandes) {
+      this.demandeAuteursChartData = {
+        labels: this.statistiquesDemande.auteursDemandes.map(a => a.auteur),
+        datasets: [{
+          label: 'Nombre de demandes',
+          data: this.statistiquesDemande.auteursDemandes.map(a => a.nombre),
+          backgroundColor: this.colorPalettes.gradient,
+          borderRadius: 8,
+          borderSkipped: false
+        }]
+      };
+    }
+
+    if (this.statistiquesDemande.certificatsMedicaux) {
+      this.demandeCertificatsChartData = {
+        labels: this.statistiquesDemande.certificatsMedicaux.map(c => c.type),
+        datasets: [{
+          data: this.statistiquesDemande.certificatsMedicaux.map(c => c.nombre),
+          backgroundColor: this.colorPalettes.primary,
+          borderWidth: 0
+        }]
+      };
+    }
+
+    if (this.statistiquesDemande.parGouvernorat) {
+      this.demandeGouvernoratChartData = {
+        labels: this.statistiquesDemande.parGouvernorat.map(g => g.gouvernorat),
+        datasets: [{
+          label: 'Nombre de demandes',
+          data: this.statistiquesDemande.parGouvernorat.map(g => g.nombre),
+          backgroundColor: this.colorPalettes.warm,
+          borderRadius: 8,
+          borderSkipped: false
+        }]
+      };
+    }
+  }
+
+  selectGouvernoratForDelegation(gouvernorat: string): void {
+    this.selectedGouvernorat = gouvernorat;
+    const gouvernoratData = this.statistiquesDemande?.parGouvernorat.find(g => g.gouvernorat === gouvernorat);
+
+    if (gouvernoratData && gouvernoratData.parDelegation) {
+      this.demandeDelegationChartData = {
+        labels: gouvernoratData.parDelegation.map(d => d.delegation),
+        datasets: [{
+          label: 'Nombre de demandes par délégation',
+          data: gouvernoratData.parDelegation.map(d => d.nombre),
+          backgroundColor: this.colorPalettes.multi,
+          borderRadius: 8,
+          borderSkipped: false
+        }]
+      };
+    }
   }
 
   toggleFilters(): void {
@@ -892,6 +1011,7 @@ export class DashboardNationalComponent implements OnInit {
   onFilterChange(): void {
     this.loadStatistiques();
     this.loadStatistiquesMarche();
+    this.loadStatistiquesDemandes();
   }
 
   resetFilters(): void {
@@ -900,6 +1020,7 @@ export class DashboardNationalComponent implements OnInit {
     };
     this.usePeriode = false;
     this.loadStatistiques();
+    this.loadStatistiquesDemandes();
   }
 
   selectTrancheAge(tranche: any): void {

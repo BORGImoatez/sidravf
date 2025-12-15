@@ -5,9 +5,11 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import tn.gov.ms.sidra.dto.demande.StatistiquesDemandeDTO;
 import tn.gov.ms.sidra.dto.formulaire.StatistiquesDTO;
 import tn.gov.ms.sidra.entity.User;
 import tn.gov.ms.sidra.entity.UserRole;
+import tn.gov.ms.sidra.service.StatistiquesDemandeService;
 import tn.gov.ms.sidra.service.StatistiquesService;
 
 import java.time.LocalDate;
@@ -20,6 +22,7 @@ import java.util.List;
 public class StatistiquesController {
 
     private final StatistiquesService statistiquesService;
+    private final StatistiquesDemandeService statistiquesDemandeService;
 
     /**
      * Récupère les statistiques nationales avec filtres optionnels
@@ -105,5 +108,19 @@ public class StatistiquesController {
     public ResponseEntity<List<String>> getGouvernoratsDisponibles() {
         List<String> gouvernorats = statistiquesService.getGouvernoratsDisponibles();
         return ResponseEntity.ok(gouvernorats);
+    }
+
+    @GetMapping("/demandes")
+    public ResponseEntity<StatistiquesDemandeDTO> getStatistiquesDemandes(
+            @RequestParam(required = false) String gouvernorat,
+            @RequestParam(required = false) Integer annee,
+            @RequestParam(required = false) Integer mois,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateDebut,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateFin
+    ) {
+        StatistiquesDemandeDTO stats = statistiquesDemandeService.getStatistiquesDemandes(
+                gouvernorat, annee, mois, dateDebut, dateFin
+        );
+        return ResponseEntity.ok(stats);
     }
 }

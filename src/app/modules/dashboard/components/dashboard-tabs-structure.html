@@ -1,0 +1,377 @@
+<!--
+  STRUCTURE DES ONGLETS À INTÉGRER DANS LE DASHBOARD-NATIONAL
+  Remplacez la section <div class="charts-container"> par cette structure
+-->
+
+<div class="tabs-container" *ngIf="statistiques && !loading">
+  <!-- En-tête des onglets -->
+  <div class="tabs-header">
+    <button
+      class="tab-button"
+      [class.active]="activeTab === 'general'"
+      (click)="switchTab('general')">
+      Indicateurs Généraux
+    </button>
+    <button
+      class="tab-button"
+      [class.active]="activeTab === 'demographie'"
+      (click)="switchTab('demographie')">
+      Démographie
+    </button>
+    <button
+      class="tab-button"
+      [class.active]="activeTab === 'substances'"
+      (click)="switchTab('substances')">
+      Substances
+    </button>
+    <button
+      class="tab-button"
+      [class.active]="activeTab === 'sante'"
+      (click)="switchTab('sante')">
+      Santé
+    </button>
+    <button
+      class="tab-button"
+      [class.active]="activeTab === 'demandes'"
+      (click)="switchTab('demandes')">
+      Demandes de Prise en Charge
+    </button>
+  </div>
+
+  <!-- Contenu de l'onglet Général -->
+  <div class="tab-content" [class.active]="activeTab === 'general'">
+    <div class="charts-container">
+      <!-- Cartes de situation familiale, motif consultation, etc. -->
+      <div class="chart-card" *ngIf="situationFamilialeChartData">
+        <div class="chart-header">
+          <h3><span class="chart-icon">👨‍👩‍👧‍👦</span> Situation Familiale</h3>
+        </div>
+        <div class="chart-body">
+          <canvas baseChart
+                  [data]="situationFamilialeChartData"
+                  [type]="doughnutChartType"
+                  [options]="doughnutChartOptions">
+          </canvas>
+        </div>
+      </div>
+
+      <div class="chart-card" *ngIf="motifConsultationChartData">
+        <div class="chart-header">
+          <h3><span class="chart-icon">🏥</span> Motif de Consultation</h3>
+        </div>
+        <div class="chart-body">
+          <canvas baseChart
+                  [data]="motifConsultationChartData"
+                  [type]="barChartType"
+                  [options]="barChartOptions">
+          </canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Contenu de l'onglet Démographie -->
+  <div class="tab-content" [class.active]="activeTab === 'demographie'">
+    <div class="charts-container">
+      <div class="chart-card" *ngIf="sexeChartData">
+        <div class="chart-header">
+          <h3><span class="chart-icon">👥</span> Répartition par Sexe</h3>
+        </div>
+        <div class="chart-body">
+          <canvas baseChart
+                  [data]="sexeChartData"
+                  [type]="doughnutChartType"
+                  [options]="doughnutChartOptions">
+          </canvas>
+          <div class="stat-with-percentage" *ngIf="statistiques.repartitionSexe">
+            <span class="stat-label">Hommes:</span>
+            <div class="stat-value">
+              <span class="stat-number">{{ statistiques.repartitionSexe.hommes | number }}</span>
+              <span class="stat-percentage">
+                {{ (statistiques.repartitionSexe.hommes * 100 / statistiques.totalConsultations).toFixed(1) }}%
+              </span>
+            </div>
+          </div>
+          <div class="stat-with-percentage" *ngIf="statistiques.repartitionSexe">
+            <span class="stat-label">Femmes:</span>
+            <div class="stat-value">
+              <span class="stat-number">{{ statistiques.repartitionSexe.femmes | number }}</span>
+              <span class="stat-percentage">
+                {{ (statistiques.repartitionSexe.femmes * 100 / statistiques.totalConsultations).toFixed(1) }}%
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="chart-card" *ngIf="ageChartData">
+        <div class="chart-header">
+          <h3><span class="chart-icon">📊</span> Répartition par Tranche d'Âge</h3>
+        </div>
+        <div class="chart-body">
+          <canvas baseChart
+                  [data]="ageChartData"
+                  [type]="barChartType"
+                  [options]="barChartOptions">
+          </canvas>
+        </div>
+      </div>
+
+      <div class="chart-card wide" *ngIf="regionChartData">
+        <div class="chart-header">
+          <h3><span class="chart-icon">🗺️</span> Répartition par Région</h3>
+        </div>
+        <div class="chart-body">
+          <canvas baseChart
+                  [data]="regionChartData"
+                  [type]="barChartType"
+                  [options]="barChartOptions">
+          </canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Contenu de l'onglet Substances -->
+  <div class="tab-content" [class.active]="activeTab === 'substances'">
+    <div class="charts-container">
+      <div class="chart-card wide" *ngIf="substancesChartData">
+        <div class="chart-header">
+          <h3><span class="chart-icon">💊</span> Substances Psychoactives les Plus Consommées</h3>
+        </div>
+        <div class="chart-body">
+          <canvas baseChart
+                  [data]="substancesChartData"
+                  [type]="barChartType"
+                  [options]="barChartOptions">
+          </canvas>
+        </div>
+      </div>
+
+      <div class="chart-card" *ngIf="frequenceTabacChartData">
+        <div class="chart-header">
+          <h3><span class="chart-icon">🚬</span> Fréquence Consommation - Tabac</h3>
+        </div>
+        <div class="chart-body">
+          <canvas baseChart
+                  [data]="frequenceTabacChartData"
+                  [type]="barChartType"
+                  [options]="barChartOptions">
+          </canvas>
+        </div>
+      </div>
+
+      <div class="chart-card" *ngIf="frequenceAlcoolChartData">
+        <div class="chart-header">
+          <h3><span class="chart-icon">🍷</span> Fréquence Consommation - Alcool</h3>
+        </div>
+        <div class="chart-body">
+          <canvas baseChart
+                  [data]="frequenceAlcoolChartData"
+                  [type]="barChartType"
+                  [options]="barChartOptions">
+          </canvas>
+        </div>
+      </div>
+
+      <div class="chart-card" *ngIf="voiesAdministrationChartData">
+        <div class="chart-header">
+          <h3><span class="chart-icon">💉</span> Voies d'Administration</h3>
+        </div>
+        <div class="chart-body">
+          <canvas baseChart
+                  [data]="voiesAdministrationChartData"
+                  [type]="barChartType"
+                  [options]="barChartOptions">
+          </canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Contenu de l'onglet Santé -->
+  <div class="tab-content" [class.active]="activeTab === 'sante'">
+    <div class="charts-container">
+      <div class="chart-card wide" *ngIf="testDepistageChartData">
+        <div class="chart-header">
+          <h3><span class="chart-icon">🧪</span> Tests de Dépistage</h3>
+        </div>
+        <div class="chart-body">
+          <canvas baseChart
+                  [data]="testDepistageChartData"
+                  [type]="barChartType"
+                  [options]="barChartOptions">
+          </canvas>
+        </div>
+      </div>
+
+      <div class="chart-card wide" *ngIf="hospitalisationsChartData">
+        <div class="chart-header">
+          <h3><span class="chart-icon">🏥</span> Hospitalisations Liées aux Drogues</h3>
+        </div>
+        <div class="chart-body">
+          <canvas baseChart
+                  [data]="hospitalisationsChartData"
+                  [type]="barChartType"
+                  [options]="barChartOptions">
+          </canvas>
+        </div>
+      </div>
+
+      <div class="chart-card" *ngIf="comorbiditeChartData">
+        <div class="chart-header">
+          <h3><span class="chart-icon">🏥</span> Comorbidités</h3>
+        </div>
+        <div class="chart-body">
+          <canvas baseChart
+                  [data]="comorbiditeChartData"
+                  [type]="barChartType"
+                  [options]="barChartOptions">
+          </canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Contenu de l'onglet Demandes de Prise en Charge -->
+  <div class="tab-content" [class.active]="activeTab === 'demandes'">
+    <div class="stats-detail-section" *ngIf="statistiquesDemande">
+      <h2 class="section-title">
+        <span class="section-icon">📋</span>
+        Statistiques des Demandes de Prise en Charge
+      </h2>
+
+      <div class="stats-grid">
+        <div class="stat-item">
+          <div class="stat-label">Total demandes</div>
+          <div class="stat-value">{{ statistiquesDemande.totalDemandes | number }}</div>
+        </div>
+
+        <div class="stat-item">
+          <div class="stat-label">Âge moyen</div>
+          <div class="stat-value">{{ statistiquesDemande.moyenneAge.toFixed(1) }} <span class="unit">ans</span></div>
+        </div>
+
+        <div class="stat-item">
+          <div class="stat-label">Âge médian</div>
+          <div class="stat-value">{{ statistiquesDemande.medianeAge.toFixed(1) }} <span class="unit">ans</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="charts-container" *ngIf="statistiquesDemande">
+      <!-- Répartition par Sexe -->
+      <div class="chart-card" *ngIf="demandeSexeChartData">
+        <div class="chart-header">
+          <h3><span class="chart-icon">👥</span> Répartition par Sexe</h3>
+        </div>
+        <div class="chart-body">
+          <canvas baseChart
+                  [data]="demandeSexeChartData"
+                  [type]="doughnutChartType"
+                  [options]="doughnutChartOptions">
+          </canvas>
+          <div class="stat-with-percentage">
+            <span class="stat-label">Hommes:</span>
+            <div class="stat-value">
+              <span class="stat-number">{{ statistiquesDemande.repartitionSexe.hommes | number }}</span>
+              <span class="stat-percentage">{{ statistiquesDemande.repartitionSexe.pourcentageHommes.toFixed(1) }}%</span>
+            </div>
+          </div>
+          <div class="stat-with-percentage">
+            <span class="stat-label">Femmes:</span>
+            <div class="stat-value">
+              <span class="stat-number">{{ statistiquesDemande.repartitionSexe.femmes | number }}</span>
+              <span class="stat-percentage">{{ statistiquesDemande.repartitionSexe.pourcentageFemmes.toFixed(1) }}%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Auteurs des Demandes -->
+      <div class="chart-card" *ngIf="demandeAuteursChartData">
+        <div class="chart-header">
+          <h3><span class="chart-icon">👤</span> Auteurs des Demandes</h3>
+        </div>
+        <div class="chart-body">
+          <canvas baseChart
+                  [data]="demandeAuteursChartData"
+                  [type]="barChartType"
+                  [options]="barChartOptions">
+          </canvas>
+          <div *ngFor="let auteur of statistiquesDemande.auteursDemandes" class="stat-with-percentage">
+            <span class="stat-label">{{ auteur.auteur }}:</span>
+            <div class="stat-value">
+              <span class="stat-number">{{ auteur.nombre | number }}</span>
+              <span class="stat-percentage">{{ auteur.pourcentage.toFixed(1) }}%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Certificats Médicaux -->
+      <div class="chart-card" *ngIf="demandeCertificatsChartData">
+        <div class="chart-header">
+          <h3><span class="chart-icon">📄</span> Certificats Médicaux</h3>
+        </div>
+        <div class="chart-body">
+          <canvas baseChart
+                  [data]="demandeCertificatsChartData"
+                  [type]="doughnutChartType"
+                  [options]="doughnutChartOptions">
+          </canvas>
+          <div *ngFor="let cert of statistiquesDemande.certificatsMedicaux" class="stat-with-percentage">
+            <span class="stat-label">{{ cert.type }}:</span>
+            <div class="stat-value">
+              <span class="stat-number">{{ cert.nombre | number }}</span>
+              <span class="stat-percentage">{{ cert.pourcentage.toFixed(1) }}%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Répartition par Gouvernorat -->
+      <div class="chart-card wide" *ngIf="demandeGouvernoratChartData">
+        <div class="chart-header">
+          <h3><span class="chart-icon">🗺️</span> Répartition par Gouvernorat</h3>
+        </div>
+        <div class="chart-body">
+          <canvas baseChart
+                  [data]="demandeGouvernoratChartData"
+                  [type]="barChartType"
+                  [options]="barChartOptions">
+          </canvas>
+
+          <div class="gouvernorat-selector" style="margin-top: 20px;">
+            <label style="font-weight: 600; margin-bottom: 10px; display: block;">
+              Sélectionnez un gouvernorat pour voir les détails par délégation:
+            </label>
+            <select
+              [(ngModel)]="selectedGouvernorat"
+              (change)="selectGouvernoratForDelegation(selectedGouvernorat!)"
+              style="padding: 8px; border-radius: 8px; border: 1px solid #dee2e6; width: 100%;">
+              <option [value]="null">-- Choisir un gouvernorat --</option>
+              <option *ngFor="let gouv of statistiquesDemande.parGouvernorat" [value]="gouv.gouvernorat">
+                {{ gouv.gouvernorat }} ({{ gouv.nombre }} demandes - {{ gouv.pourcentage.toFixed(1) }}%)
+              </option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Histogramme par Délégation -->
+      <div class="chart-card wide" *ngIf="demandeDelegationChartData && selectedGouvernorat">
+        <div class="chart-header">
+          <h3><span class="chart-icon">📍</span> Répartition par Délégation - {{ selectedGouvernorat }}</h3>
+        </div>
+        <div class="chart-body">
+          <canvas baseChart
+                  [data]="demandeDelegationChartData"
+                  [type]="barChartType"
+                  [options]="barChartOptions">
+          </canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
